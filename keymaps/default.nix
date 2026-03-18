@@ -6,7 +6,7 @@ let
   telescope = import ./telescope.nix;
   trouble = import ./trouble.nix;
 in {
-  programs.nvf.settings.vim.keymaps =
+  vim.keymaps =
     lsp
     ++ oil
     ++ neogen

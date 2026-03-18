@@ -1,5 +1,5 @@
 {lib, ...}: {
-  programs.nvf.settings.vim.assistant.avante-nvim = {
+  vim.assistant.avante-nvim = {
     enable = false;
     setupOpts = {
       provider = "ollama";

@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  programs.nvf.settings.vim = {
+  vim = {
     autocomplete.blink-cmp = {
       enable = true;
       friendly-snippets.enable = true;

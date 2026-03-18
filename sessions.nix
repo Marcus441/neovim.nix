@@ -1,5 +1,5 @@
 {
-  programs.nvf.settings.vim = {
+  vim = {
     session = {
       nvim-session-manager = {
         enable = true;

@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  programs.nvf.settings.vim.extraPlugins = {
+  vim.extraPlugins = {
     theme-plugin = {
       package = pkgs.vimPlugins.kanagawa-nvim;
       setup = "

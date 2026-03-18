@@ -38,8 +38,7 @@
     };
   };
 in {
-  # NVF Configuration Block (Adjust path if needed)
-  programs.nvf.settings.vim = {
+  vim = {
     dashboard.alpha = {
       enable = true;
       theme = null;

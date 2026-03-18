@@ -1,5 +1,5 @@
 {lib, ...}: {
-  programs.nvf.settings.vim = {
+  vim = {
     augroups = [
       {
         name = "UserSetup";

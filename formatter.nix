@@ -1,5 +1,5 @@
 {
-  programs.nvf.settings.vim = {
+  vim = {
     formatter.conform-nvim = {
       enable = true;
       setupOpts = {
