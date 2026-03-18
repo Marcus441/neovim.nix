@@ -15,6 +15,7 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
+        inherit (pkgs) lib;
 
         myNeovim =
           (nvf.lib.neovimConfiguration {
