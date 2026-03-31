@@ -32,7 +32,13 @@
         format.enable = true;
         format.type = ["prettierd"];
       };
-      html.enable = true;
+      html = {
+        enable = true;
+        format = {
+          enable = true;
+          type = ["prettierd"];
+        };
+      };
       lua.enable = true;
       markdown = {
         enable = true;
