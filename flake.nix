@@ -31,6 +31,7 @@
               ./languages.nix
               ./lsp.nix
               ./sessions.nix
+              ./terminal.nix
               {
                 config.vim = {
                   vimAlias = true;
