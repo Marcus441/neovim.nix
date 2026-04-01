@@ -3,8 +3,9 @@
     theme-plugin = {
       package = pkgs.vimPlugins.kanagawa-nvim;
       setup = "
+        local is_neovide = vim.g.neovide ~= nil
         require('kanagawa').setup({
-          transparent = true,
+          transparent = not is_neovide,
           colors = {
             theme = {
               all = {
