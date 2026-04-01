@@ -31,7 +31,35 @@
               NormalFloat = { bg = 'none' },
               FloatBorder = { bg = 'none' },
               FloatTitle = { bg = 'none' },
+              
+              -------------------
+              -- Blink-cmp (Transparent & Flush)
+              -------------------
+              -- Force the entire menu and its elements to have no background
+              Pmenu = { bg = 'none' },
+              PmenuSel = { bg = theme.ui.bg_p2 }, -- The selection bar
+              PmenuSbar = { bg = 'none' },
+              PmenuThumb = { bg = theme.ui.bg_p2 },
 
+              BlinkCmpMenu = { bg = 'none' },
+              BlinkCmpMenuBorder = { bg = 'none', fg = theme.ui.bg_p2 },
+              
+              -- Individual row elements
+              BlinkCmpLabel = { bg = 'none', fg = theme.ui.fg },
+              BlinkCmpLabelDescription = { bg = 'none', fg = theme.ui.fg_dim },
+              BlinkCmpLabelDetail = { bg = 'none', fg = theme.ui.fg_dim },
+              BlinkCmpKind = { bg = 'none', fg = theme.ui.fg_dim },
+              BlinkCmpSource = { bg = 'none', fg = theme.ui.fg_dim },
+              BlinkCmpLabelMatch = { bg = 'none', fg = theme.diag.info, bold = true },
+              
+              -- The selection bar inside the menu
+              BlinkCmpMenuSelection = { bg = theme.ui.bg_p2, fg = theme.ui.fg },
+
+              -- Documentation & Signature Help
+              BlinkCmpDoc = { bg = 'none' },
+              BlinkCmpDocBorder = { bg = 'none', fg = theme.ui.bg_p2 },
+              BlinkCmpSignatureHelp = { bg = 'none' },
+              BlinkCmpSignatureHelpBorder = { bg = 'none', fg = theme.ui.bg_p2 },
               -------------------
               -- LSP Progress
               -------------------
@@ -45,7 +73,7 @@
           end
         })
         vim.cmd[[colorscheme kanagawa-dragon]]
-      ";
+  ";
     };
     vim-tmux-navigator = {
       package = pkgs.vimPlugins.vim-tmux-navigator;

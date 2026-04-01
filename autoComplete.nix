@@ -5,12 +5,6 @@
       friendly-snippets.enable = true;
       sourcePlugins = {
         spell.enable = true;
-        # emoji.enable = true;
-        # "nerdfont" = {
-        #   enable = true;
-        #   module = "blink-nerdfont";
-        #   package = pkgs.vimPlugins.blink-nerdfont-nvim;
-        # };
         ripgrep.enable = true;
       };
 
@@ -18,6 +12,28 @@
         keymap.preset = "default";
         cmdline.keymap.preset = "default";
         signature.enabled = true;
+
+        completion = {
+          ghost_text.enabled = true;
+
+          menu = {
+            border = "rounded";
+            winblend = 0;
+            draw = {
+              columns = [
+                ["kind_icon"]
+                ["label" "label_description"]
+                ["source_name"]
+              ];
+              gap = 1;
+            };
+          };
+
+          documentation = {
+            auto_show = true;
+            window.border = "rounded";
+          };
+        };
       };
     };
   };
