@@ -2,7 +2,7 @@
   vim.terminal.toggleterm = {
     enable = true;
 
-    mappings.open = "<leader>tt";
+    mappings.open = "<A-t>";
 
     lazygit = {
       enable = true;
