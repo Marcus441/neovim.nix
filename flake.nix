@@ -33,6 +33,8 @@
               ./sessions.nix
               {
                 config.vim = {
+                  theme.enable = true;
+                  theme.name = "onedark";
                   vimAlias = true;
                   undoFile.enable = true;
                   lineNumberMode = "relNumber";
