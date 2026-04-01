@@ -12,7 +12,24 @@
         keymap.preset = "default";
         cmdline.keymap.preset = "default";
         signature.enabled = true;
+        sources = {
+          default = ["lsp" "snippets" "path" "buffer" "ripgrep" "spell"];
 
+          providers = {
+            lsp = {
+              name = "LSP";
+              module = "blink.cmp.sources.lsp";
+              score_offset = 100;
+            };
+            snippets = {
+              score_offset = 80;
+            };
+            ripgrep = {
+              score_offset = 10;
+              min_keyword_length = 4;
+            };
+          };
+        };
         completion = {
           ghost_text.enabled = true;
 
