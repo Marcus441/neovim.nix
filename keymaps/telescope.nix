@@ -25,6 +25,18 @@
   }
   {
     mode = ["n"];
+    key = "<leader>sp";
+    action = "<cmd>Telescope projects<cr>";
+    desc = "[S]earch [P]rojects";
+  }
+  {
+    mode = ["n"];
+    key = "<leader>sm";
+    action = "<cmd>Telescope marks<cr>";
+    desc = "[S]earch [M]arks";
+  }
+  {
+    mode = ["n"];
     key = "<leader>sw";
     action = "<cmd>Telescope grep_string<cr>";
     desc = "[S]earch current [W]ord";
