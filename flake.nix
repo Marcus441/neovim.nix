@@ -118,7 +118,7 @@
                         };
                       };
                     };
-                    rainbow-delimiters.enable = true;
+                    rainbow-delimiters.enable = false;
                   };
 
                   autopairs.nvim-autopairs.enable = true;
