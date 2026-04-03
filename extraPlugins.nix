@@ -4,6 +4,9 @@
       package = pkgs.vimPlugins.kanagawa-nvim;
       setup = "
         local is_neovide = vim.g.neovide ~= nil
+        if is_neovide then
+          vim.o.guifont = 'JetBrainsMono Nerd Font:h13'
+        end
         require('kanagawa').setup({
           transparent = not is_neovide,
           colors = {
