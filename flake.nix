@@ -40,8 +40,7 @@
                   enableLuaLoader = true;
                   preventJunkFiles = true;
                   telescope = {
-                    enable = true;
-                    setupOpts.defaults.color_devicons = true;
+                    enable = false;
                   };
                   treesitter = {
                     context.enable = false;
@@ -190,6 +189,9 @@
                     snacks-nvim = {
                       enable = true;
                       setupOpts = {
+                        picker = {
+                          enabled = true;
+                        };
                         image = {
                           enabled = true;
                         };
