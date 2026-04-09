@@ -39,7 +39,13 @@
           type = ["prettierd"];
         };
       };
-      lua.enable = true;
+      lua = {
+        enable = true;
+        lsp = {
+          enable = true;
+          lazydev.enable = true;
+        };
+      };
       markdown = {
         enable = true;
         lsp.enable = true;
