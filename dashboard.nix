@@ -67,10 +67,10 @@ in {
           type = "group";
           val = [
             (mkButton "e" "" "> New file" "ene | startinsert")
-            (mkButton "f" "" "> Find file" "Telescope find_files")
-            (mkButton "g" "󰈞" "> Live Grep" "Telescope live_grep")
-            (mkButton "r" "󰙰" "> Recent" "Telescope oldfiles")
-            (mkButton "p" "" "> Search Projects" "Telescope projects")
+            (mkButton "f" "" "> Find file" "lua Snacks.picker.files()")
+            (mkButton "g" "󰈞" "> Live Grep" "lua Snacks.picker.grep()")
+            (mkButton "r" "󰙰" "> Recent" "lua Snacks.picker.recent()")
+            (mkButton "p" "" "> Search Projects" "lua Snacks.picker.projects()")
             (mkButton "l" "" "> Last session" "SessionManager load_last_session")
             (mkButton "q" "" "> Quit NVIM" "qa")
           ];

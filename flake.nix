@@ -162,13 +162,14 @@
                       setupOpts = {
                         ignore_filetypes = [
                           "NvimTree"
-                          "TelescopePrompt"
                           "help"
                           "neo-tree"
                           "notify"
                           "alpha"
                           "snacks_notif"
                           "snacks_notif_history"
+                          "snacks_picker_input"
+                          "snacks_picker_list"
                         ];
                         symbol = "┃";
                         draw = {
