@@ -185,6 +185,7 @@
                   utility = {
                     ccc.enable = false;
                     diffview-nvim.enable = true;
+                    direnv.enable = true;
                     icon-picker.enable = true;
                     motion = {precognition.enable = false;};
                     oil-nvim.enable = true;
