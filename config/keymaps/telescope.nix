@@ -1,4 +1,4 @@
-[
+{ vim.keymaps = [
   {
     mode = ["n"];
     key = "<leader>sh";
@@ -77,4 +77,4 @@
     action = "<cmd>Telescope buffers<cr>";
     desc = "[/] Fuzzily search in current buffer";
   }
-]
+]; }

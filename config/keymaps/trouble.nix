@@ -1,4 +1,4 @@
-[
+{ vim.keymaps = [
   {
     mode = ["n"];
     key = "<leader>xx";
@@ -35,4 +35,4 @@
     action = "<cmd>Trouble qflist toggle<cr>";
     desc = "Quickfix List (Trouble)";
   }
-]
+]; }
