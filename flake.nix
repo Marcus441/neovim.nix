@@ -40,8 +40,7 @@
                   enableLuaLoader = true;
                   preventJunkFiles = true;
                   telescope = {
-                    enable = true;
-                    setupOpts.defaults.color_devicons = true;
+                    enable = false;
                   };
                   treesitter = {
                     context.enable = false;
@@ -163,13 +162,14 @@
                       setupOpts = {
                         ignore_filetypes = [
                           "NvimTree"
-                          "TelescopePrompt"
                           "help"
                           "neo-tree"
                           "notify"
                           "alpha"
                           "snacks_notif"
                           "snacks_notif_history"
+                          "snacks_picker_input"
+                          "snacks_picker_list"
                         ];
                         symbol = "┃";
                         draw = {
@@ -190,6 +190,9 @@
                     snacks-nvim = {
                       enable = true;
                       setupOpts = {
+                        picker = {
+                          enabled = true;
+                        };
                         image = {
                           enabled = true;
                         };

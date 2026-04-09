@@ -3,14 +3,14 @@ let
   lsp = import ./lsp.nix;
   oil = import ./oil.nix;
   neogen = import ./neogen.nix;
-  telescope = import ./telescope.nix;
+  snacks_picker = import ./snacks_picker.nix;
   trouble = import ./trouble.nix;
 in {
   vim.keymaps =
     lsp
     ++ oil
     ++ neogen
-    ++ telescope
+    ++ snacks_picker
     ++ trouble
     ++ general;
 }
