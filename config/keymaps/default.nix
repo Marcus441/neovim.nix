@@ -9,7 +9,7 @@
     ./lsp.nix
     ./oil.nix
     ./neogen.nix
-    ./telescope.nix
+    ./snacks_picker.nix
     ./trouble.nix
   ];
 }

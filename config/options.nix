@@ -129,7 +129,8 @@
         setupOpts = {
           ignore_filetypes = [
             "NvimTree"
-            "TelescopePrompt"
+            "snacks_picker_input"
+            "snacks_picker_list"
             "help"
             "neo-tree"
             "notify"
