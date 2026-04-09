@@ -168,6 +168,8 @@
                           "neo-tree"
                           "notify"
                           "alpha"
+                          "snacks_notif"
+                          "snacks_notif_history"
                         ];
                         symbol = "┃";
                         draw = {
@@ -176,10 +178,6 @@
                         };
                       };
                     };
-                  };
-
-                  notify = {
-                    nvim-notify.enable = true;
                   };
 
                   utility = {
@@ -191,7 +189,16 @@
                     oil-nvim.enable = true;
                     snacks-nvim = {
                       enable = true;
-                      setupOpts = {image = {enabled = true;};};
+                      setupOpts = {
+                        image = {
+                          enabled = true;
+                        };
+                        notifier = {
+                          enabled = true;
+                          timeout = 3000;
+                          style = "fancy";
+                        };
+                      };
                     };
                     surround.enable = true;
                     vim-wakatime.enable = false;
