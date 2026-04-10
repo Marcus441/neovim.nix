@@ -1,4 +1,4 @@
-{ lib, ... }: {
+{lib, ...}: {
   config.vim = {
     vimAlias = true;
     undoFile.enable = true;
@@ -14,7 +14,6 @@
       indent.enable = false;
     };
     options = {
-      guicursor = "i:block";
       tabstop = 4;
       shiftwidth = 2;
       smartindent = true;
@@ -33,9 +32,10 @@
     diagnostics = {
       enable = true;
       config = {
-        signs = true;
-        underline = true;
         update_in_insert = false;
+        underline = true;
+        severity_sort = true;
+        signs = true;
         virtual_lines = {
           current_line = true;
           severity = {
@@ -47,6 +47,9 @@
             min = "INFO";
             max = "WARN";
           };
+          spacing = 4;
+          prefix = "●";
+          source = "if_many";
         };
       };
     };
