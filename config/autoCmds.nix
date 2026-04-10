@@ -7,6 +7,9 @@
       {
         name = "MacroRecordingNotificationGroup";
       }
+      {
+        name = "MarkdownLspGitcommit";
+      }
     ];
     autocmds = [
       {
@@ -46,6 +49,17 @@
               title = "Macro Recording End",
               timeout = 2000,
             })
+          end
+        '';
+      }
+      {
+        event = ["FileType"];
+        pattern = ["gitcommit"];
+        desc = "Attach markdown LSP to gitcommit buffers";
+        group = "MarkdownLspGitcommit";
+        callback = lib.mkLuaInline ''
+          function(args)
+            vim.cmd("LspStart marksman")
           end
         '';
       }
