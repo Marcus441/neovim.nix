@@ -55,7 +55,7 @@
         format = {
           enable = true;
           type = ["prettierd"];
-          extraFiletypes = ["gitcommit"];
+          extraFiletypes = ["gitcommit" "COMMIT_EDITMSG"];
         };
         treesitter = {
           enable = true;
@@ -66,7 +66,7 @@
         };
         extensions = {
           markview-nvim = {
-            enable = true;
+            enable = false;
           };
           render-markdown-nvim = {
             enable = true;
