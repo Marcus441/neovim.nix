@@ -39,11 +39,38 @@
           type = ["prettierd"];
         };
       };
-      lua.enable = true;
+      lua = {
+        enable = true;
+        lsp = {
+          enable = true;
+          lazydev.enable = true;
+        };
+      };
       markdown = {
         enable = true;
-        lsp.enable = true;
-        extensions.markview-nvim.enable = true;
+        lsp = {
+          enable = true;
+          servers = ["marksman"];
+        };
+        format = {
+          enable = true;
+          type = ["prettierd"];
+        };
+        treesitter = {
+          enable = true;
+        };
+        extraDiagnostics = {
+          enable = true;
+          types = ["markdownlint-cli2"];
+        };
+        extensions = {
+          markview-nvim = {
+            enable = true;
+          };
+          render-markdown-nvim = {
+            enable = false;
+          };
+        };
       };
       nix = {
         enable = true;

@@ -1,4 +1,4 @@
-[
+{ vim.keymaps = [
   {
     mode = ["n"];
     key = "gd";
@@ -53,4 +53,4 @@
     action = "<cmd>lua vim.lsp.buf.declaration()<cr>";
     desc = "[G]oto [D]eclaration";
   }
-]
+]; }
