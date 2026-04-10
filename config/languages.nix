@@ -48,8 +48,33 @@
       };
       markdown = {
         enable = true;
-        lsp.enable = true;
-        extensions.markview-nvim.enable = true;
+        lsp = {
+          enable = true;
+          servers = ["marksman"];
+        };
+        format = {
+          enable = true;
+          type = ["prettierd"];
+          extraFiletypes = ["gitcommit"];
+        };
+        treesitter = {
+          enable = true;
+        };
+        extraDiagnostics = {
+          enable = true;
+          types = ["markdownlint-cli2"];
+        };
+        extensions = {
+          markview-nvim = {
+            enable = true;
+          };
+          render-markdown-nvim = {
+            enable = true;
+            setupOpts = {
+              file_types = ["markdown"];
+            };
+          };
+        };
       };
       nix = {
         enable = true;
