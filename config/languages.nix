@@ -55,7 +55,6 @@
         format = {
           enable = true;
           type = ["prettierd"];
-          extraFiletypes = ["gitcommit" "COMMIT_EDITMSG"];
         };
         treesitter = {
           enable = true;
