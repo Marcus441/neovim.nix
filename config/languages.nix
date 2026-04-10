@@ -66,13 +66,10 @@
         };
         extensions = {
           markview-nvim = {
-            enable = false;
+            enable = true;
           };
           render-markdown-nvim = {
-            enable = true;
-            setupOpts = {
-              file_types = ["markdown"];
-            };
+            enable = false;
           };
         };
       };
