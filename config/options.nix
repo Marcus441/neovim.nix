@@ -1,14 +1,10 @@
-{lib, ...}: {
+{
   config.vim = {
     vimAlias = true;
     undoFile.enable = true;
     lineNumberMode = "relNumber";
     enableLuaLoader = true;
     preventJunkFiles = true;
-    telescope = {
-      enable = true;
-      setupOpts.defaults.color_devicons = true;
-    };
     treesitter = {
       context.enable = false;
       indent.enable = false;
@@ -63,31 +59,10 @@
     visuals = {
       nvim-web-devicons.enable = true;
       nvim-cursorline.enable = true;
-      cinnamon-nvim.enable = true;
-      fidget-nvim = {
-        enable = true;
-        setupOpts = {
-          notification.window.winblend = 0;
-          progress = {
-            display = {
-              done_icon = "✓";
-            };
-          };
-        };
-      };
+      cinnamon-nvim.enable = false; # replaced by snacks.scroll
+      fidget-nvim.enable = false; # replaced by snacks.notifier
       highlight-undo.enable = true;
-      indent-blankline = {
-        enable = true;
-        setupOpts = {
-          exclude = {
-            filetypes = ["alpha"];
-          };
-          scope = {
-            enabled = true;
-          };
-        };
-      };
-      rainbow-delimiters.enable = false;
+      indent-blankline.enable = false; # replaced by snacks.indent
     };
 
     autopairs.nvim-autopairs.enable = true;
@@ -119,7 +94,7 @@
       gitsigns.codeActions.enable = false;
     };
 
-    projects.project-nvim.enable = true;
+    projects.project-nvim.enable = false; # replaced by snacks.picker.projects
 
     statusline.lualine.enable = true;
     mini = {
@@ -127,27 +102,7 @@
       ai.enable = true;
       snippets.enable = true;
       surround.enable = true;
-      indentscope = {
-        enable = true;
-        setupOpts = {
-          ignore_filetypes = [
-            "NvimTree"
-            "snacks_picker_input"
-            "snacks_picker_list"
-            "help"
-            "neo-tree"
-            "notify"
-            "alpha"
-            "snacks_notif"
-            "snacks_notif_history"
-          ];
-          symbol = "┃";
-          draw = {
-            delay = 0;
-            animation = lib.mkLuaInline ''require('mini.indentscope').gen_animation.none()'';
-          };
-        };
-      };
+      indentscope.enable = false; # replaced by snacks.indent
     };
 
     utility = {
@@ -160,13 +115,36 @@
       snacks-nvim = {
         enable = true;
         setupOpts = {
-          image = {
+          image.enabled = true;
+          bigfile.enabled = true;
+          quickfile.enabled = true;
+          scroll.enabled = true;
+          words.enabled = true;
+          input.enabled = true;
+          statuscolumn.enabled = true;
+          indent = {
             enabled = true;
+            indent = {
+              char = "│";
+            };
+            scope = {
+              enabled = true;
+              char = "┃";
+            };
           };
           notifier = {
             enabled = true;
             timeout = 3000;
             style = "fancy";
+          };
+          picker = {
+            enabled = true;
+          };
+          terminal = {
+            enabled = true;
+          };
+          lazygit = {
+            enabled = true;
           };
         };
       };
@@ -208,6 +186,7 @@
           "markdown"
           "NvimTree"
           "alpha"
+          "snacks_dashboard"
         ];
       };
       fastaction.enable = true;

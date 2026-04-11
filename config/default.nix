@@ -1,6 +1,5 @@
 {
   imports = [
-    ./assistant.nix
     ./autoCmds.nix
     ./autoComplete.nix
     ./dashboard.nix
@@ -11,7 +10,6 @@
     ./lsp.nix
     ./options.nix
     ./sessions.nix
-    ./terminal.nix
     ./keymaps
   ];
 }
