@@ -21,13 +21,14 @@
               module = "blink.cmp.sources.lsp";
               score_offset = 100;
             };
-            snippets = {
-              score_offset = 80;
-            };
+            snippets = {score_offset = 80;};
+            path = {score_offset = 50;};
+            buffer = {score_offset = 20;};
             ripgrep = {
               score_offset = 10;
               min_keyword_length = 4;
             };
+            spell = {score_offset = 5;};
           };
         };
         completion = {

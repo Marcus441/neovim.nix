@@ -6,11 +6,10 @@
     enableLuaLoader = true;
     preventJunkFiles = true;
     treesitter = {
-      context.enable = false;
       indent.enable = false;
     };
     options = {
-      tabstop = 4;
+      tabstop = 2;
       shiftwidth = 2;
       smartindent = true;
       wrap = true;
@@ -28,20 +27,19 @@
     diagnostics = {
       enable = true;
       config = {
-        update_in_insert = false;
         underline = true;
         severity_sort = true;
         signs = true;
         virtual_lines = {
           current_line = true;
           severity = {
-            min = "ERROR";
+            min = "INFO";
           };
         };
         virtual_text = {
+          current_line = false;
           severity = {
             min = "INFO";
-            max = "WARN";
           };
           spacing = 4;
           prefix = "●";
@@ -59,18 +57,10 @@
     visuals = {
       nvim-web-devicons.enable = true;
       nvim-cursorline.enable = true;
-      cinnamon-nvim.enable = false; # replaced by snacks.scroll
-      fidget-nvim.enable = false; # replaced by snacks.notifier
       highlight-undo.enable = true;
-      indent-blankline.enable = false; # replaced by snacks.indent
     };
 
     autopairs.nvim-autopairs.enable = true;
-
-    snippets = {
-      luasnip.enable = true;
-      luasnip.loaders = "require('luasnip.loaders.from_vscode').lazy_load()";
-    };
 
     binds = {
       whichKey = {
@@ -85,70 +75,58 @@
           "<leader>h" = "Git [H]unk";
         };
       };
-      cheatsheet.enable = true;
     };
 
     git = {
       enable = true;
       gitsigns.enable = true;
-      gitsigns.codeActions.enable = false;
     };
 
-    projects.project-nvim.enable = false; # replaced by snacks.picker.projects
-
     statusline.lualine.enable = true;
+
     mini = {
       icons.enable = true;
       ai.enable = true;
       snippets.enable = true;
       surround.enable = true;
-      indentscope.enable = false; # replaced by snacks.indent
     };
 
     utility = {
-      ccc.enable = false;
       diffview-nvim.enable = true;
       direnv.enable = true;
       icon-picker.enable = true;
-      motion = {precognition.enable = false;};
       oil-nvim.enable = true;
       snacks-nvim = {
         enable = true;
         setupOpts = {
-          image.enabled = true;
           bigfile.enabled = true;
-          quickfile.enabled = true;
-          words.enabled = true;
-          input.enabled = true;
-          statuscolumn.enabled = true;
+          explorer = {
+            enabled = true;
+            replace_netrw = true;
+          };
+          image.enabled = true;
           indent = {
             enabled = true;
-            indent = {
-              char = "│";
-            };
+            indent = {char = "│";};
             scope = {
               enabled = true;
               char = "┃";
             };
           };
+          input.enabled = true;
+          lazygit = {enabled = true;};
           notifier = {
             enabled = true;
             timeout = 3000;
             style = "fancy";
           };
-          picker = {
-            enabled = true;
-          };
-          terminal = {
-            enabled = true;
-          };
-          lazygit = {
-            enabled = true;
-          };
+          picker = {enabled = true;};
+          quickfile.enabled = true;
+          statuscolumn.enabled = true;
+          terminal = {enabled = true;};
+          words.enabled = true;
         };
       };
-      surround.enable = true;
-      vim-wakatime.enable = false;
     };
 
     ui = {
@@ -172,11 +150,6 @@
         };
       };
 
-      illuminate.enable = true;
-      breadcrumbs = {
-        enable = false;
-        navbuddy.enable = false;
-      };
       smartcolumn = {
         enable = true;
         setupOpts.disabled_filetypes = [

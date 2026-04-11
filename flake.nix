@@ -5,14 +5,21 @@
     nvf.url = "github:notashelf/nvf";
   };
 
-  outputs = { self, nixpkgs, nvf, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
+  outputs = {
+    self,
+    nixpkgs,
+    nvf,
+    flake-utils,
+    ...
+  }:
+    flake-utils.lib.eachDefaultSystem (
+      system: let
         pkgs = nixpkgs.legacyPackages.${system};
-        myNeovim = (nvf.lib.neovimConfiguration {
-          inherit pkgs;
-          modules = [ ./config ];
-        }).neovim;
+        myNeovim =
+          (nvf.lib.neovimConfiguration {
+            inherit pkgs;
+            modules = [./config];
+          }).neovim;
       in {
         packages.default = myNeovim;
         packages.nvim = myNeovim;

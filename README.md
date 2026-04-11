@@ -117,22 +117,22 @@ The configuration is organized into modular Nix files:
 
 The **Leader** key is set to `<Space>`.
 
-| Prefix        | Category         | Description                                           |
-| :------------ | :--------------- | :---------------------------------------------------- |
+| Prefix        | Category        | Description                                          |
+| :------------ | :-------------- | :--------------------------------------------------- |
 | `<leader>s`   | **[S]earch**    | Fuzzy find files, grep, help tags, etc. (Telescope)  |
-| `<leader>w`  | **[W]orkspace** | Workspace-specific actions.                          |
-| `<leader>c`  | **[C]ode**      | LSP actions like code actions and formatting.         |
-| `<leader>d`  | **[D]ocument**  | Document-specific actions and diagnostics.           |
-| `<leader>r`  | **[R]ename**    | LSP symbol renaming.                                 |
-| `<leader>h`  | **[H]unk**      | Git hunks and staging.                               |
-| `<leader>t`  | **[T]oggle**    | Toggle UI elements like line numbers or diagnostics. |
-| `<leader>u`  | **[U]ndotree**  | Toggle the UndoTree visualization.                   |
-| `<leader>sc` | **[S]ave [C]**  | Save current session.                                |
-| `<leader>sl` | **[S]ave [L]**  | Pick and load a session.                             |
-| `<leader>slt`| **[S]ess [L]T** | Load last session.                                   |
-| `<leader>sd` | **[S]ess [D]**  | Delete a session.                                    |
-| `<leader>gg` | **Lazygit**     | Open lazygit in a floating terminal.                 |
-| `<A-t>`      | **Terminal**    | Open a floating terminal.                            |
+| `<leader>w`   | **[W]orkspace** | Workspace-specific actions.                          |
+| `<leader>c`   | **[C]ode**      | LSP actions like code actions and formatting.        |
+| `<leader>d`   | **[D]ocument**  | Document-specific actions and diagnostics.           |
+| `<leader>r`   | **[R]ename**    | LSP symbol renaming.                                 |
+| `<leader>h`   | **[H]unk**      | Git hunks and staging.                               |
+| `<leader>t`   | **[T]oggle**    | Toggle UI elements like line numbers or diagnostics. |
+| `<leader>u`   | **[U]ndotree**  | Toggle the UndoTree visualization.                   |
+| `<leader>sc`  | **[S]ave [C]**  | Save current session.                                |
+| `<leader>sl`  | **[S]ave [L]**  | Pick and load a session.                             |
+| `<leader>slt` | **[S]ess [L]T** | Load last session.                                   |
+| `<leader>sd`  | **[S]ess [D]**  | Delete a session.                                    |
+| `<leader>gg`  | **Lazygit**     | Open lazygit in a floating terminal.                 |
+| `<A-t>`       | **Terminal**    | Open a floating terminal.                            |
 
 **Pro Tip**: Press `<leader>` and wait for a second to see the `which-key`
 popup, which lists all available keybindings and their descriptions.
@@ -141,3 +141,4 @@ popup, which lists all available keybindings and their descriptions.
 
 Contributions are welcome! If you find a bug or have a feature request, feel
 free to open an issue or submit a pull request.
+
