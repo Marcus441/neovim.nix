@@ -118,7 +118,6 @@
           image.enabled = true;
           bigfile.enabled = true;
           quickfile.enabled = true;
-          scroll.enabled = true;
           words.enabled = true;
           input.enabled = true;
           statuscolumn.enabled = true;
