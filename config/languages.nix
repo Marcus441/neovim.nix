@@ -4,11 +4,9 @@
       enableFormat = true;
       enableTreesitter = true;
       enableExtraDiagnostics = true;
+
+      # Systems
       assembly = {
-        enable = true;
-        lsp.enable = true;
-      };
-      bash = {
         enable = true;
         lsp.enable = true;
       };
@@ -20,56 +18,22 @@
         };
         dap.enable = true;
       };
-      csharp = {
+      rust = {
         enable = true;
-        lsp = {
-          enable = true;
-          # servers = ["roslyn_ls"];
-        };
+        lsp.enable = true;
+        extensions = {crates-nvim.enable = true;};
       };
-      css = {
+
+      # Scripting
+      bash = {
         enable = true;
-        format.enable = true;
-        format.type = ["prettierd"];
-      };
-      html = {
-        enable = true;
-        format = {
-          enable = true;
-          type = ["prettierd"];
-        };
+        lsp.enable = true;
       };
       lua = {
         enable = true;
         lsp = {
           enable = true;
           lazydev.enable = true;
-        };
-      };
-      markdown = {
-        enable = true;
-        lsp = {
-          enable = true;
-          servers = ["marksman"];
-        };
-        format = {
-          enable = true;
-          type = ["prettierd"];
-        };
-        treesitter = {
-          enable = true;
-        };
-        extraDiagnostics = {
-          enable = true;
-          types = ["markdownlint-cli2"];
-        };
-        extensions = {
-          markview-nvim = {
-            enable = true;
-          };
-          render-markdown-nvim = {
-            enable = false;
-          };
         };
       };
       nix = {
@@ -81,25 +45,43 @@
         format.type = ["ruff"];
         lsp.enable = true;
       };
-      rust = {
-        enable = true;
-        lsp.enable = true;
-        extensions = {crates-nvim.enable = true;};
-      };
-      terraform = {
-        enable = true;
-        lsp.enable = true;
-      };
+
+      # Web
       ts = {
         enable = true;
         lsp.enable = true;
         format.type = ["prettierd"];
         extensions.ts-error-translator.enable = true;
       };
-      typst = {
+
+      # Prose
+      markdown = {
         enable = true;
-        lsp.enable = true;
+        lsp = {
+          enable = true;
+          servers = ["marksman"];
+        };
+        format = {
+          enable = true;
+          type = ["prettierd"];
+        };
+        extraDiagnostics = {
+          enable = true;
+          types = ["markdownlint-cli2"];
+        };
+        extensions.markview-nvim.enable = true;
       };
     };
+
+    luaConfigRC.markdownlint = ''
+      local config_path = vim.fn.expand("~/.markdownlint-cli2.yaml")
+      if vim.fn.filereadable(config_path) == 0 then
+        local f = io.open(config_path, "w")
+        if f then
+          f:write("MD055: false\nMD056: false\n")
+          f:close()
+        end
+      end
+    '';
   };
 }
