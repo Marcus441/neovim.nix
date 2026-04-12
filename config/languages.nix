@@ -67,21 +67,10 @@
         };
         extraDiagnostics = {
           enable = true;
-          types = ["markdownlint-cli2"];
+          types = ["rumdl"];
         };
         extensions.markview-nvim.enable = true;
       };
     };
-
-    luaConfigRC.markdownlint = ''
-      local config_path = vim.fn.expand("~/.markdownlint-cli2.yaml")
-      if vim.fn.filereadable(config_path) == 0 then
-        local f = io.open(config_path, "w")
-        if f then
-          f:write("MD055: false\nMD056: false\n")
-          f:close()
-        end
-      end
-    '';
   };
 }

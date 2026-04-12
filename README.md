@@ -117,22 +117,61 @@ The configuration is organized into modular Nix files:
 
 The **Leader** key is set to `<Space>`.
 
-| Prefix        | Category        | Description                                          |
-| :------------ | :-------------- | :--------------------------------------------------- |
-| `<leader>s`   | **[S]earch**    | Fuzzy find files, grep, help tags, etc. (Telescope)  |
-| `<leader>w`   | **[W]orkspace** | Workspace-specific actions.                          |
-| `<leader>c`   | **[C]ode**      | LSP actions like code actions and formatting.        |
-| `<leader>d`   | **[D]ocument**  | Document-specific actions and diagnostics.           |
-| `<leader>r`   | **[R]ename**    | LSP symbol renaming.                                 |
-| `<leader>h`   | **[H]unk**      | Git hunks and staging.                               |
-| `<leader>t`   | **[T]oggle**    | Toggle UI elements like line numbers or diagnostics. |
-| `<leader>u`   | **[U]ndotree**  | Toggle the UndoTree visualization.                   |
-| `<leader>sc`  | **[S]ave [C]**  | Save current session.                                |
-| `<leader>sl`  | **[S]ave [L]**  | Pick and load a session.                             |
-| `<leader>slt` | **[S]ess [L]T** | Load last session.                                   |
-| `<leader>sd`  | **[S]ess [D]**  | Delete a session.                                    |
-| `<leader>gg`  | **Lazygit**     | Open lazygit in a floating terminal.                 |
-| `<A-t>`       | **Terminal**    | Open a floating terminal.                            |
+### Quick Reference
+
+| Keybinding         | Category                 | Description                              |
+| :----------------- | :----------------------- | :--------------------------------------- |
+| `<Esc>`            | Clear search             | Clear search highlights                  |
+| `<leader>u`        | [U]ndotree               | Toggle UndoTree visualization            |
+| `<C-m>`            | Markview                 | Toggle Markdown preview                  |
+| `J`                | Join                     | Join line and keep cursor position       |
+| `<C-d>`            | Page                     | Half page down and center                |
+| `<C-u>`            | Page                     | Half page up and center                  |
+| `n` / `N`          | Search                   | Next/previous match and center           |
+| `J` / `K` (v)      | Visual                   | Move visual block down/up                |
+| `gd`               | [G]oto [D]efinition      | Goto Definition                          |
+| `gD`               | [G]oto [D]eclaration     | Goto Declaration                         |
+| `gr`               | [G]oto [R]eferences      | Goto References                          |
+| `gI`               | [G]oto [I]mplementation  | Goto Implementation                      |
+| `<leader>D`        | Type [D]efinition        | Goto Type Definition                     |
+| `<leader>ds`       | [D]oc [S]ymbols          | Document Symbols                         |
+| `<leader>ws`       | [W]s [S]ymbols           | Workspace Symbols                        |
+| `<leader>rn`       | [R]e[n]ame               | LSP Rename symbol                        |
+| `<leader>ca`       | [C]ode [A]ction          | Code Action                              |
+| `<leader>sh`       | [S]earch [H]elp          | Help tags                                |
+| `<leader>sk`       | [S]earch [K]eymaps       | Keymaps                                  |
+| `<leader>sf`       | [S]earch [F]iles         | Files                                    |
+| `<leader>ss`       | [S]earch [S]elect Picker | Select Picker                            |
+| `<leader>sp`       | [S]earch [P]rojects      | Projects                                 |
+| `<leader>sm`       | [S]earch [M]arks         | Marks                                    |
+| `<leader>sw`       | [S]earch current [W]ord  | Search word under cursor                 |
+| `<leader>sg`       | [S]earch by [G]rep       | Grep                                     |
+| `<leader>sd`       | [S]earch [D]iagnostics   | Diagnostics                              |
+| `<leader>sr`       | [S]earch [R]esume        | Resume last picker                       |
+| `<leader>s.`       | [S]earch [.]Recent       | Recent Files                             |
+| `<leader>/`        | [/] Search               | Search in current buffer                 |
+| `<leader><leader>` | [ ] Buffers              | Find existing buffers                    |
+| `<leader>xx`       | Diagnostics              | Toggle Diagnostics (Trouble)             |
+| `<leader>xX`       | Buffer Diags             | Toggle Buffer Diagnostics                |
+| `<leader>cs`       | [C]hange [S]ymbols       | Toggle Symbols                           |
+| `<leader>cl`       | [C]hange [L]ist          | LSP Definitions/references               |
+| `<leader>xL`       | Location List            | Toggle Location List                     |
+| `<leader>xQ`       | Quickfix List            | Toggle Quickfix List                     |
+| `<leader>tt`       | [T]oggle [T]erminal      | Toggle Terminal                          |
+| `<leader>tl`       | [T]oggle [L]azygit       | Toggle Lazygit                           |
+| `<leader>ee`       | [E]xplorer               | Toggle File Explorer                     |
+| `<leader>er`       | [E]xplorer [R]eveal      | Reveal current file                      |
+| `<leader>y`        | Yank                     | Yank to system clipboard                 |
+| `<leader>Y`        | Yank line                | Yank line to system clipboard            |
+| `<leader>p` (v)    | Paste                    | Paste into void register                 |
+| `<leader>d`        | Delete                   | Delete to void register                  |
+| `<leader>gs`       | [G]it [S]tatus           | Show Git status                          |
+| `-`                | Oil                      | Toggle Oil (file explorer)               |
+| `<leader>nf`       | [N]eogen                 | Generate Annotation                      |
+| `<C-h/j/k/l>`      | Focus                    | Navigate tmux panes (left/down/up/right) |
+| `<Esc><Esc>` (t)   | Terminal                 | Exit terminal mode                       |
+| `<C-=>`            | Scale                    | Increase window scale                    |
+| `<C-->`            | Scale                    | Decrease window scale                    |
 
 **Pro Tip**: Press `<leader>` and wait for a second to see the `which-key`
 popup, which lists all available keybindings and their descriptions.
@@ -141,4 +180,3 @@ popup, which lists all available keybindings and their descriptions.
 
 Contributions are welcome! If you find a bug or have a feature request, feel
 free to open an issue or submit a pull request.
-
