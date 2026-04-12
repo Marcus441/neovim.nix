@@ -63,7 +63,7 @@
         };
         format = {
           enable = true;
-          type = ["prettierd"];
+          type = ["rumdl"];
         };
         extraDiagnostics = {
           enable = true;
