@@ -6,12 +6,11 @@
     enableLuaLoader = true;
     preventJunkFiles = true;
     treesitter = {
-      indent.enable = false;
+      indent.enable = true;
     };
     options = {
       tabstop = 2;
       shiftwidth = 2;
-      smartindent = true;
       wrap = true;
     };
 
@@ -105,6 +104,7 @@
             enabled = true;
             replace_netrw = true;
           };
+          gitbrowse.enabled = true;
           image.enabled = true;
           indent = {
             enabled = true;
@@ -112,6 +112,16 @@
             scope = {
               enabled = true;
               char = "┃";
+            };
+            chunk = {
+              enabled = true;
+              char = {
+                corner_top = "╭";
+                corner_bottom = "╰";
+                horizontal = "─";
+                vertical = "│";
+                arrow = "─";
+              };
             };
           };
           input.enabled = true;
@@ -130,9 +140,12 @@
             };
           };
           quickfile.enabled = true;
+          rename.enabled = true;
           scope.enabled = true;
+          scratch.enabled = true;
           statuscolumn.enabled = true;
           terminal = {enabled = true;};
+          toggle.enabled = true;
           words.enabled = true;
           zen.enabled = true;
         };

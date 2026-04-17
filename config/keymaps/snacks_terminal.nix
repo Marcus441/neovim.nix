@@ -2,15 +2,15 @@
   vim.keymaps = [
     {
       mode = ["n"];
-      key = "<leader>tt";
+      key = "<leader>T";
       action = "<cmd>lua Snacks.terminal()<cr>";
-      desc = "[T]oggle [T]erminal";
+      desc = "[T]erminal";
     }
     {
       mode = ["n"];
-      key = "<leader>tl";
+      key = "<leader>L";
       action = "<cmd>lua Snacks.lazygit()<cr>";
-      desc = "[T]oggle [L]azygit";
+      desc = "[L]azygit";
     }
   ];
 }

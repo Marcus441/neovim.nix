@@ -50,6 +50,12 @@
     }
     {
       mode = ["n"];
+      key = "<leader>cs";
+      action = "<cmd>lua Snacks.scratch()<cr>";
+      desc = "[C]ode [S]cratch";
+    }
+    {
+      mode = ["n"];
       key = "gD";
       action = "<cmd>lua vim.lsp.buf.declaration()<cr>";
       desc = "[G]oto [D]eclaration";

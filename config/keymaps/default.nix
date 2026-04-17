@@ -11,7 +11,7 @@
     ./snacks_explorer.nix
     ./snacks_picker.nix
     ./snacks_terminal.nix
-    ./snacks_zen.nix
+    ./snacks_toggle.nix
     ./trouble.nix
     ./window.nix
   ];
