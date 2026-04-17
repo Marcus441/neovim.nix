@@ -35,7 +35,7 @@
           ghost_text.enabled = true;
 
           menu = {
-            border = ["🭽" "▔" "🭾" "▕" "🭿" "▁" "🭼" "▏"];
+            border = "rounded";
             winblend = 0;
             draw = {
               columns = [
@@ -49,7 +49,7 @@
 
           documentation = {
             auto_show = true;
-            window.border = ["🭽" "▔" "🭾" "▕" "🭿" "▁" "🭼" "▏"];
+            window.border = "rounded";
           };
         };
       };

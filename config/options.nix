@@ -100,6 +100,7 @@
         enable = true;
         setupOpts = {
           bigfile.enabled = true;
+          dim.enabled = true;
           explorer = {
             enabled = true;
             replace_netrw = true;
@@ -123,11 +124,18 @@
           picker = {
             enabled = true;
             sources.zoxide = {};
+            sources.projects = {
+              dev = ["~/projects" "~/oss"];
+              patterns = [".git" "flake.nix" "package.json" "Makefile"];
+            };
           };
           quickfile.enabled = true;
+          scope.enabled = true;
+          scroll.enabled = true;
           statuscolumn.enabled = true;
           terminal = {enabled = true;};
           words.enabled = true;
+          zen.enabled = true;
         };
       };
     };
@@ -138,7 +146,6 @@
       noice.setupOpts = {
         lsp.signature.enabled = true;
         presets = {
-          lsp_doc_border = true;
           command_palette = true;
           bottom_search = false;
         };
