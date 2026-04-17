@@ -32,6 +32,12 @@
     }
     {
       mode = ["n"];
+      key = "<leader>sz";
+      action = "<cmd>lua Snacks.picker.zoxide()<cr>";
+      desc = "[S]earch [Z]oxide";
+    }
+    {
+      mode = ["n"];
       key = "<leader>sm";
       action = "<cmd>lua Snacks.picker.marks()<cr>";
       desc = "[S]earch [M]arks";

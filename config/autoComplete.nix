@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{
   vim = {
     autocomplete.blink-cmp = {
       enable = true;
@@ -35,7 +35,7 @@
           ghost_text.enabled = true;
 
           menu = {
-            border = "rounded";
+            border = ["🭽" "▔" "🭾" "▕" "🭿" "▁" "🭼" "▏"];
             winblend = 0;
             draw = {
               columns = [
@@ -49,7 +49,7 @@
 
           documentation = {
             auto_show = true;
-            window.border = "rounded";
+            window.border = ["🭽" "▔" "🭾" "▕" "🭿" "▁" "🭼" "▏"];
           };
         };
       };

@@ -25,10 +25,10 @@
         };
 
         mappings = {
-          deleteSession = "<leader>sd"; # Delete session
-          loadLastSession = "<leader>slt"; # Load last session
-          loadSession = "<leader>sl"; # Pick and load session
-          saveCurrentSession = "<leader>sc"; # Save current session
+          deleteSession = "<leader>sd";
+          loadLastSession = "<leader>slt";
+          loadSession = "<leader>sl";
+          saveCurrentSession = "<leader>sc";
         };
       };
     };

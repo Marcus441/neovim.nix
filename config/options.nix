@@ -120,7 +120,10 @@
             timeout = 3000;
             style = "fancy";
           };
-          picker = {enabled = true;};
+          picker = {
+            enabled = true;
+            sources.zoxide = {};
+          };
           quickfile.enabled = true;
           statuscolumn.enabled = true;
           terminal = {enabled = true;};
@@ -131,9 +134,14 @@
 
     ui = {
       borders.enable = true;
-      noice = {
-        enable = true;
-        setupOpts.lsp.signature.enabled = true;
+      noice.enable = true;
+      noice.setupOpts = {
+        lsp.signature.enabled = true;
+        presets = {
+          lsp_doc_border = true;
+          command_palette = true;
+          bottom_search = false;
+        };
       };
       colorizer = {
         enable = true;
