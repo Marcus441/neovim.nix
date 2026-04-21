@@ -8,9 +8,10 @@
           ;; extends
           (import_declaration "import" @keyword.import)
           (import_declaration name: (module_name) @module)
-          (module_declaration) @keyword.import
+          (module_declaration "export"? @keyword.import "module" @keyword.import)
           (module_declaration name: (module_name) @module)
           (export_declaration "export" @keyword.import)
+          (global_module_fragment_declaration "module" @keyword.import)
         '';
       }
     ];
