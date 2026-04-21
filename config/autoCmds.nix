@@ -1,12 +1,8 @@
 {lib, ...}: {
   vim = {
     augroups = [
-      {
-        name = "UserSetup";
-      }
-      {
-        name = "MacroRecordingNotificationGroup";
-      }
+      {name = "UserSetup";}
+      {name = "MacroRecordingNotificationGroup";}
     ];
     autocmds = [
       {
@@ -15,7 +11,7 @@
         group = "UserSetup";
         callback = lib.mkLuaInline ''
           function()
-            vim.highlight.on_yank()
+            vim.hl.on_yank()
           end
         '';
       }

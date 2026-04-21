@@ -1,5 +1,19 @@
 {
   vim = {
+    treesitter.queries = [
+      {
+        type = "highlights";
+        filetypes = ["cpp"];
+        content = ''
+          ;; extends
+          (import_declaration "import" @keyword.import)
+          (import_declaration name: (module_name) @module)
+          (module_declaration) @keyword.import
+          (module_declaration name: (module_name) @module)
+          (export_declaration "export" @keyword.import)
+        '';
+      }
+    ];
     languages = {
       enableFormat = true;
       enableTreesitter = true;
@@ -47,7 +61,7 @@
       };
 
       # Web
-      ts = {
+      typescript = {
         enable = true;
         lsp.enable = true;
         format.type = ["prettierd"];
