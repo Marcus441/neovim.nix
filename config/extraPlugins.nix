@@ -16,21 +16,5 @@
       setup = "";
       after = ["vim-tmux-navigator"];
     };
-    neogen = {
-      package = pkgs.vimPlugins.neogen;
-      setup = ''
-        require('neogen').setup({
-          enabled = true,
-          snippet_engine = "luasnip",
-          languages = {
-            cs = {
-              template = {
-                annotation_convention = "xmldoc" -- This forces the XML style
-              }
-            }
-          }
-        })
-      '';
-    };
   };
 }

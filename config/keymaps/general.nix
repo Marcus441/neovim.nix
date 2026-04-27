@@ -12,11 +12,5 @@
       action = "<CMD>UndotreeToggle<CR>";
       desc = "[U]ndotree";
     }
-    {
-      mode = ["n"];
-      key = "<C-m>";
-      action = "<cmd>Markview<cr>";
-      desc = "Toggle markview";
-    }
   ];
 }

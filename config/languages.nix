@@ -78,11 +78,9 @@
         };
         format = {
           enable = true;
-          type = ["rumdl"];
         };
         extraDiagnostics = {
-          enable = true;
-          types = ["rumdl"];
+          enable = false;
         };
         extensions.markview-nvim.enable = true;
       };

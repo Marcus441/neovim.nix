@@ -61,21 +61,6 @@
 
     autopairs.nvim-autopairs.enable = true;
 
-    binds = {
-      whichKey = {
-        enable = true;
-        register = {
-          "<leader>c" = "[C]ode";
-          "<leader>d" = "[D]ocument";
-          "<leader>r" = "[R]ename";
-          "<leader>s" = "[S]earch";
-          "<leader>w" = "[W]orkspace";
-          "<leader>t" = "[T]oggle";
-          "<leader>h" = "Git [H]unk";
-        };
-      };
-    };
-
     git = {
       enable = true;
       gitsigns.enable = true;
@@ -91,18 +76,22 @@
     };
 
     utility = {
-      diffview-nvim.enable = true;
-      direnv.enable = true;
-      icon-picker.enable = true;
       oil-nvim.enable = true;
+      direnv.enable = true;
       snacks-nvim = {
         enable = true;
         setupOpts = {
           bigfile.enabled = true;
           dim.enabled = true;
-          explorer = {
+          # explorer/terminal/toggle replaced by fish aliases + fzf/fd/rg
+          # picker and projects kept — needed inside Neovide (no shell access)
+          picker = {
             enabled = true;
-            replace_netrw = true;
+            sources.zoxide = {};
+            sources.projects = {
+              dev = ["~/projects" "~/oss"];
+              patterns = [".git" "flake.nix" "package.json" "Makefile"];
+            };
           };
           gitbrowse.enabled = true;
           image.enabled = true;
@@ -131,21 +120,11 @@
             timeout = 3000;
             style = "fancy";
           };
-          picker = {
-            enabled = true;
-            sources.zoxide = {};
-            sources.projects = {
-              dev = ["~/projects" "~/oss"];
-              patterns = [".git" "flake.nix" "package.json" "Makefile"];
-            };
-          };
           quickfile.enabled = true;
           rename.enabled = true;
           scope.enabled = true;
           scratch.enabled = true;
           statuscolumn.enabled = true;
-          terminal = {enabled = true;};
-          toggle.enabled = true;
           words.enabled = true;
           zen.enabled = true;
         };
@@ -154,14 +133,6 @@
 
     ui = {
       borders.enable = true;
-      noice.enable = true;
-      noice.setupOpts = {
-        lsp.signature.enabled = true;
-        presets = {
-          command_palette = true;
-          bottom_search = false;
-        };
-      };
       colorizer = {
         enable = true;
         setupOpts = {
@@ -176,19 +147,6 @@
           };
         };
       };
-
-      smartcolumn = {
-        enable = true;
-        setupOpts.disabled_filetypes = [
-          "help"
-          "text"
-          "markdown"
-          "NvimTree"
-          "alpha"
-          "snacks_dashboard"
-        ];
-      };
-      fastaction.enable = true;
     };
 
     notes.todo-comments.enable = true;

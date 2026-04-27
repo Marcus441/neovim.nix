@@ -12,5 +12,11 @@
       action = "<cmd>lua Snacks.gitbrowse()<cr>";
       desc = "[G]it [B]rowse";
     }
+    {
+      mode = ["n"];
+      key = "<leader>L";
+      action = "<cmd>lua Snacks.lazygit()<cr>";
+      desc = "[L]azygit";
+    }
   ];
 }

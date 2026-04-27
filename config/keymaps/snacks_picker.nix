@@ -20,12 +20,6 @@
     }
     {
       mode = ["n"];
-      key = "<leader>ss";
-      action = "<cmd>lua Snacks.picker.pickers()<cr>";
-      desc = "[S]earch [S]elect Picker";
-    }
-    {
-      mode = ["n"];
       key = "<leader>sp";
       action = "<cmd>lua Snacks.picker.projects()<cr>";
       desc = "[S]earch [P]rojects";
@@ -70,7 +64,7 @@
       mode = ["n"];
       key = "<leader>s.";
       action = "<cmd>lua Snacks.picker.recent()<cr>";
-      desc = "[S]earch Recent Files (\".\" for repeat)";
+      desc = "[S]earch Recent Files";
     }
     {
       mode = ["n"];

@@ -20,21 +20,15 @@
     }
     {
       mode = ["n"];
+      key = "gD";
+      action = "<cmd>lua vim.lsp.buf.declaration()<cr>";
+      desc = "[G]oto [D]eclaration";
+    }
+    {
+      mode = ["n"];
       key = "<leader>D";
-      action = "<cmd>lua Snacks.picker.lsp_type_definitions()<cr>";
+      action = "<cmd>lua vim.lsp.buf.type_definition()<cr>";
       desc = "Type [D]efinition";
-    }
-    {
-      mode = ["n"];
-      key = "<leader>ds";
-      action = "<cmd>lua Snacks.picker.lsp_symbols()<cr>";
-      desc = "[D]ocument [S]ymbols";
-    }
-    {
-      mode = ["n"];
-      key = "<leader>ws";
-      action = "<cmd>lua Snacks.picker.lsp_workspace_symbols()<cr>";
-      desc = "[W]orkspace [S]ymbols";
     }
     {
       mode = ["n"];
@@ -50,15 +44,15 @@
     }
     {
       mode = ["n"];
-      key = "<leader>cs";
-      action = "<cmd>lua Snacks.scratch()<cr>";
-      desc = "[C]ode [S]cratch";
+      key = "<leader>ds";
+      action = "<cmd>lua Snacks.picker.lsp_symbols()<cr>";
+      desc = "[D]ocument [S]ymbols";
     }
     {
       mode = ["n"];
-      key = "gD";
-      action = "<cmd>lua vim.lsp.buf.declaration()<cr>";
-      desc = "[G]oto [D]eclaration";
+      key = "<leader>cs";
+      action = "<cmd>lua Snacks.scratch()<cr>";
+      desc = "[C]ode [S]cratch";
     }
   ];
 }
