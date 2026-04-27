@@ -67,12 +67,11 @@
       gitsigns.enable = true;
     };
 
-    statusline.lualine.enable = true;
-
     mini = {
-      icons.enable = true;
       ai.enable = true;
+      icons.enable = true;
       snippets.enable = true;
+      statusline.enable = true;
       surround.enable = true;
     };
 
@@ -83,7 +82,6 @@
         enable = true;
         setupOpts = {
           bigfile.enabled = true;
-          dim.enabled = true;
           # explorer/terminal/toggle replaced by fish aliases + fzf/fd/rg
           # picker and projects kept — needed inside Neovide (no shell access)
           picker = {
@@ -99,6 +97,7 @@
           indent = {
             enabled = true;
             indent = {char = "│";};
+            animate = {enabled = false;};
             scope = {
               enabled = true;
               char = "┃";
@@ -119,15 +118,13 @@
           notifier = {
             enabled = true;
             timeout = 3000;
-            style = "fancy";
+            style = "compact";
           };
           quickfile.enabled = true;
           rename.enabled = true;
           scope.enabled = true;
-          scratch.enabled = true;
           statuscolumn.enabled = true;
           words.enabled = true;
-          zen.enabled = true;
         };
       };
     };
