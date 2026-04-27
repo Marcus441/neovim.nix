@@ -7,6 +7,5 @@
     ./movement.nix
     ./oil.nix
     ./snacks_picker.nix
-    ./window.nix
   ];
 }
