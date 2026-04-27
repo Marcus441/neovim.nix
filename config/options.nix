@@ -83,7 +83,7 @@
         setupOpts = {
           bigfile.enabled = true;
           # explorer/terminal/toggle replaced by fish aliases + fzf/fd/rg
-          # picker and projects kept — needed inside Neovide (no shell access)
+          # picker and projects kept
           picker = {
             enabled = true;
             sources.zoxide = {};
