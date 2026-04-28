@@ -83,12 +83,17 @@
               patterns = [".git" "flake.nix" "package.json" "Makefile"];
             };
           };
-          gitbrowse.enabled = true;
-          image.enabled = true;
           input.enabled = true;
           quickfile.enabled = true;
           scope.enabled = true;
           statuscolumn.enabled = true;
+          # disabled
+          lazygit.enabled = false;
+          gitbrowse.enabled = false;
+          image.enabled = false;
+          notifier.enabled = false;
+          indent.enabled = false;
+          words.enabled = false;
         };
       };
     };

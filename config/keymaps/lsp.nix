@@ -26,12 +26,6 @@
     }
     {
       mode = ["n"];
-      key = "<leader>D";
-      action = "<cmd>lua vim.lsp.buf.type_definition()<cr>";
-      desc = "Type [D]efinition";
-    }
-    {
-      mode = ["n"];
       key = "<leader>rn";
       action = "<cmd>lua vim.lsp.buf.rename()<cr>";
       desc = "[R]e[n]ame";
