@@ -1,43 +1,53 @@
 {
   vim = {
     autocomplete.blink-cmp = {
-      enable = true;
+      enable = false;
       friendly-snippets.enable = true;
-      sourcePlugins = {
-        spell.enable = true;
-        ripgrep.enable = true;
-      };
-
       setupOpts = {
-        keymap.preset = "default";
+        keymap = {
+          preset = "default";
+          "<C-d>" = ["scroll_documentation_down" "fallback"];
+          "<C-u>" = ["scroll_documentation_up" "fallback"];
+        };
         cmdline.keymap.preset = "default";
         signature.enabled = true;
+        fuzzy.implementation = "prefer_rust_with_warning";
         sources = {
-          default = ["lsp" "snippets" "path" "buffer" "ripgrep" "spell"];
-
+          default = ["lsp" "snippets" "path" "buffer"];
           providers = {
             lsp = {
-              name = "LSP";
-              module = "blink.cmp.sources.lsp";
-              score_offset = 100;
+              score_offset = 5;
+              fallbacks = [];
             };
-            snippets = {score_offset = 80;};
-            path = {score_offset = 50;};
-            buffer = {score_offset = 20;};
-            ripgrep = {
-              score_offset = 10;
-              min_keyword_length = 4;
+            snippets = {
+              score_offset = 4;
             };
-            spell = {score_offset = 5;};
+            path = {
+              score_offset = 3;
+            };
+            buffer = {
+              score_offset = 2;
+              max_items = 5;
+            };
           };
         };
         completion = {
+          keyword.range = "full";
+          trigger = {
+            show_on_blocked_trigger_characters = [" " "\n" "\t"];
+            show_on_x_blocked_trigger_characters = ["'" "\"" "(" "{" "["];
+          };
+          list.selection = {
+            preselect = true;
+            auto_insert = false;
+          };
+          accept.auto_brackets.enabled = true;
           ghost_text.enabled = true;
-
           menu = {
-            border = "rounded";
+            auto_show = true;
             winblend = 0;
             draw = {
+              treesitter = ["lsp"];
               columns = [
                 ["kind_icon"]
                 ["label" "label_description"]
@@ -46,10 +56,9 @@
               gap = 1;
             };
           };
-
           documentation = {
             auto_show = true;
-            window.border = "rounded";
+            auto_show_delay_ms = 300;
           };
         };
       };

@@ -21,10 +21,6 @@
       enableExtraDiagnostics = true;
 
       # Systems
-      assembly = {
-        enable = true;
-        lsp.enable = true;
-      };
       clang = {
         enable = true;
         lsp = {
@@ -39,11 +35,6 @@
         extensions = {crates-nvim.enable = true;};
       };
 
-      # Scripting
-      bash = {
-        enable = true;
-        lsp.enable = true;
-      };
       lua = {
         enable = true;
         lsp = {
@@ -66,23 +57,6 @@
         enable = true;
         lsp.enable = true;
         format.type = ["prettierd"];
-        extensions.ts-error-translator.enable = true;
-      };
-
-      # Prose
-      markdown = {
-        enable = true;
-        lsp = {
-          enable = true;
-          servers = ["marksman"];
-        };
-        format = {
-          enable = true;
-        };
-        extraDiagnostics = {
-          enable = false;
-        };
-        extensions.markview-nvim.enable = true;
       };
     };
   };

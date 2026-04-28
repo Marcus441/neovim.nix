@@ -20,7 +20,8 @@ Nix modules.
   - Full LSP, Treesitter, and Formatter support for:
     - **Languages**: Nix, Rust, Python, TypeScript/JavaScript, C/C++, C#, Lua,
       Bash, Assembly, HTML/CSS, Markdown, Terraform, Typst.
-  - **Auto-formatting**: Enabled on save for all supported languages via Conform.
+  - **Auto-formatting**: Enabled on save for all supported languages via
+    Conform.
 - **Completion & Snippets**:
   - `blink-cmp` for intelligent autocompletion with LSP, snippets, path, buffer,
     ripgrep, and spell sources.
@@ -34,10 +35,8 @@ Nix modules.
     notifications, and picker integrations.
   - `mini.indentscope` for visual indentation scope indicators.
   - `indent-blankline.nvim` for clear indentation guides.
-  - `markview.nvim` for beautiful markdown previews within the buffer.
   - `smartcolumn` for dynamic column guides.
   - `nvim-highlight-undo` for visual undo highlighting.
-  - `nvim-colorizer` for inline color preview.
   - `vim-visual-multi` / `mini.ai` for enhanced text objects.
 - **Terminal Integration**:
   - `toggleterm.nvim` for integrated terminal sessions.
@@ -101,12 +100,13 @@ To include it in your NixOS or Home Manager configuration:
 The configuration is organized into modular Nix files:
 
 - `flake.nix`: The entry point for the flake, defining the final Neovim package.
-- `config/languages.nix`: Language-specific settings (LSP, Tree-sitter, Formatters).
+- `config/languages.nix`: Language-specific settings (LSP, Tree-sitter,
+  Formatters).
 - `config/lsp.nix`: Core LSP configuration (Trouble, format on save).
 - `config/options.nix`: Global options, UI, diagnostics, statusline, utilities.
 - `config/autoComplete.nix`: `blink-cmp` completion settings.
-- `config/extraPlugins.nix`: Plugins and configurations not covered by native `nvf`
-  modules (Kanagawa, vim-tmux-navigator, Undotree, Neogen).
+- `config/extraPlugins.nix`: Plugins and configurations not covered by native
+  `nvf` modules (Kanagawa, vim-tmux-navigator, Undotree, Neogen).
 - `config/keymaps/`: Modular directory for all keybindings.
 - `config/dashboard.nix`: Custom Alpha-nvim dashboard layout.
 - `config/terminal.nix`: ToggleTerm and lazygit configuration.
@@ -123,7 +123,6 @@ The **Leader** key is set to `<Space>`.
 | :----------------- | :----------------------- | :--------------------------------------- |
 | `<Esc>`            | Clear search             | Clear search highlights                  |
 | `<leader>u`        | [U]ndotree               | Toggle UndoTree visualization            |
-| `<C-m>`            | Markview                 | Toggle Markdown preview                  |
 | `J`                | Join                     | Join line and keep cursor position       |
 | `<C-d>`            | Page                     | Half page down and center                |
 | `<C-u>`            | Page                     | Half page up and center                  |

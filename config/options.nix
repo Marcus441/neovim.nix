@@ -9,10 +9,12 @@
       indent.enable = true;
     };
     options = {
-      tabstop = 2;
-      shiftwidth = 2;
+      tabstop = 4;
+      shiftwidth = 4;
       shortmess = "I";
-      wrap = true;
+      wrap = false;
+      guicursor = "i:block";
+      winborder = "single";
     };
 
     clipboard = {
@@ -48,19 +50,11 @@
       };
     };
 
-    spellcheck = {
-      enable = true;
-      languages = ["en"];
-      programmingWordlist.enable = true;
-    };
-
     visuals = {
       nvim-web-devicons.enable = true;
-      nvim-cursorline.enable = true;
+      nvim-cursorline.enable = false;
       highlight-undo.enable = true;
     };
-
-    autopairs.nvim-autopairs.enable = true;
 
     git = {
       enable = true;
@@ -70,7 +64,6 @@
     mini = {
       ai.enable = true;
       icons.enable = true;
-      snippets.enable = true;
       statusline.enable = true;
       surround.enable = true;
     };
@@ -82,8 +75,6 @@
         enable = true;
         setupOpts = {
           bigfile.enabled = true;
-          # explorer/terminal/toggle replaced by fish aliases + fzf/fd/rg
-          # picker and projects kept
           picker = {
             enabled = true;
             sources.zoxide = {};
@@ -94,60 +85,21 @@
           };
           gitbrowse.enabled = true;
           image.enabled = true;
-          indent = {
-            enabled = true;
-            indent = {char = "│";};
-            animate = {enabled = false;};
-            scope = {
-              enabled = true;
-              char = "┃";
-            };
-            chunk = {
-              enabled = true;
-              char = {
-                corner_top = "╭";
-                corner_bottom = "╰";
-                horizontal = "─";
-                vertical = "│";
-                arrow = "─";
-              };
-            };
-          };
           input.enabled = true;
-          lazygit = {enabled = true;};
-          notifier = {
-            enabled = true;
-            timeout = 3000;
-            style = "compact";
-          };
           quickfile.enabled = true;
-          rename.enabled = true;
           scope.enabled = true;
           statuscolumn.enabled = true;
-          words.enabled = true;
         };
       };
     };
 
     ui = {
-      borders.enable = true;
-      colorizer = {
+      borders = {
         enable = true;
-        setupOpts = {
-          filetypes = {
-            "*" = {
-              RGB = true;
-              RRGGBB = true;
-              always_update = true;
-              css = true;
-              mode = "background";
-            };
-          };
-        };
+        globalStyle = "single";
       };
     };
 
-    notes.todo-comments.enable = true;
     comments = {
       comment-nvim.enable = true;
     };
