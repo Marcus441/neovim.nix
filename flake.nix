@@ -6,7 +6,6 @@
   };
 
   outputs = {
-    self,
     nixpkgs,
     nvf,
     flake-utils,
@@ -14,7 +13,13 @@
   }:
     flake-utils.lib.eachDefaultSystem (
       system: let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate = pkg:
+            builtins.elem (nixpkgs.lib.getName pkg) [
+              "vscode-extension-ms-dotnettools-csharp"
+            ];
+        };
         myNeovim =
           (nvf.lib.neovimConfiguration {
             inherit pkgs;

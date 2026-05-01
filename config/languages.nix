@@ -69,7 +69,6 @@
           enable = true;
           types = ["eslint_d"];
         };
-        extensions.ts-error-translator.enable = true;
       };
       # Dotnet
       csharp = {
