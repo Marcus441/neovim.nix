@@ -1,7 +1,7 @@
 {
   vim = {
     autocomplete.blink-cmp = {
-      enable = false;
+      enable = true;
       friendly-snippets.enable = true;
       setupOpts = {
         keymap = {

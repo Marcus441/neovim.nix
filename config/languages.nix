@@ -4,7 +4,7 @@
       {
         type = "highlights";
         filetypes = ["cpp"];
-        content = ''
+        query = ''
           ;; extends
           (import_declaration "import" @keyword.import)
           (import_declaration name: (module_name) @module)
@@ -55,8 +55,39 @@
       # Web
       typescript = {
         enable = true;
-        lsp.enable = true;
+        lsp = {
+          enable = true;
+          servers = [
+            "typescript-language-server"
+            /*
+            "angular-language-server"
+            */
+          ];
+        };
         format.type = ["prettierd"];
+        extraDiagnostics = {
+          enable = true;
+          types = ["eslint_d"];
+        };
+        extensions.ts-error-translator.enable = true;
+      };
+      # Dotnet
+      csharp = {
+        enable = true;
+        lsp = {
+          enable = true;
+          servers = ["roslyn-ls"];
+        };
+        format = {
+          enable = true;
+          # type = ["csharpier"];
+        };
+        treesitter.enable = true;
+        extensions.roslyn-nvim = {
+          enable = true;
+          setupOpts.filewatching = "roslyn";
+          setupOpts.extensions.razor.enabled = true;
+        };
       };
     };
   };
