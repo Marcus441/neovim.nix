@@ -33,11 +33,17 @@ require("kanagawa").setup({
 			FloatTitle = { bg = "none" },
 
 			-------------------
-			-- Blink-cmp (Transparent & Flush)
+			-- Status Line
+			-------------------
+			MiniStatuslineFilename = { fg = theme.ui.fg },
+			MiniStatuslineFileinfo = { fg = theme.ui.fg },
+			MiniStatuslineDevinfo = { fg = theme.ui.fg },
+			-------------------
+			-- Blink-cmp
 			-------------------
 			-- Force the entire menu and its elements to have no background
 			Pmenu = { bg = "none" },
-			PmenuSel = { bg = theme.ui.bg_p2 }, -- The selection bar
+			PmenuSel = { bg = theme.ui.bg_p2 },
 			PmenuSbar = { bg = "none" },
 			PmenuThumb = { bg = theme.ui.bg_p2 },
 
@@ -60,15 +66,6 @@ require("kanagawa").setup({
 			BlinkCmpDocBorder = { bg = "none", fg = theme.ui.bg_p2 },
 			BlinkCmpSignatureHelp = { bg = "none" },
 			BlinkCmpSignatureHelpBorder = { bg = "none", fg = theme.ui.bg_p2 },
-			-------------------
-			-- LSP Progress
-			-------------------
-			LspProgressStatus = { bg = "none" },
-			LspProgressClient = { bg = "none" },
-			LspProgressTitle = { bg = "none" },
-			LspProgressSpinner = { bg = "none" },
-			LspProgressMsg = { bg = "none" },
-			LspProgressDone = { bg = "none" },
 		}
 	end,
 })
