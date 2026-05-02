@@ -1,8 +1,8 @@
 {
   imports = [
-    ./autoCmds.nix
-    ./autoComplete.nix
-    ./extraPlugins.nix
+    ./auto-cmds.nix
+    ./auto-complete.nix
+    ./extra-plugins.nix
     ./formatter.nix
     ./languages.nix
     ./lsp.nix
