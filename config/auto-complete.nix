@@ -6,6 +6,7 @@
       setupOpts = {
         keymap = {
           preset = "default";
+          "<C-y>" = ["select_and_accept" "fallback"];
           "<C-d>" = ["scroll_documentation_down" "fallback"];
           "<C-u>" = ["scroll_documentation_up" "fallback"];
         };
@@ -38,11 +39,11 @@
             show_on_x_blocked_trigger_characters = ["'" "\"" "(" "{" "["];
           };
           list.selection = {
-            preselect = true;
+            preselect = false;
             auto_insert = false;
           };
           accept.auto_brackets.enabled = true;
-          ghost_text.enabled = true;
+          ghost_text.enabled = false;
           menu = {
             auto_show = true;
             winblend = 0;
