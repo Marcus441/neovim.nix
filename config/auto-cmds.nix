@@ -3,6 +3,7 @@
     augroups = [
       {name = "UserSetup";}
       {name = "SpellCheck";}
+      {name = "CSharpIndent";}
     ];
     autocmds = [
       {
@@ -24,6 +25,18 @@
           function()
             vim.opt_local.spell = true
             vim.opt_local.spelllang = "en"
+          end
+        '';
+      }
+      {
+        event = ["FileType"];
+        pattern = ["cs"];
+        desc = "Use smartindent for C# since treesitter has no indent queries";
+        group = "CSharpIndent";
+        callback = lib.mkLuaInline ''
+          function()
+            vim.bo.indentexpr = ""
+            vim.bo.smartindent = true
           end
         '';
       }
