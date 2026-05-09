@@ -1,5 +1,6 @@
+local is_neovide = vim.g.neovide ~= nil
 require("kanagawa").setup({
-	transparent = true,
+	transparent = not is_neovide,
 	colors = {
 		theme = {
 			all = {
