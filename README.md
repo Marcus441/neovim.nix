@@ -1,31 +1,41 @@
-# neovim
+# neovim.nix
 
-Neovim configuration built with [nvf](https://github.com/notashelf/nvf).
+Personal Neovim configuration built with [nvf](https://github.com/notashelf/nvf).
+Produces two derivations: a minimal terminal editor (`min`) and a full IDE build for [Neovide](https://neovide.github.io) (`gui`).
 
-## Usage
-
-Run directly:
-
-```bash
-nix run github:yourusername/neovim-config
-```
-
-Or add to your NixOS/Home Manager config:
+## Installation
 
 ```nix
-inputs.my-neovim.url = "github:yourusername/neovim-config";
-environment.systemPackages = [ inputs.my-neovim.packages.${pkgs.system}.default ];
+# flake.nix
+inputs.neovim-config = {
+  url = "github:Marcus441/neovim.nix";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+```nix
+# home.nix
+{ pkgs, inputs, ... }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+  neovim = inputs.neovim-config.packages.${system};
+in {
+  home.packages = [ neovim.min ];
+
+  programs.neovide = {
+    enable = true;
+    settings.neovim-bin = "${neovim.gui}/bin/nvim";
+  };
+}
 ```
 
 ## Structure
 
-- `flake.nix` — entry point
-- `config/languages.nix` — LSP, treesitter, formatters
-- `config/lsp.nix` — LSP and diagnostics
-- `config/options.nix` — global options, UI, utilities
-- `config/extraPlugins.nix` — kanagawa, undotree
-- `config/keymaps/` — keybindings
-- `config/formatter.nix` — conform.nvim
+```
+core/       shared config (options, keymaps, theme, formatter, languages/treesitter)
+min/        mini.statusline, builtin treesitter grammars
+gui/        LSP, blink-cmp, lualine, snacks extras, dashboard, session manager
+```
 
 ## Keybindings
 
@@ -33,31 +43,29 @@ Leader is `<Space>`.
 
 | Key | Description |
 | :-- | :---------- |
-| `<Esc>` | Clear search highlights |
-| `<leader>u` | Undotree |
-| `<leader>gs` | Git status |
-| `gd` / `gD` | Goto definition / declaration |
-| `gr` / `gI` | Goto references / implementation |
+| `gd` / `gD` | Definition / declaration |
+| `gr` / `gI` | References / implementation |
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code action |
 | `<leader>ds` | Document symbols |
+| `<leader>xx` / `<leader>xX` | Trouble diagnostics / buffer |
 | `<leader>sf` | Find files |
-| `<leader>sg` | Grep |
-| `<leader>sw` | Search word under cursor |
-| `<leader>sd` | Search diagnostics |
-| `<leader>sr` | Resume last search |
-| `<leader>s.` | Recent files |
-| `<leader><leader>` | Find buffers |
-| `<leader>/` | Search in buffer |
+| `<leader>sg` / `<leader>sw` | Grep / search word |
+| `<leader>sd` | Diagnostics |
+| `<leader>sr` / `<leader>s.` | Resume / recent files |
+| `<leader><leader>` / `<leader>/` | Buffers / search in buffer |
 | `<leader>sh` / `<leader>sk` | Help / keymaps |
 | `<leader>sp` / `<leader>sz` | Projects / zoxide |
-| `<leader>y` / `<leader>Y` | Yank to clipboard / yank line |
-| `<leader>p` | Paste from void register |
-| `<leader>d` | Delete to void register |
+| `<leader>sm` | Marks |
+| `<leader>gs` / `<leader>gb` | Git status / browse |
+| `<leader>L` | Lazygit |
+| `<leader>u` | Undotree |
 | `<leader>cs` | Scratch buffer |
 | `-` | Oil |
-| `K` | Hover docs |
-| `J` | Join line |
-| `<C-d>` / `<C-u>` | Half page down/up (centered) |
-| `n` / `N` | Next/prev match (centered) |
-| `J` / `K` (visual) | Move block down/up |
+| `<leader>y` / `<leader>Y` | Yank to clipboard / yank line |
+| `<leader>p` | Paste (void register) |
+| `<leader>d` | Delete (void register) |
+| `J` / `K` (visual) | Move block down / up |
+| `<C-d>` / `<C-u>` | Half page down / up (centered) |
+| `n` / `N` | Next / prev match (centered) |
+| `<C-=>` / `<C-->` | Neovide scale up / down |
