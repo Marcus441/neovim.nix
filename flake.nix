@@ -20,14 +20,17 @@
               "vscode-extension-ms-dotnettools-csharp"
             ];
         };
-        myNeovim =
+        mkNeovim = modules:
           (nvf.lib.neovimConfiguration {
             inherit pkgs;
-            modules = [./config];
+            modules = [./core] ++ modules;
           }).neovim;
       in {
-        packages.default = myNeovim;
-        packages.nvim = myNeovim;
+        packages = {
+          default = mkNeovim [./min];
+          min = mkNeovim [./min];
+          gui = mkNeovim [./gui];
+        };
       }
     );
 }

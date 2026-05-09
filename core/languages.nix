@@ -1,4 +1,4 @@
-{
+{lib, ...}: {
   vim = {
     treesitter.queries = [
       {
@@ -18,74 +18,39 @@
     languages = {
       enableFormat = true;
       enableTreesitter = true;
-      enableExtraDiagnostics = true;
+      enableExtraDiagnostics = lib.mkDefault false;
 
-      # Systems
       clang = {
         enable = true;
-        lsp = {
-          enable = true;
-          servers = ["clangd"];
-        };
-        dap.enable = true;
+        lsp.enable = lib.mkDefault false;
+        dap.enable = lib.mkDefault false;
       };
       rust = {
         enable = true;
-        lsp.enable = true;
-        extensions = {crates-nvim.enable = true;};
+        lsp.enable = lib.mkDefault false;
       };
-
       lua = {
         enable = true;
-        lsp = {
-          enable = true;
-          lazydev.enable = true;
-        };
+        lsp.enable = lib.mkDefault false;
       };
       nix = {
         enable = true;
-        lsp.enable = true;
+        lsp.enable = lib.mkDefault false;
       };
       python = {
         enable = true;
         format.type = ["ruff"];
-        lsp.enable = true;
+        lsp.enable = lib.mkDefault false;
       };
-
-      # Web
       typescript = {
         enable = true;
-        lsp = {
-          enable = true;
-          servers = [
-            "typescript-language-server"
-            /*
-            "angular-language-server"
-            */
-          ];
-        };
         format.type = ["prettierd"];
-        extraDiagnostics = {
-          enable = true;
-          types = ["eslint_d"];
-        };
+        lsp.enable = lib.mkDefault false;
       };
-      # Dotnet
       csharp = {
         enable = true;
-        lsp = {
-          enable = true;
-          servers = ["roslyn-ls"];
-        };
-        format = {
-          enable = true;
-        };
         treesitter.enable = true;
-        extensions.roslyn-nvim = {
-          enable = true;
-          setupOpts.filewatching = "roslyn";
-          setupOpts.extensions.razor.enabled = true;
-        };
+        lsp.enable = lib.mkDefault false;
       };
     };
   };
