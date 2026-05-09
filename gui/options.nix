@@ -14,7 +14,6 @@
 
     visuals.nvim-cursorline.enable = true;
     autopairs.nvim-autopairs.enable = true;
-    mini.snippets.enable = true;
     notes.todo-comments.enable = true;
 
     utility.snacks-nvim.setupOpts = {
