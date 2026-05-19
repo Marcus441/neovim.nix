@@ -77,7 +77,7 @@
             enabled = true;
             sources.zoxide = {};
             sources.projects = {
-              dev = ["~/projects" "~/oss"];
+              dev = ["~/Projects" "~/projects" "~/oss"];
               patterns = [".git" "flake.nix" "package.json" "Makefile"];
             };
           };
