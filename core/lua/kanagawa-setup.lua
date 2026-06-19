@@ -4,7 +4,7 @@ local is_wsl = (vim.uv or vim.loop).os_uname().release:lower():find("microsoft")
 if is_neovide and is_wsl then
 	vim.o.guifont = "IosevkaTerm Nerd Font Mono:h11"
 end
-endrequire("kanagawa").setup({
+require("kanagawa").setup({
 	transparent = not is_neovide,
 	colors = {
 		theme = {
