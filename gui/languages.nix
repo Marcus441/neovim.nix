@@ -34,6 +34,11 @@
         types = ["eslint_d"];
       };
     };
+    sql = {
+      lsp = {
+        enable = true;
+      };
+    };
     csharp = {
       lsp = {
         enable = true;

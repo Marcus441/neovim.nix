@@ -2,6 +2,7 @@
   vim = {
     augroups = [
       {name = "MacroRecordingNotificationGroup";}
+      {name = "DboutCleanup";}
     ];
     autocmds = [
       {
@@ -17,6 +18,19 @@
               -- The `keep` function is embedded directly within the Lua string
               keep = function() return _MACRO_RECORDING_STATUS end,
             })
+          end
+        '';
+      }
+      {
+        event = ["FileType"];
+        pattern = ["dbout"];
+        desc = "Disable snacks indent/scope guides in query result buffers";
+        group = "DboutCleanup";
+        callback = lib.mkLuaInline ''
+          function(args)
+            vim.b[args.buf].snacks_indent = false
+            vim.b[args.buf].snacks_scope = false
+            vim.wo.wrap = false
           end
         '';
       }

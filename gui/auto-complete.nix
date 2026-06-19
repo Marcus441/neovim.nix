@@ -15,6 +15,9 @@
         fuzzy.implementation = "prefer_rust_with_warning";
         sources = {
           default = ["lsp" "snippets" "path" "buffer"];
+          per_filetype = {
+            sql = ["dadbod" "lsp" "snippets" "buffer"];
+          };
           providers = {
             lsp = {
               score_offset = 5;
@@ -29,6 +32,11 @@
             buffer = {
               score_offset = 2;
               max_items = 5;
+            };
+            dadbod = {
+              name = "Dadbod";
+              module = "vim_dadbod_completion.blink";
+              score_offset = 30;
             };
           };
         };
