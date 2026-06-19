@@ -13,80 +13,37 @@
         after = ["vim-dadbod"];
       };
     };
-
     luaConfigRC.dadbod = ''
       vim.g.db_ui_use_nerd_fonts = 1
 
-      -- Sensitive server list (client/company infra) loads from a runtime file
-      -- OUTSIDE the repo. Point NVIM_DB_SERVERS at it; it can be plaintext-gitignored
-      -- or dropped by sops/agenix. Shape: a JSON array of {name,host,port,user}.
-      local function load_servers()
-        local path = os.getenv("NVIM_DB_SERVERS")
-        if not path or path == "" then return {} end
-        local ok, data = pcall(function()
-          return vim.json.decode(table.concat(vim.fn.readfile(path), "\n"))
-        end)
+      -- Connections (with passwords) live in a gitignored file OUTSIDE the repo.
+      -- Shape: a JSON array of { "name": "...", "url": "sqlserver://..." }.
+      -- dadbod-ui expands each server's databases in the drawer natively, so no
+      -- enumeration is needed. Override the path with NVIM_DB_SECRETS if you like.
+      local function load_dbs()
+        local path = os.getenv("NVIM_DB_SECRETS")
+          or (os.getenv("HOME") .. "/.config/nvim-secrets/dbs.json")
+        local f = io.open(path, "r")
+        if not f then
+          vim.notify("[db] no secrets file at " .. path, vim.log.levels.WARN)
+          return {}
+        end
+        local contents = f:read("*a")
+        f:close()
+        local ok, data = pcall(vim.json.decode, contents)
         if not ok then
-          vim.notify("[db] bad NVIM_DB_SERVERS: " .. tostring(data), vim.log.levels.WARN)
+          vim.notify("[db] bad JSON in " .. path .. ": " .. tostring(data), vim.log.levels.WARN)
           return {}
         end
         return data
       end
 
-      local servers = {
-        { name = "mssql2022", host = "127.0.0.1", port = 1433, user = "sa" },
-        { name = "mssql2019", host = "127.0.0.1", port = 1435, user = "sa" },
-      }
-      vim.list_extend(servers, load_servers())
+      vim.g.dbs = load_dbs()
 
-      -- Enumerate user databases on one server. No password here or on the
-      -- command line: sqlcmd reads it from $SQLCMDPASSWORD in the environment.
-      local function enumerate(s)
-        local out = vim.system({
-          "sqlcmd", "-S", s.host .. "," .. (s.port or 1433),
-          "-U", s.user, "-C", "-h", "-1", "-W", "-Q",
-          -- database_id > 4 skips master/tempdb/model/msdb; tighten with e.g.
-          -- "AND name LIKE 'Client_%'" to limit to real client DBs.
-          "SET NOCOUNT ON; SELECT name FROM sys.databases WHERE database_id > 4 ORDER BY name;",
-        }, { text = true }):wait()
-        local conns = {}
-        if out.code ~= 0 then
-          vim.notify(("[db] %s: %s"):format(s.name, out.stderr or "failed"), vim.log.levels.WARN)
-          return conns
-        end
-        for line in (out.stdout or ""):gmatch("[^\r\n]+") do
-          local db = vim.trim(line)
-          if db ~= "" then
-            table.insert(conns, {
-              name = s.name .. "/" .. db,
-              url = ("sqlserver://%s@%s:%d/%s?trustServerCertificate=yes")
-                    :format(s.user, s.host, s.port or 1433, db),
-            })
-          end
-        end
-        return conns
-      end
-
-      local function refresh()
-        local all = {}
-        for _, s in ipairs(servers) do
-          local ok, conns = pcall(enumerate, s)
-          if ok then vim.list_extend(all, conns) end
-        end
-        vim.g.dbs = all
-        if vim.tbl_isempty(all) then
-          vim.notify("[db] no databases (is SQLCMDPASSWORD set?)", vim.log.levels.INFO)
-        end
-      end
-
-      vim.api.nvim_create_user_command("DBRefresh", refresh,
-        { desc = "Re-enumerate SQL Server databases" })
-
-      -- Enumerate lazily on first open so startup is never blocked by a query.
-      vim.api.nvim_create_user_command("DBOpen", function()
-        if not vim.g.dbs or vim.tbl_isempty(vim.g.dbs) then refresh() end
-        vim.cmd("DBUIToggle")
-      end, { desc = "Enumerate (if needed) and toggle DBUI" })
+      -- Reload connections from the secrets file without restarting nvim.
+      vim.api.nvim_create_user_command("DBReload", function()
+        vim.g.dbs = load_dbs()
+      end, { desc = "Reload DB connections from the secrets file" })
 
       -- <C-x><C-o> table/column completion in SQL buffers.
       vim.api.nvim_create_autocmd("FileType", {
@@ -94,12 +51,11 @@
         callback = function() vim.bo.omnifunc = "vim_dadbod_completion#omni" end,
       })
     '';
-
     keymaps = [
       {
         mode = ["n"];
         key = "<leader>D";
-        action = "<CMD>DBOpen<CR>";
+        action = "<CMD>DBUIToggle<CR>";
         desc = "[D]atabase UI";
       }
     ];
