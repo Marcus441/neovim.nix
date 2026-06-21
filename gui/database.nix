@@ -20,14 +20,12 @@
           or (os.getenv("HOME") .. "/.config/nvim-secrets/servers.json")
         local f = io.open(path, "r")
         if not f then
-          vim.notify("[db] no secrets file at " .. path, vim.log.levels.WARN)
           return {}
         end
         local contents = f:read("*a")
         f:close()
         local ok, data = pcall(vim.json.decode, contents)
         if not ok then
-          vim.notify("[db] bad JSON in " .. path .. ": " .. tostring(data), vim.log.levels.WARN)
           return {}
         end
         return data
@@ -80,7 +78,6 @@
       end
 
       vim.g.dbs = {}
-      refresh()  -- runs at startup; reads file, enumerates both instances
 
       vim.api.nvim_create_user_command("DBRefresh", refresh,
         { desc = "Re-enumerate databases from the secrets file" })
