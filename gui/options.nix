@@ -36,6 +36,7 @@
 
     utility.snacks-nvim.setupOpts = {
       dim.enabled = true;
+      direnv.enable = true;
       gitbrowse.enabled = true;
       indent = {
         enabled = true;

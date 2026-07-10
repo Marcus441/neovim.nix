@@ -68,7 +68,6 @@
 
     utility = {
       oil-nvim.enable = true;
-      direnv.enable = true;
       snacks-nvim = {
         enable = true;
         setupOpts = {
