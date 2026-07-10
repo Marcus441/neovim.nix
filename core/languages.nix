@@ -44,7 +44,7 @@
       };
       typescript = {
         enable = true;
-        format.type = ["prettierd"];
+        format.type = ["prettier"];
         lsp.enable = lib.mkDefault false;
       };
       csharp = {
