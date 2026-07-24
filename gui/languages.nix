@@ -67,9 +67,12 @@ in {
       clangd.cmd = lib.mkForce [
         (preferPathExe "clangd" (lib.getExe' pkgs.clang-tools "clangd"))
       ];
-      rust-analyzer.cmd = lib.mkForce [
-        (preferPathExe "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
-      ];
+      rust-analyzer = {
+        cmd = lib.mkForce [
+          (preferPathExe "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
+        ];
+        filetypes = ["rust"];
+      };
       lua-language-server.cmd = lib.mkForce [
         (preferPathExe "lua-language-server" (lib.getExe pkgs.lua-language-server))
       ];
@@ -84,9 +87,13 @@ in {
         (preferPathExe "typescript-language-server" (lib.getExe pkgs.typescript-language-server))
         "--stdio"
       ];
-      kotlin-language-server.cmd = lib.mkForce [
-        (preferPathExe "kotlin-language-server" (lib.getExe pkgs.kotlin-language-server))
-      ];
+      kotlin-language-server = {
+        cmd = lib.mkForce [
+          (preferPathExe "kotlin-language-server" (lib.getExe pkgs.kotlin-language-server))
+        ];
+        filetypes = ["kotlin"];
+        init_options.__raw = "vim.empty_dict()";
+      };
     };
   };
 }
