@@ -34,38 +34,40 @@
     autopairs.nvim-autopairs.enable = true;
     notes.todo-comments.enable = true;
 
-    utility.snacks-nvim.setupOpts = {
-      dim.enabled = true;
+    utility = {
       direnv.enable = true;
-      gitbrowse.enabled = true;
-      indent = {
-        enabled = true;
-        indent.char = "│";
-        scope = {
+      snacks-nvim.setupOpts = {
+        dim.enabled = true;
+        gitbrowse.enabled = true;
+        indent = {
           enabled = true;
-          char = "┃";
-        };
-        chunk = {
-          enabled = true;
-          char = {
-            corner_top = "╭";
-            corner_bottom = "╰";
-            horizontal = "─";
-            vertical = "│";
-            arrow = "─";
+          indent.char = "│";
+          scope = {
+            enabled = true;
+            char = "┃";
+          };
+          chunk = {
+            enabled = true;
+            char = {
+              corner_top = "╭";
+              corner_bottom = "╰";
+              horizontal = "─";
+              vertical = "│";
+              arrow = "─";
+            };
           };
         };
+        lazygit.enabled = true;
+        notifier = {
+          enabled = true;
+          timeout = 3000;
+          style = "fancy";
+        };
+        rename.enabled = true;
+        scratch.enabled = true;
+        words.enabled = true;
+        zen.enabled = true;
       };
-      lazygit.enabled = true;
-      notifier = {
-        enabled = true;
-        timeout = 3000;
-        style = "fancy";
-      };
-      rename.enabled = true;
-      scratch.enabled = true;
-      words.enabled = true;
-      zen.enabled = true;
     };
     ui = {
       noice.enable = true;
