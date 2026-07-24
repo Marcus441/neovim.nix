@@ -91,8 +91,8 @@ in {
         cmd = lib.mkForce [
           (preferPathExe "kotlin-language-server" (lib.getExe pkgs.kotlin-language-server))
         ];
-        filetypes = ["kotlin"];
-        init_options.__raw = "vim.empty_dict()";
+        root_markers = ["settings.gradle.kts" "settings.gradle" "gradlew"];
+        init_options = lib.mkForce (lib.generators.mkLuaInline "vim.empty_dict()");
       };
     };
   };
