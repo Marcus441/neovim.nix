@@ -93,6 +93,11 @@ in {
         ];
         root_markers = ["settings.gradle.kts" "settings.gradle" "gradlew"];
         init_options = lib.mkForce (lib.generators.mkLuaInline "vim.empty_dict()");
+        on_attach = lib.generators.mkLuaInline ''
+          function(client, _)
+            client.server_capabilities.documentHighlightProvider = nil
+          end
+        '';
       };
     };
   };
