@@ -96,6 +96,8 @@ in {
         on_attach = lib.generators.mkLuaInline ''
           function(client, _)
             client.server_capabilities.documentHighlightProvider = nil
+            client.server_capabilities.documentFormattingProvider = nil
+            client.server_capabilities.documentRangeFormattingProvider = nil
           end
         '';
       };
