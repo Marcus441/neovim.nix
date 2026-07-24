@@ -3,9 +3,6 @@
   lib,
   ...
 }: let
-  # LSP launcher that prefers the binary on $PATH (dev shell / direnv, so the
-  # server matches the project toolchain) and falls back to the pinned
-  # nixpkgs package so the LSP always works outside dev shells.
   preferPath = name: fallbackExe:
     pkgs.writeShellScriptBin name ''
       if command -v ${name} >/dev/null 2>&1; then
@@ -27,12 +24,7 @@ in {
         dap.enable = true;
       };
       rust = {
-        lsp = {
-          enable = true;
-          # nvf launches "${package}/bin/rust-analyzer", so the wrapper binary
-          # must be named rust-analyzer.
-          package = preferPath "rust-analyzer" (lib.getExe pkgs.rust-analyzer);
-        };
+        lsp.enable = true;
         extensions.crates-nvim.enable = true;
       };
       lua.lsp = {
@@ -41,14 +33,15 @@ in {
       };
       nix.lsp.enable = true;
       python.lsp.enable = true;
+      kotlin.lsp = {
+        enable = true;
+        servers = ["kotlin-language-server"];
+      };
       typescript = {
         lsp = {
           enable = true;
           servers = [
             "typescript-language-server"
-            /*
-            "angular-language-server"
-            */
           ];
         };
         extraDiagnostics = {
@@ -70,12 +63,12 @@ in {
       };
     };
 
-    # mkForce only replaces the preset's cmd; root_markers, capabilities and
-    # on_attach from the preset are kept. roslyn-ls is not listed here: the
-    # roslyn-nvim extension launches it from nvim's own PATH (extraPackages).
     lsp.servers = {
       clangd.cmd = lib.mkForce [
         (preferPathExe "clangd" (lib.getExe' pkgs.clang-tools "clangd"))
+      ];
+      rust-analyzer.cmd = lib.mkForce [
+        (preferPathExe "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
       ];
       lua-language-server.cmd = lib.mkForce [
         (preferPathExe "lua-language-server" (lib.getExe pkgs.lua-language-server))
@@ -90,6 +83,9 @@ in {
       typescript-language-server.cmd = lib.mkForce [
         (preferPathExe "typescript-language-server" (lib.getExe pkgs.typescript-language-server))
         "--stdio"
+      ];
+      kotlin-language-server.cmd = lib.mkForce [
+        (preferPathExe "kotlin-language-server" (lib.getExe pkgs.kotlin-language-server))
       ];
     };
   };
