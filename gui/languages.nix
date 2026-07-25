@@ -91,7 +91,11 @@ in {
         cmd = lib.mkForce [
           (preferPathExe "kotlin-language-server" (lib.getExe pkgs.kotlin-language-server))
         ];
-        root_markers = ["settings.gradle.kts" "settings.gradle" "gradlew"];
+        root_markers = [
+          "settings.gradle.kts"
+          "settings.gradle"
+          "gradlew"
+        ];
         init_options = lib.mkForce (lib.generators.mkLuaInline "vim.empty_dict()");
         on_attach = lib.generators.mkLuaInline ''
           function(client, _)
@@ -101,6 +105,30 @@ in {
           end
         '';
       };
+    };
+
+    formatter.conform-nvim.setupOpts = {
+      formatters_by_ft.kotlin = ["ktlint"];
+      formatters.ktlint.command = preferPathExe "ktlint" (lib.getExe pkgs.ktlint);
+      # ktlint pays JVM startup on every run, so a synchronous format on
+      # save blocks the editor for seconds. Route kotlin through conform's
+      # async after-save path instead; everything else stays sync.
+      format_on_save = lib.mkForce (lib.generators.mkLuaInline ''
+        function(bufnr)
+          if vim.bo[bufnr].filetype == "kotlin" then
+            return
+          end
+          return {timeout_ms = 500, lsp_format = "fallback"}
+        end
+      '');
+      format_after_save = lib.mkForce (lib.generators.mkLuaInline ''
+        function(bufnr)
+          if vim.bo[bufnr].filetype ~= "kotlin" then
+            return
+          end
+          return {lsp_format = "fallback"}
+        end
+      '');
     };
   };
 }
