@@ -52,11 +52,6 @@
         treesitter.enable = true;
         lsp.enable = lib.mkDefault false;
       };
-      kotlin = {
-        enable = true;
-        treesitter.enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
     };
   };
 }
