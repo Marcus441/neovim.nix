@@ -4,9 +4,6 @@ paths: "modules/**/*.nix"
 
 # Writing a file under `modules/`
 
-> The `core/`, `gui/` and `min/` globs above are the pre-refactor tree. Drop them
-> from this file's frontmatter when Stage 1 lands and those directories are gone.
-
 ## The invariants, in full
 
 1. **Every `.nix` file under `modules/` is a flake-parts module.** Not an nvf
@@ -73,13 +70,15 @@ One file, one language, both builds. The `lib` in scope inside
 
 ## Read before writing a new file
 
-Until Stage 1 lands there are **no exemplars in this tree** — every file is
-single-aspect because the variant split is still done by directory. Check
-CLAUDE.md §8 before treating any file as an example.
+`modules/database.nix` is the exemplar for a single-aspect concern: dadbod's
+plugins, its Lua *and* its keymap in one file, at a path that names the feature.
+`modules/auto-cmds.nix` is the exemplar for the two-aspect shape — one concern,
+both memberships, one file.
 
-The closest thing to the target shape today is `modules/gui/database.nix`: one concern
-(dadbod) carrying its plugins, its Lua, *and* its keymap in one file. Its fault
-is only that the file sits under `gui/`.
+Neither is an exemplar of *size*. `modules/options.nix` and
+`modules/languages.nix` declare both aspects correctly and are still grab-bags;
+CLAUDE.md §8 items 5 and 7 have them scheduled. Check §8 before copying a file's
+scope.
 
 The sibling flake's `modules/filemanager/thunar.nix` is the canonical exemplar of
 one concern declaring several memberships, if you want to see the shape working.
@@ -91,9 +90,10 @@ is redundant and the files should be flat. If the files span declining aspects,
 the directory is pure navigation and is fine. **`core` does not count toward
 "several aspects"** — every variant takes `core`.
 
-`languages/` is fine: every file in it declares both `core` and `gui`, so the
-directory predicts nothing. A `gui/` directory holding only `gui` files is
-exactly what Inv. 4 forbids.
+`modules/keymaps/` passes: five of its files declare `core` and four declare
+`gui`, so the path predicts nothing. A future `languages/` passes for the same
+reason — every file in it would declare both. A `gui/` directory holding only
+`gui` files is exactly what Inv. 4 forbids.
 
 ## Assets and non-modules
 
@@ -108,7 +108,7 @@ skips any path matching `hasInfix "/_"`. **It is not a grouping mechanism.**
 
 ## A helper used by more than one file
 
-`preferPath` (`modules/gui/languages.nix:7`) is a `let` binding today, which is correct
+`preferPath` (`modules/languages.nix:65`) is a `let` binding today, which is correct
 while one file uses it and fatal the moment Stage 2 splits that file per
 language. In order of preference:
 

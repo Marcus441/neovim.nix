@@ -15,15 +15,16 @@ burned seven commits (`9f20108`–`8dc5394`) — each fix found one more site.
 
 | What | Aspect | Today | After Stage 2 |
 | --- | --- | --- | --- |
-| `enable`, treesitter, formatter | `core` | `modules/core/languages.nix` | `modules/languages/<lang>.nix` |
-| `lsp.enable = lib.mkDefault false` | `core` | `modules/core/languages.nix` | same file |
-| `lsp.enable = true`, `servers`, extensions | `gui` | `modules/gui/languages.nix` | same file |
-| `lsp.servers.<name>.cmd` override | `gui` | `modules/gui/languages.nix` (separate block) | same file |
-| filetype/indent autocmd | `core` | `modules/core/auto-cmds.nix` | same file, or the language file |
-| treesitter query patch | `core` | `modules/core/languages.nix` | same file |
+| `enable`, treesitter, formatter | `core` | `modules/languages.nix`, `core` half | `modules/languages/<lang>.nix` |
+| `lsp.enable = lib.mkDefault false` | `core` | `modules/languages.nix`, `core` half | same file |
+| `lsp.enable = true`, `servers`, extensions | `gui` | `modules/languages.nix`, `gui` half | same file |
+| `lsp.servers.<name>.cmd` override | `gui` | `modules/languages.nix`, separate block below the `gui` half | same file |
+| filetype/indent autocmd | `core` | `modules/auto-cmds.nix`, `core` half | same file, or the language file |
+| treesitter query patch | `core` | `modules/languages.nix`, `core` half | same file |
 
-**After Stage 2 this is one file.** Until then it is two, and the second one is
-the one that gets forgotten — check `modules/gui/languages.nix` before declaring done.
+**One file already, but three places inside it.** The `lsp.servers.*.cmd` block
+is the one that gets forgotten — it sits below the `gui` half and never names
+the language. Scroll to the bottom of the file before declaring done.
 
 ## The rules that bite
 
@@ -38,24 +39,24 @@ the one that gets forgotten — check `modules/gui/languages.nix` before declari
   attribute name is the *server's*, not the language's:
   `basedpyright` for python, `typescript-language-server` for typescript.
 - **`preferPath` wraps a server so a project's own toolchain wins.**
-  `modules/gui/languages.nix:7` — it execs the `$PATH` binary if present, else the pinned
+  `modules/languages.nix:65` — it execs the `$PATH` binary if present, else the pinned
   one. Use it for anything a devshell plausibly provides. It is a `let` binding
   in that file today, so a language file split out before Stage 2 cannot reach
   it (CLAUDE.md §8 item 6).
 - **Do not pin a toolchain-sized formatter.** `core` resolves rustfmt and
-  clang-format from `$PATH` on purpose (`modules/core/formatter.nix`) — each
+  clang-format from `$PATH` on purpose (`modules/formatter.nix`) — each
   pins ~2 GB into `min`.
   Check the closure, not just the build.
 - **Some languages need an indent autocmd.** C# has one because treesitter ships
-  no indent queries for it (`modules/core/auto-cmds.nix:31-42`). If indentation is wrong
+  no indent queries for it (`modules/auto-cmds.nix:32-43`). If indentation is wrong
   in practice, this is why.
 
 ## Removing a language
 
 Every site above, in one commit. `8dc5394` is the worked example: it removed
-kotlin from both `languages.nix` files together. Grep the language name and the
-server name across the tree before committing — the `lsp.servers` block does not
-mention the language.
+kotlin from both halves together, back when they were two files. Grep the
+language name and the server name across the tree before committing — the
+`lsp.servers` block does not mention the language.
 
 ## Verify
 
@@ -70,7 +71,7 @@ failure**, and no Nix-level check catches it.
 
 ## Before you finish
 
-- Both `languages.nix` files updated, or one file after Stage 2.
+- Both halves of `modules/languages.nix` updated, plus the `lsp.servers` block.
 - `lib.mkDefault` in `core`, plain value in `gui`, `lib.mkForce` on any `cmd`.
 - Small, single-concern commit. Rationale in the message, not in comments.
 - If the change touched a file listed under CLAUDE.md §8, migrate it in the same

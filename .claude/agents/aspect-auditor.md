@@ -14,9 +14,9 @@ refactored to the dendritic flake-parts pattern. In the target shape, every
 `.nix` file under `modules/` is a flake-parts module that declares membership by
 setting `flake.modules.nvf.<aspect>`, where the aspect is `core` or `gui`.
 
-**The profile split may still be in place.** Until Stage 1 lands, every file
-declares exactly one aspect and `modules/core/` vs `modules/gui/` still predicts
-it — say which stage of `REFACTOR.md` the tree is at.
+**The profile split is gone (Stage 1).** Membership is declared, not implied by
+a path, and a file may declare both aspects. Say which stage of `REFACTOR.md`
+the tree is at.
 
 Answer the question you were asked and return **conclusions with file paths**,
 never bulk file contents. Keep the report under ~40 lines.
@@ -34,9 +34,9 @@ never bulk file contents. Keep the report under ~40 lines.
 
 ## What counts as a finding
 
-- **One concern spread across several files.** The signature failure here: a
-  `modules/core/x.nix` and a `modules/gui/x.nix` that are the same concern. One file declaring
-  several memberships is **not** this — it is the merge working as intended.
+- **One concern spread across several files**, or one file holding several
+  concerns. One file declaring several memberships is **not** this — it is the
+  merge working as intended.
 - An aspect no variant takes, or that every variant takes (the latter is `core`).
 - **An unearned aspect** — one no variant declines. With two variants, only
   `gui` is earned.
@@ -58,7 +58,7 @@ never bulk file contents. Keep the report under ~40 lines.
 
 Anything in `.claude/rules/settled-decisions.md`, and anything listed under
 CLAUDE.md §8 *Known divergences* — report those as **known**, with the stage that
-closes them, not as defects. The pre-refactor tree is expected to violate almost
-every invariant; saying so at length is not an audit.
+closes them, not as defects. Re-arguing a scheduled item at length is not an
+audit.
 
 Do not edit any file. Report only.

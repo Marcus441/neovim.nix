@@ -9,12 +9,14 @@ commit ending in `./scripts/verify.sh <previous-commit>`.
 
 ## What is wrong today, in one paragraph
 
-`modules/core/` and `modules/gui/` are profile directories: the path says which
-build a file belongs to, which is the thing the pattern exists to remove. Four
-concerns are consequently split across two files each (`options`, `auto-cmds`,
-`languages`, `keymaps/`), so a language costs 2–4 edits and a plugin's keymap
-lives away from the plugin. Commits `9f20108`–`8dc5394` are seven fixes' worth
-of evidence for the cost.
+The structure is right and the decomposition is not. Stage 1 dissolved the
+profile directories, so no path encodes a variant any more — but three files
+still hold everything. `modules/languages.nix` is every language at once,
+`modules/options.nix` mixes `vim.options` with sixteen plugin enables, and
+`modules/keymaps/` groups binds by domain while `modules/database.nix` keeps its
+own. So a language still costs three edits inside one file, and a plugin's keymap
+still lives away from the plugin. Commits `9f20108`–`8dc5394` are seven fixes'
+worth of evidence for the cost.
 
 ## Ground rules for every stage
 
@@ -26,24 +28,15 @@ of evidence for the cost.
   precedent and the method: canonicalise every `listOf` region of both
   `init.lua` files by sorting its records, then diff. What survives is real
   content change and must be justified line by line. Store-path equality is
-  still the stronger proof when you can get it — `min` did in Stage 0.
+  still the stronger proof when you can get it — `min` did in Stage 0, and all
+  three outputs did in Stage 1. **Do not budget for a reorder you have not
+  measured:** only same-aspect relative order matters, so interleaving two
+  already-alphabetical sequences permutes nothing.
 - **Do not push.** The consuming flake pins a revision; publishing is the
   human's call, and nothing here reaches the desktop until they make it.
 - **Close the §8 item in the same commit** that fixes it.
 
 ---
-
-## Stage 1 — dissolve the profile split
-
-Closes §8 items 2 and 4.
-
-Merge each pair into one file declaring both memberships: `options`,
-`auto-cmds`, `languages`, and the `keymaps/` trees. `modules/core/` and
-`modules/gui/` cease to exist. This is where Inv. 3 and Inv. 4 are actually paid
-off.
-
-Expect the store path to move — merging reorders the `listOf` options. Verify the
-diff is order-only.
 
 ## Stage 2 — per-language files
 
@@ -51,10 +44,10 @@ Closes §8 items 5 and 6.
 
 `modules/languages/<lang>.nix`, one file per language, carrying treesitter, the
 formatter, the `core` `lsp.enable = lib.mkDefault false`, the `gui` server
-choice, and any `lsp.servers.<name>.cmd` override. Both `languages.nix` files
-disappear.
+choice, and any `lsp.servers.<name>.cmd` override. `modules/languages.nix`
+disappears.
 
-**Resolve `preferPath` first.** It is a `let` binding in `modules/gui/languages.nix:7`
+**Resolve `preferPath` first.** It is a `let` binding in `modules/languages.nix:65`
 and per-language files cannot reach it. Two candidates — a flake-parts option, or
 a `/_` expression consumed by `import`. This is an open question in
 `.claude/rules/settled-decisions.md`; ask rather than inventing.
@@ -66,23 +59,24 @@ refactor.
 
 Closes §8 items 7 and 9.
 
-`modules/core/options.nix` and `modules/gui/options.nix` each mix
-`vim.options` with about eight plugin enables. Split per concern: snacks, mini,
-git/gitsigns, diagnostics, oil, borders, comments, and a genuine `options.nix`
-holding only `vim.options`.
+Both halves of `modules/options.nix` mix `vim.options` with about eight plugin
+enables each. Split per concern: snacks, mini, git/gitsigns, diagnostics, oil,
+borders, comments, and a genuine `options.nix` holding only `vim.options`. Each
+resulting file carries both aspects where both have something to say — snacks in
+particular is split across the two halves today.
 
-Normalise `config.vim` vs bare `vim` while here — `modules/core/options.nix` is the only
-file using the explicit form.
+Normalise `config.vim` vs bare `vim` while here — `modules/options.nix` is the
+only file using the explicit form.
 
 ## Stage 4 — keymaps go with the feature
 
 Closes §8 item 8.
 
-Today undotree's bind is in `modules/core/keymaps/general.nix` while the plugin is in
-`modules/core/extra-plugins.nix`; dadbod's bind is inline in `modules/gui/database.nix`. Two
+Today undotree's bind is in `modules/keymaps/general.nix` while the plugin is in
+`modules/extra-plugins.nix`; dadbod's bind is inline in `modules/database.nix`. Two
 shapes, and only one survives.
 
-`modules/gui/database.nix` is the shape that matches the pattern: the file that installs
+`modules/database.nix` is the shape that matches the pattern: the file that installs
 a thing owns its keymap. The alternative — keymaps grouped by domain, as a
 deliberate intent namespace — is defensible but must then be *all* of them.
 **Decide, record it in `.claude/rules/settled-decisions.md`, and apply it

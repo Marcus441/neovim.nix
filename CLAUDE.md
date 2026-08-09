@@ -6,12 +6,13 @@ by feature, not by which build it belongs to. If a change would violate an
 invariant, stop and say so — the invariants are the whole value of this
 structure, and a single exception metastasises.
 
-**Stage 0 has landed; the profile split has not.** flake-parts, import-tree, the
-aspect options and the variant generator are in place, but every file still
-declares exactly one aspect and `modules/core/` and `modules/gui/` still encode
-it. §1 describes the target; §8 describes the tree as it actually is.
-`REFACTOR.md` is the live plan. Read §8 before concluding that existing code is
-an example to copy — today, most of it is not.
+**Stages 0 and 1 have landed.** flake-parts, import-tree, the aspect options and
+the variant generator are in place, the profile directories are gone, and
+`modules/options.nix`, `auto-cmds.nix` and `languages.nix` each declare both
+aspects. What remains is decomposition, not structure: three grab-bag files and
+two keymap shapes. §1 describes the target; §8 describes the tree as it actually
+is. `REFACTOR.md` is the live plan. Read §8 before treating a file as an example
+to copy.
 
 | Output | Aspects | Consumed by |
 | --- | --- | --- |
@@ -144,7 +145,7 @@ every host; `gui` is one program's launcher. A line in `gui` that could have bee
 
 The counter-pressure is closure size — `core` deliberately resolves rustfmt and
 clang-format from `$PATH` rather than pinning them
-(`modules/core/formatter.nix`), because each pins a ~2 GB toolchain. **A `core`
+(`modules/formatter.nix`), because each pins a ~2 GB toolchain. **A `core`
 line that drags a toolchain into `min` is the exception that justifies `gui`.**
 
 ## 7. Hazards and verification
@@ -182,29 +183,26 @@ a proof; an eyeball diff is not.
 migrate it in the same change, or state why not. Item numbers are stable
 identities — closed items are deleted and survivors keep their numbers.
 
-Every file still declares exactly one aspect. `REFACTOR.md` is the plan; the
-stage that closes each item is named.
+Nothing left here is structural — every remaining item is a file that holds too
+much or a shape that exists twice. `REFACTOR.md` is the plan; the stage that
+closes each item is named.
 
-2. **`modules/core/` and `modules/gui/` encode the variant** (Inv. 4). `min/` is
-   gone — its body is `core`, and `gui` declines the statusline half. *Stage 1.*
-4. **Four concerns split across two files each by variant** (Inv. 3):
-   `*/options.nix`, `*/auto-cmds.nix`, `*/languages.nix`, `*/keymaps/`. *Stage 1.*
-5. **Languages cost 2–4 edits.** `modules/core/languages.nix` enables and
-   defaults `lsp.enable` off; `modules/gui/languages.nix` turns it on, picks
-   servers, and holds a separate `lsp.servers.*.cmd` block that is easy to
-   forget. Commits `9f20108`–`8dc5394` are seven fixes' worth of evidence.
-   *Stage 2.*
-6. **`preferPath` is a `let` binding in `modules/gui/languages.nix:7`,** so
+5. **Languages cost 2–4 edits.** `modules/languages.nix` is one file, but still
+   one *pile*: the `core` half enables and defaults `lsp.enable` off, the `gui`
+   half turns it on and picks servers, and a separate `lsp.servers.*.cmd` block
+   sits below both and is easy to forget. Commits `9f20108`–`8dc5394` are seven
+   fixes' worth of evidence. *Stage 2.*
+6. **`preferPath` is a `let` binding in `modules/languages.nix:65`,** so
    per-language files cannot reach it. It needs a home before Stage 2 splits
    that file.
-7. **`modules/core/options.nix` and `modules/gui/options.nix` are grab-bags** —
-   `vim.options` mixed with eight plugin enables each (Inv. 3). *Stage 3.*
+7. **`modules/options.nix` is a grab-bag** — `vim.options` mixed with about
+   sixteen plugin enables across its two aspects (Inv. 3). *Stage 3.*
 8. **Keymaps are inconsistently placed.** Undotree's bind is in
-   `modules/core/keymaps/general.nix` while the plugin is in
-   `modules/core/extra-plugins.nix`; dadbod's bind is inline in
-   `modules/gui/database.nix`. One shape, not two. *Stage 4.*
-9. **`modules/core/options.nix` writes `config.vim`; every other file writes
-   bare `vim`.** Both are valid; the inconsistency is not. *Stage 3.*
+   `modules/keymaps/general.nix` while the plugin is in
+   `modules/extra-plugins.nix`; dadbod's bind is inline in
+   `modules/database.nix`. One shape, not two. *Stage 4.*
+9. **`modules/options.nix` writes `config.vim`; every other file writes bare
+   `vim`.** Both are valid; the inconsistency is not. *Stage 3.*
 10. **`.luarc.json` and `.luacheckrc` reference a `lua/` layout that no longer
     exists.** Confirm dead, then delete. *Stage 5.*
 11. **No `checks`, no `formatter`, no `devShells` output.** `nix flake check` is

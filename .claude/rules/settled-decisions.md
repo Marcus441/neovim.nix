@@ -25,7 +25,7 @@ commit hash, never a plan filename.
   `flake/modules/neovide.nix`); `home-example.nix` documents the shape for
   anyone else.
 - **`core` resolves rustfmt and clang-format from `$PATH`, deliberately**
-  (`modules/core/formatter.nix`), so both builds do. Pinning them in `min` is a
+  (`modules/formatter.nix`), so both builds do. Pinning them in `min` is a
   ~4.5 GB closure regression. Not an oversight, not a `mkForce` to clean up.
 - **`preferPath` prefers the `$PATH` binary over the pinned one, deliberately.**
   It exists so a project's own toolchain wins inside a devshell. Its silent
@@ -40,7 +40,7 @@ commit hash, never a plan filename.
 
 ## Still open — ask rather than inventing
 
-- Where `preferPath` lives once Stage 2 splits `modules/gui/languages.nix`: a flake-parts
+- Where `preferPath` lives once Stage 2 splits `modules/languages.nix`: a flake-parts
   option, or a `/_` expression consumed by `import`. CLAUDE.md §8 item 6.
 - Whether keymaps stay grouped by domain or move to the file that installs the
   feature. CLAUDE.md §8 item 8, Stage 4.

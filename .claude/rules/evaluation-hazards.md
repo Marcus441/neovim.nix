@@ -20,13 +20,13 @@ Priorities: `mkDefault` = 1000, a plain value = 100, `mkForce` = 50. **Lower
 wins.** So the rule is: **`core` states the `min` behaviour with `mkDefault`;
 `gui` states its own with a plain value.**
 
-Every `lsp.enable` in `modules/core/languages.nix` is `lib.mkDefault false` for this
+Every `lsp.enable` in the `core` half of `modules/languages.nix` is `lib.mkDefault false` for this
 reason, and so is `enableExtraDiagnostics`. A plain `false` there fails loudly
 the first time `gui` disagrees — which is the good case. The bad case is a
 `mkDefault` that nothing ever overrides: it looks deliberate and is just noise.
 
 **`lsp.servers.<name>.cmd` needs `lib.mkForce`.** nvf sets `cmd` itself at normal
-priority, so a plain assignment conflicts. This is why `modules/gui/languages.nix:66-85`
+priority, so a plain assignment conflicts. This is why `modules/languages.nix:124-145`
 is written the way it is; keep the `mkForce` when those blocks move into
 per-language files.
 
@@ -40,9 +40,13 @@ the store path.
 
 Consequences worth holding onto:
 
-- **Merging two files into one reorders them.** Stage 1 merges `modules/core/x` and
-  `modules/gui/x`; expect the store path to move and explain the diff rather than
-  assuming it is innocent.
+- **Merging two files into one need not reorder them, and predicting either way
+  is the mistake.** Stage 1 merged the `core`/`gui` pairs and flattened both
+  profile directories, and all three store paths were unchanged: **only the
+  relative order of files contributing to the *same* aspect matters**, and each
+  aspect's sequence was alphabetical before the move and after it. Interleaving
+  the two sequences moved every file and permuted nothing. A merge that lands a
+  file on the other side of a same-aspect sibling *does* reorder. Build both.
 - **Renaming a file reorders it** relative to its siblings in the same aspect.
 - **A list never conflicts.** Two files declaring an augroup with the same name
   is not an error — it emits the group twice.
@@ -76,7 +80,7 @@ arguments. Getting this wrong produces infinite recursion, not a clear error.
   as an unfree refusal from inside the roslyn closure, nowhere near the line that
   dropped it.
 - **`core` resolves rustfmt and clang-format from `$PATH` on purpose**
-  (`modules/core/formatter.nix`), because pinning them drags ~2.4 GB and ~2.1 GB
+  (`modules/formatter.nix`), because pinning them drags ~2.4 GB and ~2.1 GB
   of toolchain into `min`. A line that pins a formatter binary silently undoes
   that. Check the closure size, not just the build.
 - **`preferPath` degrades quietly.** It execs the `$PATH` binary if present and

@@ -25,7 +25,7 @@ vim.extraPlugins = {
 ```
 
 `after` is the **only** ordering mechanism for these — file position does
-nothing. `modules/core/extra-plugins.nix` orders undotree after the theme this way.
+nothing. `modules/extra-plugins.nix` orders undotree after the theme this way.
 
 ## 2. Which aspect?
 
@@ -55,15 +55,15 @@ declaring two memberships:
 }
 ```
 
-Splitting that across `modules/core/oil.nix` and `modules/gui/oil.nix` is the Inv. 3 violation
-this whole refactor exists to remove.
+Splitting that across a `core` file and a `gui` file is the Inv. 3 violation this
+whole refactor exists to remove.
 
 ## 4. Its keymap and its Lua go with it
 
 The file that installs a plugin owns its keymap and its setup body.
-`modules/gui/database.nix` is the right shape: plugins, `luaConfigRC`, and the
-`<leader>D` bind in one file. `modules/core/extra-plugins.nix` + the undotree bind in
-`modules/core/keymaps/general.nix` is the wrong shape — CLAUDE.md §8 item 8.
+`modules/database.nix` is the right shape: plugins, `luaConfigRC`, and the
+`<leader>D` bind in one file. `modules/extra-plugins.nix` + the undotree bind in
+`modules/keymaps/general.nix` is the wrong shape — CLAUDE.md §8 item 8.
 
 Lua goes in via `luaConfigRC.<name>` (a DAG entry, ordered by name and
 `entryAfter`) or `extraPlugins.<n>.setup`. A large body belongs in a `.lua` file
