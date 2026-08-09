@@ -5,12 +5,7 @@
         enable = true;
         friendly-snippets.enable = true;
         setupOpts = {
-          keymap = {
-            preset = "default";
-            "<C-y>" = ["select_and_accept" "fallback"];
-            "<C-d>" = ["scroll_documentation_down" "fallback"];
-            "<C-u>" = ["scroll_documentation_up" "fallback"];
-          };
+          keymap.preset = "default";
           cmdline.keymap.preset = "default";
           signature.enabled = true;
           fuzzy.implementation = "prefer_rust_with_warning";

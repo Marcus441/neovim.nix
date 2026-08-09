@@ -116,9 +116,10 @@ in module order**, and that order becomes the order of the generated `init.lua`.
   **lists**. Merging two files into one, or renaming a file so it sorts
   differently, reorders them.
 - **A plugin's `setupOpts` lists concatenate too**, and they concatenate against
-  *nvf's own defaults*, not just against your files. `blink-cmp`'s
-  `keymap."<C-d>"` and `sources.default` both reordered in Stage 0. Where a key
-  is defined twice, module order picks which definition wins at runtime.
+  *nvf's own defaults*, not just against your files — `blink-cmp`'s
+  `sources.default` holds ours and nvf's back to back today. Where a key is
+  defined twice, module order picks which definition wins at runtime: Stage 0
+  flipped `blink-cmp`'s `keymap."<C-d>"` that way (`2ea202f`).
 - `vim.extraPlugins` is an attrset keyed by name — order comes from `after`, not
   from file order.
 - **Import order** is a depth-first walk, per-directory alphabetical.

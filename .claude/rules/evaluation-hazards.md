@@ -47,10 +47,11 @@ Consequences worth holding onto:
 - **A list never conflicts.** Two files declaring an augroup with the same name
   is not an error — it emits the group twice.
 - **A plugin's `setupOpts` lists concatenate against nvf's own defaults.**
-  `blink-cmp`'s `keymap."<C-d>"` holds our `scroll_documentation_down` *and*
-  nvf's `scroll_documentation_up`; whichever comes first is what the key does.
-  Stage 0 flipped it. Reordering files can therefore change behaviour without
-  changing any Lua body.
+  `blink-cmp`'s `sources.default` holds ours and nvf's end to end today. Where
+  the option is a keymap, whichever definition comes first is what the key
+  *does*, so **reordering files can change behaviour without changing any Lua
+  body**: Stage 0 flipped `keymap."<C-d>"` this way, and `2ea202f` resolved it by
+  dropping our blink keymap overrides rather than letting file order decide.
 
 By contrast, **`vim.extraPlugins` and `vim.luaConfigRC` are order-stable under
 file moves.** `extraPlugins` is an attrset ordered by its `after` field;

@@ -69,8 +69,8 @@ The method Stage 0 used, and the one every later stage should reuse:
 
 **Order-only is not the same as behaviour-preserving.** Where two modules define
 the same key in a concatenated list, the first one wins at runtime, so a pure
-reorder can change what a key does. Stage 0 flipped blink's `<C-d>` this way.
-Check the contested keys, not just the record counts.
+reorder can change what a key does. Stage 0 flipped blink's `<C-d>` this way
+(`2ea202f`). Check the contested keys, not just the record counts.
 
 ## `min` is the control
 
