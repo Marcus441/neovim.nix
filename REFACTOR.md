@@ -82,19 +82,19 @@ deliberate intent namespace — is defensible but must then be *all* of them.
 **Decide, record it in `.claude/rules/settled-decisions.md`, and apply it
 uniformly.**
 
-## Stage 5 — docs, README, cleanup
+## Stage 5 — docs and cleanup
 
 Closes §8 items 10 and 11 (or records item 11 as deliberately deferred).
 
-1. Rewrite the README's *Structure* section — it still describes `core/ min/ gui/`,
-   which no longer exists at all.
-2. Populate `docs/conventions/` and `docs/decisions/` with the decisions the
+1. Populate `docs/conventions/` and `docs/decisions/` with the decisions the
    preceding stages actually made, and add the `# load-bearing:` pointers at the
    values that need them. The known candidates: the `allowUnfreePredicate`, the
    `$PATH` formatter resolution in `core`, `preferPath`'s silent fallback, and
    the `mkDefault`/plain override rule between `core` and `gui`.
-3. Confirm `.luarc.json` and `.luacheckrc` are dead — they reference a `lua/`
+2. Confirm `.luarc.json` and `.luacheckrc` are dead — they reference a `lua/`
    layout that no longer exists — then delete them.
+3. Re-check the README against the tree the earlier stages left. Its *Structure*
+   section was rewritten when Stage 1 landed; Stages 2–4 move files it names.
 4. Delete this file.
 
 ## Not in scope

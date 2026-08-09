@@ -31,11 +31,42 @@ in {
 
 ## Structure
 
+Every `.nix` file under `modules/` is a [flake-parts](https://github.com/hercules-ci/flake-parts)
+module, discovered by [import-tree](https://github.com/vic/import-tree) — nothing
+is imported by hand except the variant wiring. A file is named after a *feature*,
+never after a build, and says which **aspects** it belongs to:
+
+```nix
+# modules/statusline.nix — one concern, one aspect
+{
+  flake.modules.nvf.gui = {
+    vim = {
+      mini.statusline.enable = false;
+      statusline.lualine = {
+        enable = true;
+        theme = "auto";
+      };
+    };
+  };
+}
 ```
-core/       shared config (options, keymaps, theme, formatter, languages/treesitter)
-min/        mini.statusline, builtin treesitter grammars
-gui/        LSP, blink-cmp, lualine, snacks extras, dashboard, session manager
-```
+
+A concern that differs between builds is still **one file**, declaring both
+memberships — `modules/languages.nix` puts `enable`, treesitter and formatters in
+`core`, and the LSP servers and diagnostics in `gui`. Those attribute sets merge,
+so a feature grows by adding a file rather than by editing a list.
+
+`modules/variants/` is the only place that names a build. Each variant is an
+aspect list, and nothing else:
+
+| Output | Aspects | What it is |
+| :--- | :--- | :--- |
+| `min` | `core` | terminal editor — options, keymaps, theme, treesitter, formatters, mini.statusline |
+| `default` | `core` | alias of `min` |
+| `gui` | `core` `gui` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager |
+
+Two derivations, three names. Directories such as `modules/keymaps/` are
+navigation only — they carry no meaning for the module system.
 
 ## Keybindings
 
