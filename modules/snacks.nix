@@ -123,14 +123,12 @@
           };
         };
       };
-      lazygit.enabled = true;
       notifier = {
         enabled = true;
         timeout = 3000;
         style = "fancy";
       };
       rename.enabled = true;
-      scratch.enabled = true;
       words.enabled = true;
       zen.enabled = true;
     };
@@ -141,18 +139,6 @@
         key = "<leader>gb";
         action = "<cmd>lua Snacks.gitbrowse()<cr>";
         desc = "[G]it [B]rowse";
-      }
-      {
-        mode = ["n"];
-        key = "<leader>L";
-        action = "<cmd>lua Snacks.lazygit()<cr>";
-        desc = "[L]azygit";
-      }
-      {
-        mode = ["n"];
-        key = "<leader>cs";
-        action = "<cmd>lua Snacks.scratch()<cr>";
-        desc = "[C]ode [S]cratch";
       }
     ];
   };

@@ -4,9 +4,7 @@
       enable = true;
       gitsigns.enable = true;
     };
-  };
 
-  flake.modules.nvf.gui = {
     vim.keymaps = [
       {
         mode = ["n"];

@@ -91,9 +91,8 @@ Leader is `<Space>`.
 | `<leader>sp` / `<leader>sz` | Projects / zoxide |
 | `<leader>sm` | Marks |
 | `<leader>gs` / `<leader>gb` | Git status / browse |
-| `<leader>L` | Lazygit |
 | `<leader>u` | Undotree |
-| `<leader>cs` | Scratch buffer |
+| `<leader>cs` / `<leader>cl` | Trouble symbols / LSP |
 | `-` | Oil |
 | `<leader>y` / `<leader>Y` | Yank to clipboard / yank line |
 | `<leader>p` | Paste (void register) |
