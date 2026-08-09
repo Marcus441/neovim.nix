@@ -30,6 +30,11 @@ commit hash, never a plan filename.
 - **`preferPath` prefers the `$PATH` binary over the pinned one, deliberately.**
   It exists so a project's own toolchain wins inside a devshell. Its silent
   fallback is a known cost, not a bug to fix.
+- **`preferPathExe` is a flake-parts option** (`modules/prefer-path.nix`),
+  declared `functionTo raw` and taking `pkgs` explicitly, because the top-level
+  flake-parts `config` is not per-system. A language file reaches it by capturing
+  the flake-parts `config` in an outer `let`. Chosen over a `/_` expression so no
+  language file carries a relative import path. Weak typing is the accepted cost.
 
 ## Deliberately deferred — do not propose unasked
 
@@ -40,7 +45,5 @@ commit hash, never a plan filename.
 
 ## Still open — ask rather than inventing
 
-- Where `preferPath` lives once Stage 2 splits `modules/languages.nix`: a flake-parts
-  option, or a `/_` expression consumed by `import`. CLAUDE.md §8 item 6.
 - Whether keymaps stay grouped by domain or move to the file that installs the
   feature. CLAUDE.md §8 item 8, Stage 4.

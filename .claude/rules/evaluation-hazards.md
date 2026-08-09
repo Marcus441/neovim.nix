@@ -20,15 +20,14 @@ Priorities: `mkDefault` = 1000, a plain value = 100, `mkForce` = 50. **Lower
 wins.** So the rule is: **`core` states the `min` behaviour with `mkDefault`;
 `gui` states its own with a plain value.**
 
-Every `lsp.enable` in the `core` half of `modules/languages.nix` is `lib.mkDefault false` for this
+Every `lsp.enable` in the `core` half of a `modules/languages/*.nix` is `lib.mkDefault false` for this
 reason, and so is `enableExtraDiagnostics`. A plain `false` there fails loudly
 the first time `gui` disagrees — which is the good case. The bad case is a
 `mkDefault` that nothing ever overrides: it looks deliberate and is just noise.
 
 **`lsp.servers.<name>.cmd` needs `lib.mkForce`.** nvf sets `cmd` itself at normal
-priority, so a plain assignment conflicts. This is why `modules/languages.nix:124-145`
-is written the way it is; keep the `mkForce` when those blocks move into
-per-language files.
+priority, so a plain assignment conflicts. This is why every `lsp.servers.*.cmd`
+in `modules/languages/` carries one.
 
 ## Lists concatenate — and that is where order leaks into the hash
 

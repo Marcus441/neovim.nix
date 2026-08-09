@@ -52,9 +52,10 @@ never after a build, and says which **aspects** it belongs to:
 ```
 
 A concern that differs between builds is still **one file**, declaring both
-memberships — `modules/languages.nix` puts `enable`, treesitter and formatters in
-`core`, and the LSP servers and diagnostics in `gui`. Those attribute sets merge,
-so a feature grows by adding a file rather than by editing a list.
+memberships — each `modules/languages/<lang>.nix` puts `enable`, treesitter and
+the formatter in `core`, and the LSP server and diagnostics in `gui`. Those
+attribute sets merge, so a feature grows by adding a file rather than by editing
+a list, and adding a language means adding exactly one file.
 
 `modules/variants/` is the only place that names a build. Each variant is an
 aspect list, and nothing else:

@@ -6,13 +6,12 @@ by feature, not by which build it belongs to. If a change would violate an
 invariant, stop and say so — the invariants are the whole value of this
 structure, and a single exception metastasises.
 
-**Stages 0 and 1 have landed.** flake-parts, import-tree, the aspect options and
-the variant generator are in place, the profile directories are gone, and
-`modules/options.nix`, `auto-cmds.nix` and `languages.nix` each declare both
-aspects. What remains is decomposition, not structure: three grab-bag files and
-two keymap shapes. §1 describes the target; §8 describes the tree as it actually
-is. `REFACTOR.md` is the live plan. Read §8 before treating a file as an example
-to copy.
+**Stages 0–2 have landed.** flake-parts, import-tree, the aspect options and the
+variant generator are in place, the profile directories are gone, and
+`modules/languages/<lang>.nix` is one file per language. What remains is
+`modules/options.nix`, which is still a grab-bag, and the two keymap shapes. §1
+describes the target; §8 describes the tree as it actually is. `REFACTOR.md` is
+the live plan. Read §8 before treating a file as an example to copy.
 
 | Output | Aspects | Consumed by |
 | --- | --- | --- |
@@ -187,14 +186,6 @@ Nothing left here is structural — every remaining item is a file that holds to
 much or a shape that exists twice. `REFACTOR.md` is the plan; the stage that
 closes each item is named.
 
-5. **Languages cost 2–4 edits.** `modules/languages.nix` is one file, but still
-   one *pile*: the `core` half enables and defaults `lsp.enable` off, the `gui`
-   half turns it on and picks servers, and a separate `lsp.servers.*.cmd` block
-   sits below both and is easy to forget. Commits `9f20108`–`8dc5394` are seven
-   fixes' worth of evidence. *Stage 2.*
-6. **`preferPath` is a `let` binding in `modules/languages.nix:65`,** so
-   per-language files cannot reach it. It needs a home before Stage 2 splits
-   that file.
 7. **`modules/options.nix` is a grab-bag** — `vim.options` mixed with about
    sixteen plugin enables across its two aspects (Inv. 3). *Stage 3.*
 8. **Keymaps are inconsistently placed.** Undotree's bind is in
@@ -226,8 +217,8 @@ closes each item is named.
 
 ## 10. Working style
 
-- **There is a skill for each recurring job.** **add-language** (the one that
-  costs 2–4 edits today), **add-plugin-or-feature**, **add-variant**, and
+- **There is a skill for each recurring job.** **add-language**,
+  **add-plugin-or-feature**, **add-variant**, and
   **structural-change-checklist**. Use the checklist before committing any
   structural change — moving/renaming/regrouping files, adding/splitting/renaming
   aspects, changing a variant's aspect list, editing the generator or

@@ -70,15 +70,14 @@ One file, one language, both builds. The `lib` in scope inside
 
 ## Read before writing a new file
 
-`modules/database.nix` is the exemplar for a single-aspect concern: dadbod's
-plugins, its Lua *and* its keymap in one file, at a path that names the feature.
-`modules/auto-cmds.nix` is the exemplar for the two-aspect shape — one concern,
-both memberships, one file.
+`modules/languages/rust.nix` is the exemplar: one concern, both memberships, one
+file, and a path that names the feature and predicts no aspect.
+`modules/database.nix` is the exemplar for a concern only one variant wants —
+dadbod's plugins, its Lua *and* its keymap together.
 
-Neither is an exemplar of *size*. `modules/options.nix` and
-`modules/languages.nix` declare both aspects correctly and are still grab-bags;
-CLAUDE.md §8 items 5 and 7 have them scheduled. Check §8 before copying a file's
-scope.
+Neither is an exemplar of *size*. `modules/options.nix` declares both aspects
+correctly and is still a grab-bag; CLAUDE.md §8 item 7 has it scheduled. Check §8
+before copying a file's scope.
 
 The sibling flake's `modules/filemanager/thunar.nix` is the canonical exemplar of
 one concern declaring several memberships, if you want to see the shape working.
@@ -91,9 +90,9 @@ the directory is pure navigation and is fine. **`core` does not count toward
 "several aspects"** — every variant takes `core`.
 
 `modules/keymaps/` passes: five of its files declare `core` and four declare
-`gui`, so the path predicts nothing. A future `languages/` passes for the same
-reason — every file in it would declare both. A `gui/` directory holding only
-`gui` files is exactly what Inv. 4 forbids.
+`gui`, so the path predicts nothing. `modules/languages/` passes for a stronger
+reason — every file in it declares both. A `gui/` directory holding only `gui`
+files is exactly what Inv. 4 forbids.
 
 ## Assets and non-modules
 
@@ -108,15 +107,32 @@ skips any path matching `hasInfix "/_"`. **It is not a grouping mechanism.**
 
 ## A helper used by more than one file
 
-`preferPath` (`modules/languages.nix:65`) is a `let` binding today, which is correct
-while one file uses it and fatal the moment Stage 2 splits that file per
-language. In order of preference:
+In order of preference:
 
 1. **`let` binding** — when only that file needs it.
 2. **A flake-parts option** — when other files need it. Capture the flake-parts
    `config` in an outer `let`; inside `flake.modules.*`, `config` is nvf's.
 3. **A `/_` expression consumed by `import`** — for a pure function that has no
    business being an option.
+
+`preferPathExe` (`modules/prefer-path.nix`) is the worked example of #2, and
+`modules/languages/rust.nix` of the call site:
+
+```nix
+{config, ...}: let
+  inherit (config) preferPathExe;   # flake-parts config, captured outside
+in {
+  flake.modules.nvf.gui = {pkgs, lib, ...}: {
+    vim.lsp.servers.rust-analyzer.cmd = lib.mkForce [
+      (preferPathExe pkgs "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
+    ];
+  };
+}
+```
+
+**It takes `pkgs` as an argument** because the top-level flake-parts `config` is
+not per-system, and `flake.modules.*` values are system-agnostic until the
+generator instantiates them.
 
 **Forbidden:** a `lib/` directory (Inv. 1), and importing a module file by path
 to call a function out of it.
