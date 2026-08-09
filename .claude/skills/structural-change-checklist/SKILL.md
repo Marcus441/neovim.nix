@@ -2,7 +2,7 @@
 description: >-
   Use before committing a structural change — moving, renaming, or regrouping
   files; adding, splitting, or renaming aspects; changing a variant's aspect
-  list; editing the generator or aspects.nix; or executing a REFACTOR.md stage.
+  list; or editing the generator or aspects.nix.
   Runs the invariant self-check, anti-pattern scan, ordering check, and
   verification.
 ---
@@ -11,7 +11,7 @@ description: >-
 
 **Structural** = moving/renaming/regrouping files, adding/splitting/renaming
 aspects, changing a variant's aspect list, editing `modules/variants/generator.nix`
-or `modules/aspects.nix`, or executing a stage of `REFACTOR.md`.
+or `modules/aspects.nix`.
 
 ## 1. Invariant self-check
 
@@ -78,7 +78,7 @@ nix flake check                  # cheap eval sweep
 
 `min` is the control: a change confined to `gui` must leave `min` identical.
 
-**Stage 0 of `REFACTOR.md` must be byte-identical on both outputs.** It moves
+**A pure file move must be byte-identical on both outputs.** It moves
 files and changes no content, so a FAIL there is always a bug — most likely the
 module order handed to nvf, or the `pkgs` instantiation losing its
 `allowUnfreePredicate`.
@@ -109,6 +109,6 @@ the assembled `init.lua` is the ground truth for every ordering question.
 - If a task touched a file listed under CLAUDE.md §8 *Known divergences*, migrate
   it in the same change or state why not. Close the item when it is done.
 - Finished plans go to git history. Cite a §-number or commit hash, never a plan
-  filename. Delete `REFACTOR.md` when its last stage lands.
+  filename.
 - **Do not push.** The consuming flake pins a revision; publishing is the
   human's call.

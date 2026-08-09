@@ -69,7 +69,7 @@ canonical shape: plugins, `luaConfigRC`, and the `<leader>D` bind in one file.
 A bind that no file installs — a motion, a register trick — is its own concern
 and gets its own file (`modules/movement.nix`, `modules/search.nix`). **Do not
 recreate a `modules/keymaps/` directory**; grouping binds by mechanism is what
-Stage 4 removed.
+`d53d10b` removed.
 
 Lua goes in via `luaConfigRC.<name>` (a DAG entry, ordered by name and
 `entryAfter`) or `extraPlugins.<n>.setup`. A large body belongs in a `.lua` file

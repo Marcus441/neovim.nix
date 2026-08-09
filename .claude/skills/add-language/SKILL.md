@@ -8,7 +8,7 @@ description: >-
 
 # Adding a language
 
-**One language is one file: `modules/languages/<lang>.nix`.** That is what Stage 2
+**One language is one file: `modules/languages/<lang>.nix`.** That is what `45334ab`
 bought, and the kotlin attempt (`9f20108`–`8dc5394`, seven commits, each fix
 finding one more site) is what it cost before.
 

@@ -38,7 +38,7 @@ A differing store path is not automatically a defect. Work out which it is:
 - **Innocent:** the generated `init.lua` differs only in the *order* of
   autocmds, augroups, keymaps or treesitter queries. Those are `listOf` options
   that concatenate in module order, so any file move or merge reorders them
-  (`evaluation-hazards.md`). Stage 1 will produce this legitimately.
+  (`evaluation-hazards.md`). `094bc3e` and `d53d10b` both produced this legitimately.
 - **Not innocent:** a plugin appears or disappears, a package version changes, a
   Lua body differs in content rather than position, or the closure size moves. A
   closure jump of ~2 GB means a formatter stopped resolving from `$PATH`.
@@ -52,7 +52,7 @@ Store-path equality is the strongest proof, but a refactor that reorders `listOf
 options cannot produce it. The gate is then **"the diff is order-only"**, and
 that is a claim you prove, not one you assert from a small-looking diff.
 
-The method Stage 0 used, and the one every later stage should reuse:
+The method `2ea202f` used, and the one every later change should reuse:
 
 1. Extract `init.lua` from both builds — `$out/bin/nvf-print-config-path` names it.
 2. For each order-sensitive region, split it into its **records** and re-emit
@@ -66,11 +66,20 @@ The method Stage 0 used, and the one every later stage should reuse:
 4. Assert the record count per region is unchanged. A permutation preserves it;
    a dropped or duplicated entry does not, and would otherwise hide inside a
    sorted comparison.
+5. **Assert the splitter accounted for every input line.** Sum the lines it put
+   in each stream and check the total equals the file's line count. This is the
+   step that catches a broken canonicaliser rather than a broken build, and
+   skipping it makes every other step vacuous: a splitter that assumes a fixed
+   record shape will silently swallow the rest of the file the first time it
+   meets a record of a different length, and the comparison then passes because
+   both sides are equally truncated. `vim.keymap.set` records are *not* a fixed
+   eight lines — a few are emitted on one line. Balance parentheses instead of
+   counting lines.
 
 **Order-only is not the same as behaviour-preserving.** Where two modules define
 the same key in a concatenated list, the first one wins at runtime, so a pure
-reorder can change what a key does. Stage 0 flipped blink's `<C-d>` this way
-(`2ea202f`). Check the contested keys, not just the record counts.
+reorder can change what a key does. `2ea202f` flipped blink's `<C-d>` this way
+and `03123e9` resolved it. Check the contested keys, not just the record counts.
 
 ## `min` is the control
 

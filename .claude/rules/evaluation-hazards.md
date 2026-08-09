@@ -40,7 +40,7 @@ the store path.
 Consequences worth holding onto:
 
 - **Merging two files into one need not reorder them, and predicting either way
-  is the mistake.** Stage 1 merged the `core`/`gui` pairs and flattened both
+  is the mistake.** `094bc3e` merged the `core`/`gui` pairs and flattened both
   profile directories, and all three store paths were unchanged: **only the
   relative order of files contributing to the *same* aspect matters**, and each
   aspect's sequence was alphabetical before the move and after it. Interleaving
@@ -53,8 +53,8 @@ Consequences worth holding onto:
   `blink-cmp`'s `sources.default` holds ours and nvf's end to end today. Where
   the option is a keymap, whichever definition comes first is what the key
   *does*, so **reordering files can change behaviour without changing any Lua
-  body**: Stage 0 flipped `keymap."<C-d>"` this way, and `2ea202f` resolved it by
-  dropping our blink keymap overrides rather than letting file order decide.
+  body**: `2ea202f` flipped `keymap."<C-d>"` this way, and `03123e9` resolved it
+  by dropping our blink keymap overrides rather than letting file order decide.
 
 By contrast, **`vim.extraPlugins` and `vim.luaConfigRC` are order-stable under
 file moves.** `extraPlugins` is an attrset ordered by its `after` field;

@@ -4,7 +4,7 @@
 # to edit.
 #
 # Scoped to modules/ on purpose: that is the whole tree now. The pre-refactor
-# barrels in core/ and gui/ were deleted by Stage 0.
+# barrels in core/ and gui/ were deleted by 2ea202f.
 set -uo pipefail
 
 file=$(jq -r '.tool_input.file_path // empty')

@@ -6,13 +6,13 @@ by feature, not by which build it belongs to. If a change would violate an
 invariant, stop and say so — the invariants are the whole value of this
 structure, and a single exception metastasises.
 
-**Stages 0–4 have landed.** flake-parts, import-tree, the aspect options and the
-variant generator are in place, the profile directories are gone,
+**The refactor is complete.** flake-parts, import-tree, the aspect options and
+the variant generator are in place, the profile directories are gone,
 `modules/languages/<lang>.nix` is one file per language, the `options.nix`
-grab-bag is split per concern, and a feature's keymap now lives in the file that
-installs it. What remains is docs and cleanup. §1 describes the target; §8
-describes the tree as it actually is. `REFACTOR.md` is the live plan. Read §8
-before treating a file as an example to copy.
+grab-bag is split per concern, and a feature's keymap lives in the file that
+installs it. §1 is now a description, not a target, and §8 is empty. The
+rationale behind individual values lives in `docs/`; a `# load-bearing:` comment
+points at the entry.
 
 | Output | Aspects | Consumed by |
 | --- | --- | --- |
@@ -119,8 +119,8 @@ in module order**, and that order becomes the order of the generated `init.lua`.
 - **A plugin's `setupOpts` lists concatenate too**, and they concatenate against
   *nvf's own defaults*, not just against your files — `blink-cmp`'s
   `sources.default` holds ours and nvf's back to back today. Where a key is
-  defined twice, module order picks which definition wins at runtime: Stage 0
-  flipped `blink-cmp`'s `keymap."<C-d>"` that way (`2ea202f`).
+  defined twice, module order picks which definition wins at runtime: `2ea202f`
+  flipped `blink-cmp`'s `keymap."<C-d>"` that way, and `03123e9` resolved it.
 - `vim.extraPlugins` is an attrset keyed by name — order comes from `after`, not
   from file order.
 - **Import order** is a depth-first walk, per-directory alphabetical.
@@ -183,14 +183,14 @@ a proof; an eyeball diff is not.
 migrate it in the same change, or state why not. Item numbers are stable
 identities — closed items are deleted and survivors keep their numbers.
 
-Nothing left here touches the module tree — what remains is dead config files and
-a missing output. `REFACTOR.md` is the plan; the stage that closes each item is
-named.
+**Nothing is currently divergent.** The refactor landed in full — `2ea202f` laid
+the skeleton, `d53d10b` moved the last keymap — and the tree matches §1–§7. Add
+an item here the moment something drifts, and give it the next unused number: 12.
 
-10. **`.luarc.json` and `.luacheckrc` reference a `lua/` layout that no longer
-    exists.** Confirm dead, then delete. *Stage 5.*
-11. **No `checks`, no `formatter`, no `devShells` output.** `nix flake check` is
-    currently near-empty. Not scheduled; raise it if a stage needs it.
+One gap is known and deliberate, so it is not an item: there is no `checks`,
+`formatter` or `devShells` output, which leaves `nix flake check` near-empty.
+`.claude/rules/settled-decisions.md` records it under *Deliberately deferred* —
+do not propose it unasked.
 
 ## 9. Anti-patterns
 
@@ -201,7 +201,7 @@ named.
 | `default.nix` that only lists siblings | `import-tree` already loaded them (Inv. 5) |
 | `imports = [ ./foo.nix ]` inside `modules/` | Same (Inv. 5) — a hook rejects it |
 | `_` to group related `.nix` modules | `/_` is for non-modules only (§4) |
-| A `keymaps/` directory grouping binds by domain | Splits a plugin from its own bind — settled, Stage 4 |
+| A `keymaps/` directory grouping binds by domain | Splits a plugin from its own bind — settled, `d53d10b` |
 | Aspect named `minimal` / `extras` / `ide` | Magnitude or archetype, not a decision (§3) |
 | A third aspect no variant declines | Structure without a decision (§3) |
 | `mkEnableOption` per aspect | Variants compose by taking aspects, not by enabling |
@@ -215,8 +215,8 @@ named.
   **add-plugin-or-feature**, **add-variant**, and
   **structural-change-checklist**. Use the checklist before committing any
   structural change — moving/renaming/regrouping files, adding/splitting/renaming
-  aspects, changing a variant's aspect list, editing the generator or
-  `aspects.nix`, or executing a `REFACTOR.md` stage.
+  aspects, changing a variant's aspect list, or editing the generator or
+  `aspects.nix`.
 - **Auditing aspect membership?** The **aspect-auditor** agent does it in an
   isolated context and returns conclusions rather than file dumps.
 - **Prefer adding a file to editing one**, especially when extending an aspect.
@@ -242,6 +242,6 @@ named.
 - **Do not run `nix flake update`.** Adding an input and running `nix flake lock`
   is fine. A hook blocks the bare update.
 - **Finished plans go to git history.** Cite a §-number or commit hash, never a
-  plan filename. `REFACTOR.md` is deleted when its last stage lands.
+  plan filename.
 - **If a request genuinely doesn't fit the pattern,** say so and give options with
   their costs. Do not silently bend an invariant.

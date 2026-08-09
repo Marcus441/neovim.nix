@@ -1,5 +1,5 @@
 ---
-paths: "flake.nix,modules/variants/**,modules/aspects.nix,REFACTOR.md,README.md"
+paths: "flake.nix,modules/variants/**,modules/aspects.nix,README.md"
 ---
 
 # Settled decisions — do not re-propose
@@ -31,7 +31,7 @@ commit hash, never a plan filename.
   It exists so a project's own toolchain wins inside a devshell. Its silent
   fallback is a known cost, not a bug to fix.
 - **The file that installs a feature owns its keymap.** Not a `modules/keymaps/`
-  directory grouped by domain — that shape was deleted in Stage 4, and
+  directory grouped by domain — that shape was deleted in `d53d10b`, and
   `modules/database.nix` is the exemplar. A bind with no installing file is its
   own concern and gets its own file (`modules/movement.nix`,
   `modules/search.nix`). Re-grouping binds by mechanism is a re-litigation, not a

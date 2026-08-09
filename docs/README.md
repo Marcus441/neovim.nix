@@ -7,9 +7,8 @@ conventions/   patterns that recur across many files
 decisions/     why one file made its call, grouped by area
 ```
 
-Both are empty until the refactor gives them something to hold. An entry written
-before the decision exists is speculation, and a register that drifts is worse
-than none.
+An entry written before the decision exists is speculation, and a register that
+drifts is worse than none.
 
 Most entries should be three lines — **Why** the value is what it is, **Breaks**
 what goes wrong if you change it, and **Also** where there is a related trap.
@@ -18,13 +17,16 @@ what goes wrong if you change it, and **Also** where there is a related trap.
 ## Finding the reason for a line
 
 Files carry no comments except a pointer, at the values where changing them
-breaks something non-obviously. Nothing carries one yet — the shape, for when
-Stage 5 writes the first entry:
+breaks something non-obviously:
 
 ```nix
-# load-bearing: docs/decisions/languages.md#preferpath
-cmd = lib.mkForce [ (preferPathExe "clangd" …) ];
+# load-bearing: docs/decisions/prefer-path.md#silent-fallback
+config.preferPathExe = pkgs: name: fallbackExe:
 ```
+
+Three values carry one today — `modules/nixpkgs.nix`, `modules/formatter.nix`
+and `modules/prefer-path.nix`. They are exactly the three whose **Breaks** line
+says *silently*; a value that fails loudly does not need a pointer.
 
 A pointer to an entry that does not exist is worse than no pointer, so the two
 land in the same commit.
@@ -40,7 +42,6 @@ devshell binary over the pinned one.
 - **`CLAUDE.md`** — the invariants. What must stay true.
 - **`.claude/rules/*.md`** — hazards and mechanics, loaded automatically by file
   path.
-- **`REFACTOR.md`** — the live plan, deleted when its last stage lands.
 - **`docs/`** — the rationale.
 
 ## Keeping these honest

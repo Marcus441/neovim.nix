@@ -14,9 +14,8 @@ refactored to the dendritic flake-parts pattern. In the target shape, every
 `.nix` file under `modules/` is a flake-parts module that declares membership by
 setting `flake.modules.nvf.<aspect>`, where the aspect is `core` or `gui`.
 
-**The profile split is gone (Stage 1).** Membership is declared, not implied by
-a path, and a file may declare both aspects. Say which stage of `REFACTOR.md`
-the tree is at.
+**The profile split is gone (`094bc3e`).** Membership is declared, not implied by
+a path, and a file may declare both aspects.
 
 Answer the question you were asked and return **conclusions with file paths**,
 never bulk file contents. Keep the report under ~40 lines.

@@ -8,6 +8,7 @@
     '';
   };
 
+  # load-bearing: docs/decisions/prefer-path.md#silent-fallback
   config.preferPathExe = pkgs: name: fallbackExe:
     lib.getExe (pkgs.writeShellScriptBin name ''
       if command -v ${name} >/dev/null 2>&1; then

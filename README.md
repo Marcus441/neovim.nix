@@ -37,25 +37,33 @@ is imported by hand except the variant wiring. A file is named after a *feature*
 never after a build, and says which **aspects** it belongs to:
 
 ```nix
-# modules/statusline.nix — one concern, one aspect
+# modules/oil.nix — one concern, one aspect, and its own keymap
 {
-  flake.modules.nvf.gui = {
-    vim = {
-      mini.statusline.enable = false;
-      statusline.lualine = {
-        enable = true;
-        theme = "auto";
-      };
-    };
+  flake.modules.nvf.core = {
+    vim.utility.oil-nvim.enable = true;
+
+    vim.keymaps = [
+      {
+        mode = ["n"];
+        key = "-";
+        desc = "Toggle Oil in CWD";
+        action = "<CMD>Oil<CR>";
+      }
+    ];
   };
 }
 ```
 
 A concern that differs between builds is still **one file**, declaring both
 memberships — each `modules/languages/<lang>.nix` puts `enable`, treesitter and
-the formatter in `core`, and the LSP server and diagnostics in `gui`. Those
-attribute sets merge, so a feature grows by adding a file rather than by editing
-a list, and adding a language means adding exactly one file.
+the formatter in `core`, and the LSP server and diagnostics in `gui`, and
+`modules/statusline.nix` gives `min` mini.statusline while `gui` swaps in
+lualine. Those attribute sets merge, so a feature grows by adding a file rather
+than by editing a list, and adding a language means adding exactly one file.
+
+Where both aspects set the same option, `core` states its value with
+`lib.mkDefault` and `gui` states a plain value — the only combination that
+merges. See `docs/conventions/overrides.md`.
 
 `modules/variants/` is the only place that names a build. Each variant is an
 aspect list, and nothing else:
@@ -69,6 +77,10 @@ aspect list, and nothing else:
 Two derivations, three names. Directories such as `modules/languages/` are
 navigation only — they carry no meaning for the module system. A plugin's keymap
 lives in the file that installs the plugin, not in a keymap directory.
+
+`docs/` holds the rationale: `conventions/` for what recurs across files,
+`decisions/` for why one file made its call. A `# load-bearing:` comment in a
+`.nix` file points at the entry explaining why that value cannot change freely.
 
 ## Keybindings
 
@@ -92,6 +104,7 @@ Leader is `<Space>`.
 | `<leader>sm` | Marks |
 | `<leader>gs` / `<leader>gb` | Git status / browse |
 | `<leader>u` | Undotree |
+| `<leader>D` | Database UI |
 | `<leader>cs` / `<leader>cl` | Trouble symbols / LSP |
 | `-` | Oil |
 | `<leader>y` / `<leader>Y` | Yank to clipboard / yank line |
