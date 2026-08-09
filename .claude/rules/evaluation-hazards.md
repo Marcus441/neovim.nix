@@ -1,5 +1,5 @@
 ---
-paths: "modules/**/*.nix,core/**/*.nix,gui/**/*.nix,min/**/*.nix"
+paths: "modules/**/*.nix"
 ---
 
 # Evaluation hazards
@@ -20,13 +20,13 @@ Priorities: `mkDefault` = 1000, a plain value = 100, `mkForce` = 50. **Lower
 wins.** So the rule is: **`core` states the `min` behaviour with `mkDefault`;
 `gui` states its own with a plain value.**
 
-Every `lsp.enable` in `core/languages.nix` is `lib.mkDefault false` for this
+Every `lsp.enable` in `modules/core/languages.nix` is `lib.mkDefault false` for this
 reason, and so is `enableExtraDiagnostics`. A plain `false` there fails loudly
 the first time `gui` disagrees — which is the good case. The bad case is a
 `mkDefault` that nothing ever overrides: it looks deliberate and is just noise.
 
 **`lsp.servers.<name>.cmd` needs `lib.mkForce`.** nvf sets `cmd` itself at normal
-priority, so a plain assignment conflicts. This is why `gui/languages.nix:66-85`
+priority, so a plain assignment conflicts. This is why `modules/gui/languages.nix:66-85`
 is written the way it is; keep the `mkForce` when those blocks move into
 per-language files.
 
@@ -40,12 +40,17 @@ the store path.
 
 Consequences worth holding onto:
 
-- **Merging two files into one reorders them.** Stage 1 merges `core/x` and
-  `gui/x`; expect the store path to move and explain the diff rather than
+- **Merging two files into one reorders them.** Stage 1 merges `modules/core/x` and
+  `modules/gui/x`; expect the store path to move and explain the diff rather than
   assuming it is innocent.
 - **Renaming a file reorders it** relative to its siblings in the same aspect.
 - **A list never conflicts.** Two files declaring an augroup with the same name
   is not an error — it emits the group twice.
+- **A plugin's `setupOpts` lists concatenate against nvf's own defaults.**
+  `blink-cmp`'s `keymap."<C-d>"` holds our `scroll_documentation_down` *and*
+  nvf's `scroll_documentation_up`; whichever comes first is what the key does.
+  Stage 0 flipped it. Reordering files can therefore change behaviour without
+  changing any Lua body.
 
 By contrast, **`vim.extraPlugins` and `vim.luaConfigRC` are order-stable under
 file moves.** `extraPlugins` is an attrset ordered by its `after` field;
@@ -65,14 +70,14 @@ arguments. Getting this wrong produces infinite recursion, not a clear error.
 - **`flake.modules` is an open attrset.** `flake.modules.nvf.Gui` type-checks, is
   read by nobody, and drops its modules in silence. The generator's explicit
   aspect-name check is what catches it — keep it.
-- **`pkgs` is not stock.** `flake.nix:16-22` carries an `allowUnfreePredicate`
+- **`pkgs` is not stock.** `modules/nixpkgs.nix` carries an `allowUnfreePredicate`
   for `vscode-extension-ms-dotnettools-csharp`. Lose it and the failure surfaces
   as an unfree refusal from inside the roslyn closure, nowhere near the line that
   dropped it.
-- **`min` resolves rustfmt and clang-format from `$PATH` on purpose**
-  (`min/default.nix`), because pinning them drags ~2.4 GB and ~2.1 GB of
-  toolchain into the closure. A `core` line that pins a formatter binary
-  silently undoes that. Check the closure size, not just the build.
+- **`core` resolves rustfmt and clang-format from `$PATH` on purpose**
+  (`modules/core/formatter.nix`), because pinning them drags ~2.4 GB and ~2.1 GB
+  of toolchain into `min`. A line that pins a formatter binary silently undoes
+  that. Check the closure size, not just the build.
 - **`preferPath` degrades quietly.** It execs the `$PATH` binary if present and
   the pinned one otherwise, so a broken devshell version wins over a working
   pinned one with no diagnostic.

@@ -61,9 +61,8 @@ one sat. Measure with `scripts/verify.sh`; do not predict.
 
 ## `pkgs` is not stock
 
-`flake.nix:16-22` instantiates nixpkgs with an `allowUnfreePredicate` for
-`vscode-extension-ms-dotnettools-csharp`. Under flake-parts this must be
-re-established, or the C# extension stops building — and it fails as an unfree
+`modules/nixpkgs.nix` instantiates nixpkgs with an `allowUnfreePredicate` for
+`vscode-extension-ms-dotnettools-csharp`. It must stay re-established there, or the C# extension stops building — and it fails as an unfree
 refusal at a distance, not at the line that lost the predicate:
 
 ```nix
@@ -77,7 +76,6 @@ perSystem = { system, ... }: {
 
 ## `systems`
 
-`flake-utils.lib.eachDefaultSystem` currently enumerates the default systems.
-flake-parts wants an explicit `systems` list. Keeping the same set keeps the
-`eachDefaultSystem` behaviour; narrowing it to `x86_64-linux` is a deliberate
-API narrowing, not a cleanup — the consumer indexes `packages.${system}`.
+`modules/systems.nix` lists the four systems `flake-utils.lib.eachDefaultSystem`
+used to enumerate. Narrowing it to `x86_64-linux` is a deliberate API narrowing,
+not a cleanup — the consumer indexes `packages.${system}`.

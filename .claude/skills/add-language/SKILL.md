@@ -15,15 +15,15 @@ burned seven commits (`9f20108`–`8dc5394`) — each fix found one more site.
 
 | What | Aspect | Today | After Stage 2 |
 | --- | --- | --- | --- |
-| `enable`, treesitter, formatter | `core` | `core/languages.nix` | `modules/languages/<lang>.nix` |
-| `lsp.enable = lib.mkDefault false` | `core` | `core/languages.nix` | same file |
-| `lsp.enable = true`, `servers`, extensions | `gui` | `gui/languages.nix` | same file |
-| `lsp.servers.<name>.cmd` override | `gui` | `gui/languages.nix` (separate block) | same file |
-| filetype/indent autocmd | `core` | `core/auto-cmds.nix` | same file, or the language file |
-| treesitter query patch | `core` | `core/languages.nix` | same file |
+| `enable`, treesitter, formatter | `core` | `modules/core/languages.nix` | `modules/languages/<lang>.nix` |
+| `lsp.enable = lib.mkDefault false` | `core` | `modules/core/languages.nix` | same file |
+| `lsp.enable = true`, `servers`, extensions | `gui` | `modules/gui/languages.nix` | same file |
+| `lsp.servers.<name>.cmd` override | `gui` | `modules/gui/languages.nix` (separate block) | same file |
+| filetype/indent autocmd | `core` | `modules/core/auto-cmds.nix` | same file, or the language file |
+| treesitter query patch | `core` | `modules/core/languages.nix` | same file |
 
 **After Stage 2 this is one file.** Until then it is two, and the second one is
-the one that gets forgotten — check `gui/languages.nix` before declaring done.
+the one that gets forgotten — check `modules/gui/languages.nix` before declaring done.
 
 ## The rules that bite
 
@@ -38,15 +38,16 @@ the one that gets forgotten — check `gui/languages.nix` before declaring done.
   attribute name is the *server's*, not the language's:
   `basedpyright` for python, `typescript-language-server` for typescript.
 - **`preferPath` wraps a server so a project's own toolchain wins.**
-  `gui/languages.nix:6` — it execs the `$PATH` binary if present, else the pinned
+  `modules/gui/languages.nix:7` — it execs the `$PATH` binary if present, else the pinned
   one. Use it for anything a devshell plausibly provides. It is a `let` binding
   in that file today, so a language file split out before Stage 2 cannot reach
   it (CLAUDE.md §8 item 6).
-- **Do not pin a toolchain-sized formatter in `core`.** `min` resolves rustfmt
-  and clang-format from `$PATH` on purpose (`min/default.nix`) — each pins ~2 GB.
+- **Do not pin a toolchain-sized formatter.** `core` resolves rustfmt and
+  clang-format from `$PATH` on purpose (`modules/core/formatter.nix`) — each
+  pins ~2 GB into `min`.
   Check the closure, not just the build.
 - **Some languages need an indent autocmd.** C# has one because treesitter ships
-  no indent queries for it (`core/auto-cmds.nix:31-42`). If indentation is wrong
+  no indent queries for it (`modules/core/auto-cmds.nix:31-42`). If indentation is wrong
   in practice, this is why.
 
 ## Removing a language

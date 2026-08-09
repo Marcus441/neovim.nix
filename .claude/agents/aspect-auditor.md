@@ -14,9 +14,9 @@ refactored to the dendritic flake-parts pattern. In the target shape, every
 `.nix` file under `modules/` is a flake-parts module that declares membership by
 setting `flake.modules.nvf.<aspect>`, where the aspect is `core` or `gui`.
 
-**The refactor may not have happened yet.** If `modules/` does not exist, the
-tree is still `core/` + `gui/` + `min/` with membership implied by directory —
-audit that instead and say which stage of `REFACTOR.md` the tree is at.
+**The profile split may still be in place.** Until Stage 1 lands, every file
+declares exactly one aspect and `modules/core/` vs `modules/gui/` still predicts
+it — say which stage of `REFACTOR.md` the tree is at.
 
 Answer the question you were asked and return **conclusions with file paths**,
 never bulk file contents. Keep the report under ~40 lines.
@@ -35,7 +35,7 @@ never bulk file contents. Keep the report under ~40 lines.
 ## What counts as a finding
 
 - **One concern spread across several files.** The signature failure here: a
-  `core/x.nix` and a `gui/x.nix` that are the same concern. One file declaring
+  `modules/core/x.nix` and a `modules/gui/x.nix` that are the same concern. One file declaring
   several memberships is **not** this — it is the merge working as intended.
 - An aspect no variant takes, or that every variant takes (the latter is `core`).
 - **An unearned aspect** — one no variant declines. With two variants, only

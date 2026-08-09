@@ -6,9 +6,12 @@ by feature, not by which build it belongs to. If a change would violate an
 invariant, stop and say so — the invariants are the whole value of this
 structure, and a single exception metastasises.
 
-**The refactor has not started.** §1 describes the target; §8 describes the tree
-as it actually is, and it is long. `REFACTOR.md` is the live plan. Read §8 before
-concluding that existing code is an example to copy — today, most of it is not.
+**Stage 0 has landed; the profile split has not.** flake-parts, import-tree, the
+aspect options and the variant generator are in place, but every file still
+declares exactly one aspect and `modules/core/` and `modules/gui/` still encode
+it. §1 describes the target; §8 describes the tree as it actually is.
+`REFACTOR.md` is the live plan. Read §8 before concluding that existing code is
+an example to copy — today, most of it is not.
 
 | Output | Aspects | Consumed by |
 | --- | --- | --- |
@@ -112,6 +115,10 @@ in module order**, and that order becomes the order of the generated `init.lua`.
 - `vim.augroups`, `vim.autocmds`, `vim.keymaps`, `vim.treesitter.queries` are
   **lists**. Merging two files into one, or renaming a file so it sorts
   differently, reorders them.
+- **A plugin's `setupOpts` lists concatenate too**, and they concatenate against
+  *nvf's own defaults*, not just against your files. `blink-cmp`'s
+  `keymap."<C-d>"` and `sources.default` both reordered in Stage 0. Where a key
+  is defined twice, module order picks which definition wins at runtime.
 - `vim.extraPlugins` is an attrset keyed by name — order comes from `after`, not
   from file order.
 - **Import order** is a depth-first walk, per-directory alphabetical.
@@ -134,10 +141,10 @@ A working model, not a mechanism. **Measure; do not predict** — recipe in
 every host; `gui` is one program's launcher. A line in `gui` that could have been
 `core` is a line the terminal editor does without for no reason.
 
-The counter-pressure is closure size — `min` deliberately resolves rustfmt and
-clang-format from `$PATH` rather than pinning them (`min/default.nix`), because
-each pins a ~2 GB toolchain. **A `core` line that drags a toolchain into `min` is
-the exception that justifies `gui`.**
+The counter-pressure is closure size — `core` deliberately resolves rustfmt and
+clang-format from `$PATH` rather than pinning them
+(`modules/core/formatter.nix`), because each pins a ~2 GB toolchain. **A `core`
+line that drags a toolchain into `min` is the exception that justifies `gui`.**
 
 ## 7. Hazards and verification
 
@@ -174,31 +181,29 @@ a proof; an eyeball diff is not.
 migrate it in the same change, or state why not. Item numbers are stable
 identities — closed items are deleted and survivors keep their numbers.
 
-The whole tree currently diverges. `REFACTOR.md` is the plan; the stage that
-closes each item is named.
+Every file still declares exactly one aspect. `REFACTOR.md` is the plan; the
+stage that closes each item is named.
 
-1. **No flake-parts, no import-tree.** `flake.nix` uses `flake-utils` and calls
-   `nvf.lib.neovimConfiguration` directly, with the module list built by hand
-   (Inv. 1, 2, 5). *Stage 0.*
-2. **`core/`, `min/`, `gui/` encode the variant** (Inv. 4). *Stage 0–1.*
-3. **Four barrel `default.nix` files** — `core/`, `gui/`, `core/keymaps/`,
-   `gui/keymaps/` — exist only to list siblings (Inv. 5). *Stage 0.*
+2. **`modules/core/` and `modules/gui/` encode the variant** (Inv. 4). `min/` is
+   gone — its body is `core`, and `gui` declines the statusline half. *Stage 1.*
 4. **Four concerns split across two files each by variant** (Inv. 3):
    `*/options.nix`, `*/auto-cmds.nix`, `*/languages.nix`, `*/keymaps/`. *Stage 1.*
-5. **Languages cost 2–4 edits.** `core/languages.nix` enables and defaults
-   `lsp.enable` off; `gui/languages.nix` turns it on, picks servers, and holds a
-   separate `lsp.servers.*.cmd` block that is easy to forget. Commits
-   `9f20108`–`8dc5394` are seven fixes' worth of evidence. *Stage 2.*
-6. **`preferPath` is a `let` binding in `gui/languages.nix:6`,** so per-language
-   files cannot reach it. It needs a home before Stage 2 splits that file.
-7. **`core/options.nix` (102 lines) and `gui/options.nix` (97 lines) are
-   grab-bags** — `vim.options` mixed with eight plugin enables each (Inv. 3).
-   *Stage 3.*
+5. **Languages cost 2–4 edits.** `modules/core/languages.nix` enables and
+   defaults `lsp.enable` off; `modules/gui/languages.nix` turns it on, picks
+   servers, and holds a separate `lsp.servers.*.cmd` block that is easy to
+   forget. Commits `9f20108`–`8dc5394` are seven fixes' worth of evidence.
+   *Stage 2.*
+6. **`preferPath` is a `let` binding in `modules/gui/languages.nix:7`,** so
+   per-language files cannot reach it. It needs a home before Stage 2 splits
+   that file.
+7. **`modules/core/options.nix` and `modules/gui/options.nix` are grab-bags** —
+   `vim.options` mixed with eight plugin enables each (Inv. 3). *Stage 3.*
 8. **Keymaps are inconsistently placed.** Undotree's bind is in
-   `core/keymaps/general.nix` while the plugin is in `core/extra-plugins.nix`;
-   dadbod's bind is inline in `gui/database.nix`. One shape, not two. *Stage 4.*
-9. **`core/options.nix` writes `config.vim`; every other file writes bare
-   `vim`.** Both are valid; the inconsistency is not. *Stage 3.*
+   `modules/core/keymaps/general.nix` while the plugin is in
+   `modules/core/extra-plugins.nix`; dadbod's bind is inline in
+   `modules/gui/database.nix`. One shape, not two. *Stage 4.*
+9. **`modules/core/options.nix` writes `config.vim`; every other file writes
+   bare `vim`.** Both are valid; the inconsistency is not. *Stage 3.*
 10. **`.luarc.json` and `.luacheckrc` reference a `lua/` layout that no longer
     exists.** Confirm dead, then delete. *Stage 5.*
 11. **No `checks`, no `formatter`, no `devShells` output.** `nix flake check` is

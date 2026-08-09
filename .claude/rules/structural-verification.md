@@ -46,13 +46,31 @@ A differing store path is not automatically a defect. Work out which it is:
 `diff -rq` on the two outputs answers this directly; `nvd diff` explains package
 changes if it is on `PATH`.
 
-## What a passing Stage 0 looks like
+## Proving "order-only" when the store path moves
 
-Stage 0 moves every file and changes no content, so **both outputs must be
-byte-identical**. If they are not, the skeleton changed something — most likely
-the module order handed to nvf, or the `pkgs` instantiation (`variant-wiring.md`).
-That is the one stage where a FAIL is always a bug, and it is why Stage 0 exists
-as its own commit.
+Store-path equality is the strongest proof, but a refactor that reorders `listOf`
+options cannot produce it. The gate is then **"the diff is order-only"**, and
+that is a claim you prove, not one you assert from a small-looking diff.
+
+The method Stage 0 used, and the one every later stage should reuse:
+
+1. Extract `init.lua` from both builds — `$out/bin/nvf-print-config-path` names it.
+2. For each order-sensitive region, split it into its **records** and re-emit
+   them sorted, in *both* files. The regions are the `augroups` table, the
+   `nvf_autocommands` table, the `vim.keymap.set` statements in
+   `-- SECTION: mappings`, the treesitter queries, and any plugin `setupOpts`
+   list that two modules both define (`blink-cmp`'s `keymap.<key>` and
+   `sources.default` are the known ones).
+3. Diff the canonicalised files. **Whatever survives is real content change.**
+   Justify it line by line or fix it; a residual line is never "probably fine".
+4. Assert the record count per region is unchanged. A permutation preserves it;
+   a dropped or duplicated entry does not, and would otherwise hide inside a
+   sorted comparison.
+
+**Order-only is not the same as behaviour-preserving.** Where two modules define
+the same key in a concatenated list, the first one wins at runtime, so a pure
+reorder can change what a key does. Stage 0 flipped blink's `<C-d>` this way.
+Check the contested keys, not just the record counts.
 
 ## `min` is the control
 

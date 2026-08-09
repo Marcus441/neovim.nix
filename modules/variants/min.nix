@@ -1,0 +1,3 @@
+{
+  variants.min.aspects = ["core"];
+}

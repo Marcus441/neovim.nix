@@ -3,9 +3,8 @@
 # import-tree already loaded every .nix file there; a barrel is a list to forget
 # to edit.
 #
-# Scoped to modules/ on purpose. The pre-refactor barrels in core/ and gui/ are
-# CLAUDE.md 8 item 3 and are deleted by REFACTOR.md Stage 0 -- blocking edits to
-# them before then would fight the refactor rather than help it.
+# Scoped to modules/ on purpose: that is the whole tree now. The pre-refactor
+# barrels in core/ and gui/ were deleted by Stage 0.
 set -uo pipefail
 
 file=$(jq -r '.tool_input.file_path // empty')

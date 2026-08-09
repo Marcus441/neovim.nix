@@ -1,5 +1,5 @@
 ---
-paths: "modules/**/*.nix,core/**/*.nix,gui/**/*.nix,min/**/*.nix"
+paths: "modules/**/*.nix"
 ---
 
 # Writing a file under `modules/`
@@ -77,7 +77,7 @@ Until Stage 1 lands there are **no exemplars in this tree** — every file is
 single-aspect because the variant split is still done by directory. Check
 CLAUDE.md §8 before treating any file as an example.
 
-The closest thing to the target shape today is `gui/database.nix`: one concern
+The closest thing to the target shape today is `modules/gui/database.nix`: one concern
 (dadbod) carrying its plugins, its Lua, *and* its keymap in one file. Its fault
 is only that the file sits under `gui/`.
 
@@ -108,7 +108,7 @@ skips any path matching `hasInfix "/_"`. **It is not a grouping mechanism.**
 
 ## A helper used by more than one file
 
-`preferPath` (`gui/languages.nix:6`) is a `let` binding today, which is correct
+`preferPath` (`modules/gui/languages.nix:7`) is a `let` binding today, which is correct
 while one file uses it and fatal the moment Stage 2 splits that file per
 language. In order of preference:
 
