@@ -25,7 +25,8 @@ vim.extraPlugins = {
 ```
 
 `after` is the **only** ordering mechanism for these — file position does
-nothing. `modules/extra-plugins.nix` orders undotree after the theme this way.
+nothing, and it resolves across files: `modules/undo.nix` orders undotree after
+the `theme-plugin` that `modules/extra-plugins.nix` declares.
 
 ## 2. Which aspect?
 
@@ -60,10 +61,15 @@ whole refactor exists to remove.
 
 ## 4. Its keymap and its Lua go with it
 
-The file that installs a plugin owns its keymap and its setup body.
-`modules/database.nix` is the right shape: plugins, `luaConfigRC`, and the
-`<leader>D` bind in one file. `modules/extra-plugins.nix` + the undotree bind in
-`modules/keymaps/general.nix` is the wrong shape — CLAUDE.md §8 item 8.
+The file that installs a plugin owns its keymap and its setup body. This is
+settled — see `.claude/rules/settled-decisions.md`. `modules/database.nix` is the
+canonical shape: plugins, `luaConfigRC`, and the `<leader>D` bind in one file.
+`modules/undo.nix` is the same shape for `undotree`.
+
+A bind that no file installs — a motion, a register trick — is its own concern
+and gets its own file (`modules/movement.nix`, `modules/search.nix`). **Do not
+recreate a `modules/keymaps/` directory**; grouping binds by mechanism is what
+Stage 4 removed.
 
 Lua goes in via `luaConfigRC.<name>` (a DAG entry, ordered by name and
 `entryAfter`) or `extraPlugins.<n>.setup`. A large body belongs in a `.lua` file

@@ -55,8 +55,10 @@ or nothing.
 `luaConfigRC` is a DAG keyed by entry name, resolved with `entryBefore` /
 `entryAfter`. **File position does not affect it** — moving
 `luaConfigRC.dadbod` between files leaves the output identical; renaming the key
-does not. `extraPlugins` is likewise ordered by its `after` field
-(`modules/extra-plugins.nix` puts `undotree` after `theme-plugin`).
+does not. `extraPlugins` is likewise ordered by its `after` field, and that field
+resolves **across files** — `modules/undo.nix` puts `undotree` after the
+`theme-plugin` that `modules/extra-plugins.nix` declares, and neither file's
+position matters.
 
 This is the opposite of `vim.autocmds` and friends, which are lists ordered by
 module position. See `evaluation-hazards.md`.

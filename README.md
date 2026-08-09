@@ -66,8 +66,9 @@ aspect list, and nothing else:
 | `default` | `core` | alias of `min` |
 | `gui` | `core` `gui` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager |
 
-Two derivations, three names. Directories such as `modules/keymaps/` are
-navigation only — they carry no meaning for the module system.
+Two derivations, three names. Directories such as `modules/languages/` are
+navigation only — they carry no meaning for the module system. A plugin's keymap
+lives in the file that installs the plugin, not in a keymap directory.
 
 ## Keybindings
 

@@ -30,6 +30,12 @@ commit hash, never a plan filename.
 - **`preferPath` prefers the `$PATH` binary over the pinned one, deliberately.**
   It exists so a project's own toolchain wins inside a devshell. Its silent
   fallback is a known cost, not a bug to fix.
+- **The file that installs a feature owns its keymap.** Not a `modules/keymaps/`
+  directory grouped by domain — that shape was deleted in Stage 4, and
+  `modules/database.nix` is the exemplar. A bind with no installing file is its
+  own concern and gets its own file (`modules/movement.nix`,
+  `modules/search.nix`). Re-grouping binds by mechanism is a re-litigation, not a
+  cleanup.
 - **`preferPathExe` is a flake-parts option** (`modules/prefer-path.nix`),
   declared `functionTo raw` and taking `pkgs` explicitly, because the top-level
   flake-parts `config` is not per-system. A language file reaches it by capturing
@@ -42,8 +48,3 @@ commit hash, never a plan filename.
   item 11 records the gap; nothing schedules it.
 - Migrating the C# stack away from roslyn, or dropping the
   `allowUnfreePredicate` that makes it build.
-
-## Still open — ask rather than inventing
-
-- Whether keymaps stay grouped by domain or move to the file that installs the
-  feature. CLAUDE.md §8 item 8, Stage 4.

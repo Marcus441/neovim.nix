@@ -88,10 +88,14 @@ is redundant and the files should be flat. If the files span declining aspects,
 the directory is pure navigation and is fine. **`core` does not count toward
 "several aspects"** — every variant takes `core`.
 
-`modules/keymaps/` passes: five of its files declare `core` and four declare
-`gui`, so the path predicts nothing. `modules/languages/` passes for a stronger
-reason — every file in it declares both. A `gui/` directory holding only `gui`
-files is exactly what Inv. 4 forbids.
+`modules/languages/` passes, for the strongest reason available — every file in
+it declares both `core` and `gui`, so the path predicts nothing. A `gui/`
+directory holding only `gui` files is exactly what Inv. 4 forbids.
+
+Passing the directory test is necessary, not sufficient. `modules/keymaps/`
+passed it — its files spanned both aspects — and was still deleted, because a
+directory that groups by *mechanism* separates a plugin from its own bind. Group
+by feature or stay flat.
 
 ## Assets and non-modules
 

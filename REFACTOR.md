@@ -9,12 +9,11 @@ commit ending in `./scripts/verify.sh <previous-commit>`.
 
 ## What is wrong today, in one paragraph
 
-The structure is right and one shape still exists twice. Stage 1 dissolved the
-profile directories, Stage 2 made a language one file and Stage 3 broke up the
-`options.nix` grab-bag, which was the refactor's stated point. What is left is
-the two keymap shapes — `modules/keymaps/` groups binds by domain while
-`modules/database.nix` keeps its own. So a plugin's keymap still lives away from
-the plugin.
+Nothing structural. Stage 1 dissolved the profile directories, Stage 2 made a
+language one file, Stage 3 broke up the `options.nix` grab-bag — the refactor's
+stated point — and Stage 4 put every keymap in the file that installs its
+feature. What is left is documentation the earlier stages outran, and two dead
+config files.
 
 ## Ground rules for every stage
 
@@ -35,20 +34,6 @@ the plugin.
 - **Close the §8 item in the same commit** that fixes it.
 
 ---
-
-## Stage 4 — keymaps go with the feature
-
-Closes §8 item 8.
-
-Today undotree's bind is in `modules/keymaps/general.nix` while the plugin is in
-`modules/extra-plugins.nix`; dadbod's bind is inline in `modules/database.nix`. Two
-shapes, and only one survives.
-
-`modules/database.nix` is the shape that matches the pattern: the file that installs
-a thing owns its keymap. The alternative — keymaps grouped by domain, as a
-deliberate intent namespace — is defensible but must then be *all* of them.
-**Decide, record it in `.claude/rules/settled-decisions.md`, and apply it
-uniformly.**
 
 ## Stage 5 — docs and cleanup
 

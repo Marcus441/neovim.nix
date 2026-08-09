@@ -6,12 +6,13 @@ by feature, not by which build it belongs to. If a change would violate an
 invariant, stop and say so — the invariants are the whole value of this
 structure, and a single exception metastasises.
 
-**Stages 0–3 have landed.** flake-parts, import-tree, the aspect options and the
+**Stages 0–4 have landed.** flake-parts, import-tree, the aspect options and the
 variant generator are in place, the profile directories are gone,
-`modules/languages/<lang>.nix` is one file per language, and the `options.nix`
-grab-bag is split per concern. What remains is the two keymap shapes. §1
-describes the target; §8 describes the tree as it actually is. `REFACTOR.md` is
-the live plan. Read §8 before treating a file as an example to copy.
+`modules/languages/<lang>.nix` is one file per language, the `options.nix`
+grab-bag is split per concern, and a feature's keymap now lives in the file that
+installs it. What remains is docs and cleanup. §1 describes the target; §8
+describes the tree as it actually is. `REFACTOR.md` is the live plan. Read §8
+before treating a file as an example to copy.
 
 | Output | Aspects | Consumed by |
 | --- | --- | --- |
@@ -182,14 +183,10 @@ a proof; an eyeball diff is not.
 migrate it in the same change, or state why not. Item numbers are stable
 identities — closed items are deleted and survivors keep their numbers.
 
-Nothing left here is structural — every remaining item is a file that holds too
-much or a shape that exists twice. `REFACTOR.md` is the plan; the stage that
-closes each item is named.
+Nothing left here touches the module tree — what remains is dead config files and
+a missing output. `REFACTOR.md` is the plan; the stage that closes each item is
+named.
 
-8. **Keymaps are inconsistently placed.** Undotree's bind is in
-   `modules/keymaps/general.nix` while the plugin is in
-   `modules/extra-plugins.nix`; dadbod's bind is inline in
-   `modules/database.nix`. One shape, not two. *Stage 4.*
 10. **`.luarc.json` and `.luacheckrc` reference a `lua/` layout that no longer
     exists.** Confirm dead, then delete. *Stage 5.*
 11. **No `checks`, no `formatter`, no `devShells` output.** `nix flake check` is
@@ -204,6 +201,7 @@ closes each item is named.
 | `default.nix` that only lists siblings | `import-tree` already loaded them (Inv. 5) |
 | `imports = [ ./foo.nix ]` inside `modules/` | Same (Inv. 5) — a hook rejects it |
 | `_` to group related `.nix` modules | `/_` is for non-modules only (§4) |
+| A `keymaps/` directory grouping binds by domain | Splits a plugin from its own bind — settled, Stage 4 |
 | Aspect named `minimal` / `extras` / `ide` | Magnitude or archetype, not a decision (§3) |
 | A third aspect no variant declines | Structure without a decision (§3) |
 | `mkEnableOption` per aspect | Variants compose by taking aspects, not by enabling |
