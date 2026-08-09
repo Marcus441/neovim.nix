@@ -75,9 +75,8 @@ file, and a path that names the feature and predicts no aspect.
 `modules/database.nix` is the exemplar for a concern only one variant wants —
 dadbod's plugins, its Lua *and* its keymap together.
 
-Neither is an exemplar of *size*. `modules/options.nix` declares both aspects
-correctly and is still a grab-bag; CLAUDE.md §8 item 7 has it scheduled. Check §8
-before copying a file's scope.
+Neither is an exemplar of *size*. Check CLAUDE.md §8 before copying a file's
+scope — a file listed there is one to migrate, not to imitate.
 
 The sibling flake's `modules/filemanager/thunar.nix` is the canonical exemplar of
 one concern declaring several memberships, if you want to see the shape working.

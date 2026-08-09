@@ -9,12 +9,12 @@ commit ending in `./scripts/verify.sh <previous-commit>`.
 
 ## What is wrong today, in one paragraph
 
-The structure is right and one file is still wrong. Stage 1 dissolved the profile
-directories and Stage 2 made a language one file, which was the refactor's stated
-point. What is left is `modules/options.nix`, which mixes `vim.options` with
-sixteen plugin enables across its two aspects, and the two keymap shapes —
-`modules/keymaps/` groups binds by domain while `modules/database.nix` keeps its
-own. So a plugin's keymap still lives away from the plugin.
+The structure is right and one shape still exists twice. Stage 1 dissolved the
+profile directories, Stage 2 made a language one file and Stage 3 broke up the
+`options.nix` grab-bag, which was the refactor's stated point. What is left is
+the two keymap shapes — `modules/keymaps/` groups binds by domain while
+`modules/database.nix` keeps its own. So a plugin's keymap still lives away from
+the plugin.
 
 ## Ground rules for every stage
 
@@ -35,19 +35,6 @@ own. So a plugin's keymap still lives away from the plugin.
 - **Close the §8 item in the same commit** that fixes it.
 
 ---
-
-## Stage 3 — break up the grab-bags
-
-Closes §8 items 7 and 9.
-
-Both halves of `modules/options.nix` mix `vim.options` with about eight plugin
-enables each. Split per concern: snacks, mini, git/gitsigns, diagnostics, oil,
-borders, comments, and a genuine `options.nix` holding only `vim.options`. Each
-resulting file carries both aspects where both have something to say — snacks in
-particular is split across the two halves today.
-
-Normalise `config.vim` vs bare `vim` while here — `modules/options.nix` is the
-only file using the explicit form.
 
 ## Stage 4 — keymaps go with the feature
 

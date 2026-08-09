@@ -6,10 +6,10 @@ by feature, not by which build it belongs to. If a change would violate an
 invariant, stop and say so — the invariants are the whole value of this
 structure, and a single exception metastasises.
 
-**Stages 0–2 have landed.** flake-parts, import-tree, the aspect options and the
-variant generator are in place, the profile directories are gone, and
-`modules/languages/<lang>.nix` is one file per language. What remains is
-`modules/options.nix`, which is still a grab-bag, and the two keymap shapes. §1
+**Stages 0–3 have landed.** flake-parts, import-tree, the aspect options and the
+variant generator are in place, the profile directories are gone,
+`modules/languages/<lang>.nix` is one file per language, and the `options.nix`
+grab-bag is split per concern. What remains is the two keymap shapes. §1
 describes the target; §8 describes the tree as it actually is. `REFACTOR.md` is
 the live plan. Read §8 before treating a file as an example to copy.
 
@@ -186,14 +186,10 @@ Nothing left here is structural — every remaining item is a file that holds to
 much or a shape that exists twice. `REFACTOR.md` is the plan; the stage that
 closes each item is named.
 
-7. **`modules/options.nix` is a grab-bag** — `vim.options` mixed with about
-   sixteen plugin enables across its two aspects (Inv. 3). *Stage 3.*
 8. **Keymaps are inconsistently placed.** Undotree's bind is in
    `modules/keymaps/general.nix` while the plugin is in
    `modules/extra-plugins.nix`; dadbod's bind is inline in
    `modules/database.nix`. One shape, not two. *Stage 4.*
-9. **`modules/options.nix` writes `config.vim`; every other file writes bare
-   `vim`.** Both are valid; the inconsistency is not. *Stage 3.*
 10. **`.luarc.json` and `.luacheckrc` reference a `lua/` layout that no longer
     exists.** Confirm dead, then delete. *Stage 5.*
 11. **No `checks`, no `formatter`, no `devShells` output.** `nix flake check` is
