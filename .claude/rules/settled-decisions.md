@@ -1,0 +1,46 @@
+---
+paths: "flake.nix,modules/variants/**,modules/aspects.nix,REFACTOR.md,README.md"
+---
+
+# Settled decisions — do not re-propose
+
+These shapes were argued to a conclusion. Changing one is a new decision the
+human makes, not a cleanup you offer. Rationale lives in git history — cite a
+commit hash, never a plan filename.
+
+- **nvf is the framework.** Not nixvim, not nixCats, not a hand-rolled `mnw`
+  wrapper. A migration is a rewrite of every file in the repo and is not on the
+  table as a side effect of the dendritic refactor.
+- **flake-parts and import-tree only.** No `snowfall`, `den`, `flake-file`,
+  `easy-hosts`, or any other framework, unless asked.
+- **`default`, `min` and `gui` are the output names**, and `default` aliases
+  `min`. `~/.dotfiles/flake` reads two of them by name. Adding a variant is fine;
+  renaming one is a breaking change to another repo.
+- **Two aspects: `core` and `gui`.** An aspect earns its existence when some
+  variant declines it, and there are two variants. Do not pre-split `gui` into
+  `lsp`/`ui`/`db`/`neovide` — that is structure without a decision behind it.
+  When a third variant appears, split at the seam *that variant* declines.
+- **Home Manager consumption stays out of this repo.** It exports packages, not a
+  `homeModules.default`. The consumer wires it (`flake/modules/neovim.nix`,
+  `flake/modules/neovide.nix`); `home-example.nix` documents the shape for
+  anyone else.
+- **`min` resolves rustfmt and clang-format from `$PATH`, deliberately**
+  (`min/default.nix`). Pinning them is a ~4.5 GB closure regression. Not an
+  oversight, not a `mkForce` to clean up.
+- **`preferPath` prefers the `$PATH` binary over the pinned one, deliberately.**
+  It exists so a project's own toolchain wins inside a devshell. Its silent
+  fallback is a known cost, not a bug to fix.
+
+## Deliberately deferred — do not propose unasked
+
+- A `checks` output, a `formatter` output, or a `devShells` output. CLAUDE.md §8
+  item 11 records the gap; nothing schedules it.
+- Migrating the C# stack away from roslyn, or dropping the
+  `allowUnfreePredicate` that makes it build.
+
+## Still open — ask rather than inventing
+
+- Where `preferPath` lives once Stage 2 splits `gui/languages.nix`: a flake-parts
+  option, or a `/_` expression consumed by `import`. CLAUDE.md §8 item 6.
+- Whether keymaps stay grouped by domain or move to the file that installs the
+  feature. CLAUDE.md §8 item 8, Stage 4.
