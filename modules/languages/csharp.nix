@@ -85,7 +85,7 @@
       };
 
       # load-bearing: docs/decisions/csharp.md#netcoredbg
-      extraPackages = [pkgs.netcoredbg pkgs.dotnet-sdk_8];
+      extraPackages = [pkgs.netcoredbg pkgs.dotnet-sdk_10];
 
       augroups = [{name = "RoslynFidget";}];
       autocmds = [

@@ -107,12 +107,20 @@ use with Visual Studio products only, so it is not an option here.
 and the cs launch configuration live in the csharp file (the language owns its
 debug config); the generic `nvim-dap` + UI enable is `modules/debugger.nix`.
 
-`dotnet-sdk_8` rides along in `vim.extraPackages` as a *fallback*, not a pin
+`dotnet-sdk_10` rides along in `vim.extraPackages` as a *fallback*, not a pin
 that wins: mnw appends `extraPackages` to `$PATH` (`vim.env.PATH = vim.env.PATH
 .. ":…"`), so a devshell's dotnet shadows it and the packaged SDK only serves a
 host without one — launching from a desktop with no shell still restores,
 builds and debugs. This is `gui` buying out-of-the-box weight `min` refuses,
 the same split as `docs/decisions/formatters.md#gui-re-adds-a-pinned-fallback-core-does-not`.
+The version is the newest LTS the pin carries, not the oldest supported: an SDK
+design-time builds every *lower* target, never a higher one, so a too-old
+fallback fails exactly when it is reached. Observed 2026-08-10 with `sdk_8`
+against a net10.0 project: the design-time build failed, every reference came
+back unresolved, and roslyn flagged all `using` directives IDE0005-unnecessary
+— garbage diagnostics, not a roslyn bug. A failed restore looks the same;
+`dotnet restore` in the project, then `:lsp restart roslyn`, is the first move
+when every using lights up.
 roslyn-ls itself needs no `$PATH` dotnet — its nixpkgs wrapper falls back to a
 bundled runtime, and the Razor extension DLLs are loaded inside roslyn-ls via
 `--extension`, never `dotnet <dll>`'d.
