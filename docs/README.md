@@ -24,9 +24,10 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Five files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
-`modules/direnv.nix` (three), `modules/formatter.nix` (two) and
-`modules/languages/rust.nix`. The test is the **Breaks** line: a value that
+Six files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
+`modules/direnv.nix` (three), `modules/formatter.nix` (two),
+`modules/languages/rust.nix` and `modules/languages/nix.nix` (three). The test is
+the **Breaks** line: a value that
 fails *silently* earns a pointer, one that fails loudly does not. The
 `mkOverride 40` in `modules/formatter.nix` is the one that looks like an
 exception and isn't — the wrong override *errors*, but the plausible mistake
@@ -38,8 +39,11 @@ land in the same commit.
 The ones whose **Breaks** line says *silently* are the sharp end — they fail with
 no error anywhere, so the pointer is the only warning. This repo has several
 already: the `allowUnfreePredicate` that roslyn needs, the `$PATH` formatter
-resolution that keeps `min` small, and `preferPath` preferring a possibly-broken
-devshell binary over the pinned one.
+resolution that keeps `min` small, `preferPath` preferring a possibly-broken
+devshell binary over the pinned one, and the Nix LSP split, where a dropped
+`handlers` entry doubles every diagnostic. The Nix split is also the one place
+that answers the objection: its flake precondition is checked and *reported*,
+so deleting the check is what restores the silence.
 
 ## Where else things live
 
