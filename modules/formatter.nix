@@ -11,7 +11,6 @@ in {
           formatters = {
             alejandra.command = lib.mkForce "alejandra";
             clang-format.command = lib.mkForce "clang-format";
-            csharpier.command = lib.mkForce "csharpier";
             prettier.command = lib.mkForce "prettier";
             ruff.command = lib.mkForce "ruff";
             rustfmt.command = lib.mkForce "rustfmt";

@@ -36,10 +36,12 @@ with `mkForce` (50), so a `gui` `mkForce` is two definitions at the same
 priority — a conflict, not an override. `gui` needs `lib.mkOverride 40`. See
 `docs/conventions/overrides.md#a-formatter-command-needs-mkoverride-40`.
 
-**Also:** two are deliberately absent from the `gui` half, both on closure size.
-`rustfmt` would drag the rust toolchain in and is not needed anyway — nvf
-disables rust's conform formatter whenever `lsp.enable` is set, so `gui` formats
-Rust through rust-analyzer. `csharpier` pulls `dotnet-sdk-8`, ~700 MiB and a
-different dotnet from the runtime roslyn-ls already carries. Both stay bare in
-both builds: on `$PATH` or not at all. `clang-format` is the opposite case and
-free — `pkgs.clang-tools` is already there as the clangd wrapper's fallback.
+**Also:** `rustfmt` is deliberately absent from the `gui` half, on closure
+size. It would drag the rust toolchain in and is not needed anyway — nvf
+disables rust's conform formatter whenever `lsp.enable` is set, so `gui`
+formats Rust through rust-analyzer. It stays bare in both builds: on `$PATH` or
+not at all. C# is no conform formatter's job in either build — csharpier is
+gone and cs formats through roslyn-ls, see
+`docs/decisions/csharp.md#formatting-is-the-lsps-job`. `clang-format` is the
+opposite case and free — `pkgs.clang-tools` is already there as the clangd
+wrapper's fallback.
