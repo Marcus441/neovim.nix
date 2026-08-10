@@ -43,6 +43,8 @@
           setupOpts.filewatching = "roslyn";
           # load-bearing: docs/decisions/csharp.md#razor-is-disabled-until-the-pin-catches-up
           setupOpts.extensions.razor.enabled = false;
+          # load-bearing: docs/decisions/csharp.md#roslyn-notifications-go-through-fidget
+          setupOpts.silent = true;
         };
       };
 
@@ -88,29 +90,28 @@
       augroups = [{name = "RoslynFidget";}];
       autocmds = [
         {
-          event = ["VimEnter"];
-          desc = "Divert roslyn.nvim notifications to fidget, wrapping whichever notify won startup";
+          event = ["User"];
+          pattern = ["RoslynOnInit"];
+          desc = "Report roslyn initialization through fidget, replacing the silenced notify";
           group = "RoslynFidget";
           # load-bearing: docs/decisions/csharp.md#roslyn-notifications-go-through-fidget
           callback = lib.mkLuaInline ''
+            function(ev)
+              require("lz.n").trigger_load("fidget-nvim")
+              local target = ev.data.type == "solution" and ev.data.target or "project"
+              require("fidget").notify("Initializing Roslyn for: " .. target, vim.log.levels.INFO)
+            end
+          '';
+        }
+        {
+          event = ["User"];
+          pattern = ["RoslynInitialized"];
+          desc = "Report roslyn initialization through fidget, replacing the silenced notify";
+          group = "RoslynFidget";
+          callback = lib.mkLuaInline ''
             function()
-              local delegate = vim.notify
-              local wrapper
-              wrapper = function(msg, level, opts)
-                local roslyn = (opts and opts.title == "roslyn.nvim")
-                  or (type(msg) == "string" and msg:find("roslyn.nvim", 1, true))
-                if roslyn then
-                  require("lz.n").trigger_load("fidget-nvim")
-                  return require("fidget").notify(msg, level, opts)
-                end
-                vim.notify = delegate
-                local ok, res = pcall(delegate, msg, level, opts)
-                delegate = vim.notify
-                vim.notify = wrapper
-                assert(ok, res)
-                return res
-              end
-              vim.notify = wrapper
+              require("lz.n").trigger_load("fidget-nvim")
+              require("fidget").notify("Roslyn project initialization complete", vim.log.levels.INFO)
             end
           '';
         }

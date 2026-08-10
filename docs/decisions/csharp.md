@@ -73,33 +73,30 @@ Check `:lua =vim.lsp.get_clients({name="roslyn"})[1].config.cmd`.
 ## Roslyn notifications go through fidget
 
 **Why:** roslyn.nvim narrates its lifecycle with `vim.notify` — "Initializing
-Roslyn for: …", "Roslyn project initialization complete", server-stopped, plus
-a once-per-session `vim.deprecate` notice fired because nvf always passes an
-`extensions` table to `setup()` (even with razor disabled, the table is
-non-empty). Those are progress, not alerts, so they belong in fidget's corner
-with the rest of the LSP chatter, while snacks-notifier keeps everything else
-(`modules/lsp-progress.nix` sets `override_vim_notify = false` for exactly that
-split). Every roslyn.nvim message carries `title = "roslyn.nvim"`, and the
-deprecate text embeds the plugin name, so a wrapper routes on those two keys.
-
-The wrapper installs from a `VimEnter` autocmd, not at config time: snacks
-replaces `vim.notify` wholesale during its setup, and module order between the
-two files is exactly the thing this repo refuses to predict (CLAUDE.md §5).
-And it is *self-healing*, because wrapping once is not enough: snacks installs
-a self-replacing shim — the first notification through it reassigns
-`vim.notify = Snacks.notifier.notify` (snacks/init.lua, `M.config.notifier`
-branch), which evicts a naive wrapper on the first passthrough. So on every
-delegated call the wrapper restores the delegate as `vim.notify`, lets it run
-(and self-replace if it wants), re-captures whatever `vim.notify` then is, and
-reinstalls itself. A later wholesale replacement is absorbed the same way on
-the next call. `lz.n` must trigger-load fidget before use — same as
+Roslyn for: …", "Roslyn project initialization complete". Those are progress,
+not alerts, so they belong in fidget's corner with the rest of the LSP chatter,
+while snacks/noice keep everything else (`modules/lsp-progress.nix` sets
+`override_vim_notify = false` for exactly that split). The mechanism is the
+plugin's own interface: `setupOpts.silent = true` suppresses the notify calls,
+and the plugin fires `User RoslynOnInit` (with `data.type`/`data.target`) and
+`User RoslynInitialized` at the same moments — two autocmds re-emit those
+through `require("fidget").notify`, after an `lz.n` trigger-load, same as
 `modules/direnv.nix`.
 
-**Breaks:** silently, if roslyn.nvim retitles its notifications, or if
-something assigns `vim.notify` outside a notify call *and* no further
-passthrough notification ever fires. The check: `:LspRestart` in a cs buffer
-should put "Initializing Roslyn" in fidget's corner, not a snacks toast — and
-it must still do so after one unrelated notification has been shown.
+**Do not intercept `vim.notify` for this.** It was tried twice and lost twice,
+because three parties fight over the global: snacks installs a self-replacing
+shim (its first passthrough reassigns `vim.notify = Snacks.notifier.notify`,
+evicting any wrapper above it), and noice is lazy-loaded on `DeferredUIEnter`,
+where its `source/notify.enable()` captures whatever `vim.notify` is and
+replaces it — outside any notify call, so no self-healing wrapper can survive
+it. The User-autocmd route does not participate in that fight at all.
+
+**Breaks:** silently, if roslyn.nvim renames its User events or stops gating
+those messages behind `silent`. `silent` also mutes the same messages for
+anyone not listening to the events — the autocmds and the flag are one unit;
+remove both together. The check: opening a cs file in a solution should show
+"Initializing Roslyn for: …" in fidget's corner and nothing in snacks/noice,
+even after other notifications have fired.
 
 ## netcoredbg
 
