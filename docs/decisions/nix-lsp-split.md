@@ -143,9 +143,18 @@ alphabetically — has run. It is the third global in the tree, after direnv's t
 `window/showMessage` and no `window/logMessage` when its flake is unreachable,
 measured at zero messages — and it cannot be detected by watching completions
 either, because the `nixpkgs` half lies plausibly and the options half hangs. So
-the check has to run against the *inputs*, before `nixd` is handed them:
-`luaConfigRC.nixd-flake-check` stats the flake on the first Nix buffer, then
-asks Nix for the two output name lists and confirms this host is in both.
+the check has to run against the *inputs*, before `nixd` is handed them: a
+`FileType nix` autocmd in the `NixdFlakeCheck` group stats the flake on the first
+Nix buffer, then asks Nix for the two output name lists and confirms this host is
+in both. It is a `vim.autocmds` entry rather than a hand-rolled
+`nvim_create_autocmd` inside `luaConfigRC`, so it carries a `desc` and sits in a
+named group like every other autocmd in the tree; its locals live inside the
+callback because a `mkLuaInline` body is its own chunk. The option form also
+registers it earlier — nvf's `autocmds` entry is `entryAfter ["pluginConfigs"]`,
+so it is in place before `lsp-servers` rather than after it, and the
+`doautoall FileType` that `vim.lsp.enable` fires now reaches it. That is safe
+only because `_NIXD_DEVENV_ROOT` is emitted before `lsp-servers` too; the
+callback dereferences it unguarded.
 
 It is affordable because `builtins.attrNames` does not force the configurations
 themselves — 0.142 s warm for all three hosts, against the minutes a real
