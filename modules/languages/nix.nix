@@ -14,6 +14,9 @@ in {
     ...
   }: let
     inherit (lib.generators) mkLuaInline;
+    inherit (lib.nvim.dag) entryBefore;
+
+    nixdExe = preferPathExe pkgs "nixd" (lib.getExe pkgs.nixd);
   in {
     vim = {
       languages.nix.lsp = {
@@ -36,9 +39,26 @@ in {
         };
 
         nixd = {
-          cmd = lib.mkForce [
-            (preferPathExe pkgs "nixd" (lib.getExe pkgs.nixd))
-          ];
+          # load-bearing: docs/decisions/nix-lsp-split.md#devenv-owns-its-own-nixd
+          cmd = lib.mkForce (mkLuaInline ''
+            function(dispatchers, config)
+              local devenv = _NIXD_DEVENV_ROOT(config.root_dir)
+              if devenv then
+                return vim.lsp.rpc.start({"devenv", "lsp"}, dispatchers, {cwd = devenv})
+              end
+              return vim.lsp.rpc.start({"${nixdExe}"}, dispatchers)
+            end
+          '');
+
+          before_init = mkLuaInline ''
+            function(_, config)
+              if config.settings and _NIXD_DEVENV_ROOT(config.root_dir) then
+                for key in pairs(config.settings) do
+                  config.settings[key] = nil
+                end
+              end
+            end
+          '';
 
           on_attach = mkLuaInline ''
             function(client, _)
@@ -75,6 +95,31 @@ in {
         };
       };
 
+      # load-bearing: docs/decisions/nix-lsp-split.md#devenv-owns-its-own-nixd
+      luaConfigRC.nixd-devenv = entryBefore ["lsp-servers"] ''
+        _NIXD_DEVENV_ROOT = function(source)
+          if source == nil or source == "" then
+            source = vim.uv.cwd()
+          end
+
+          local found, root = pcall(vim.fs.root, source, "devenv.nix")
+          if not found or not root then
+            return nil
+          end
+
+          if vim.fn.executable("devenv") ~= 1 then
+            if not _NIXD_DEVENV_REPORTED then
+              _NIXD_DEVENV_REPORTED = true
+              vim.notify("[nixd] " .. root .. " is a devenv project but devenv is not on PATH; "
+                .. "falling back to the system flake", vim.log.levels.WARN)
+            end
+            return nil
+          end
+
+          return root
+        end
+      '';
+
       # load-bearing: docs/decisions/nix-lsp-split.md#reporting-the-precondition
       luaConfigRC.nixd-flake-check = ''
         local flake = vim.env.HOME .. "/.dotfiles/flake"
@@ -106,8 +151,12 @@ in {
 
         vim.api.nvim_create_autocmd("FileType", {
           pattern = "nix",
-          once = true,
-          callback = function()
+          callback = function(event)
+            if _NIXD_FLAKE_CHECKED or _NIXD_DEVENV_ROOT(event.buf) then
+              return
+            end
+            _NIXD_FLAKE_CHECKED = true
+
             if not vim.uv.fs_stat(flake .. "/flake.nix") then
               warn("no flake at " .. flake)
               return

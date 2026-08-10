@@ -26,7 +26,7 @@ config.preferPathExe = pkgs: name: fallbackExe:
 
 Six files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
 `modules/direnv.nix` (three), `modules/formatter.nix` (two),
-`modules/languages/rust.nix` and `modules/languages/nix.nix` (three). The test is
+`modules/languages/rust.nix` and `modules/languages/nix.nix` (five). The test is
 the **Breaks** line: a value that
 fails *silently* earns a pointer, one that fails loudly does not. The
 `mkOverride 40` in `modules/formatter.nix` is the one that looks like an

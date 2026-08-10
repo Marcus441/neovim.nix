@@ -76,6 +76,67 @@ return empty — the request never returns at all, measured past 200 s, so
 completion simply never appears. Empty means *evaluated and found nothing*;
 absent means *hung*.
 
+## devenv owns its own nixd
+
+**Why:** a `devenv.nix` project's completions live in devenv's own module set —
+`languages.rust.enable`, `services.postgres.enable` — and the system flake knows
+nothing about them. `devenv lsp` exists for exactly this: it reads
+`devenv.nix`/`devenv.yaml`/`devenv.lock`, generates the matching nixd config, and
+then *replaces itself* with a nixd it ships internally. So in a devenv project the
+right nixd is devenv's, and the right config is the one devenv wrote — not
+`preferPathExe`'s binary and not the `settings.nixd` table above. Note that
+`devenv lsp` is unrelated to devenv's `languages.nix.lsp.enable`, which only puts
+a plain `pkgs.nixd` on `$PATH`; the bundled server is never the one `$PATH` names.
+
+The decision is per *client*, not per session, because one Neovim can hold buffers
+from a devenv project and from `~/.dotfiles` at once. Neovim 0.11's
+`vim.lsp.config` has no `on_new_config` — nvim-lspconfig's framework is gone, and
+nvf emits `vim.lsp.config["nixd"] = {…}` directly (`nvf/modules/neovim/init/lsp.nix`).
+The two hooks that *do* see a resolved per-buffer config are `cmd`-as-a-function
+and `before_init`, and this uses one for each half:
+
+- `cmd` is `fun(dispatchers, config)`, called from `Client.create` after
+  `root_dir` has been resolved for the buffer. It returns an RPC client, so each
+  branch calls `vim.lsp.rpc.start` itself — `{"devenv", "lsp"}` with `cwd` at the
+  devenv root, or the `preferPathExe` nixd otherwise. `cmd`'s list form is typed
+  `uniq (listOf str)` in nvf, but the option is `either luaInline (listOf str)`,
+  so the inline function type-checks; `mkForce` is still needed against nvf's
+  `nixd` preset.
+- `before_init` drops the `settings` table, so devenv's generated config is the
+  only thing nixd is configured by.
+
+Detection is `vim.fs.root(config.root_dir, "devenv.nix")` — upward from the root
+nixd already picked, which is `flake.nix` then `.git`. The usual devenv layout
+puts `devenv.nix` beside `.git`, so it is found. A `devenv.nix` in a
+*subdirectory* of the git root is not, and that is the one shape this misses.
+
+**Breaks:** silently, in one specific way, if the `before_init` body is ever
+rewritten to *assign* `config.settings` rather than clear it in place.
+`Client.create` does `settings = config.settings or {}` — an alias, not a copy —
+and `before_init` runs afterwards, so mutating the table's contents reaches
+`client.settings` and rebinding the field does not. Upstream's own `before_init`
+docstring shows the rebinding form. Get it wrong and nixd receives
+`workspace/didChangeConfiguration` carrying the *system flake* immediately after
+`initialize`, which nixd merges over devenv's config: completions still appear,
+they are just for the wrong project. `:lua =vim.lsp.get_clients({bufnr=0})[n].settings`
+is the check — it must be `{}` in a devenv buffer.
+
+The other silent path is `devenv` not being on `$PATH`, which would otherwise
+leave `cmd` calling `vim.lsp.rpc.start` on a binary that does not exist — a
+function `cmd` skips the `vim.fn.executable` guard that Neovim applies to the list
+form, so this is a hard error inside client creation rather than a skipped server.
+`_NIXD_DEVENV_ROOT` therefore checks `executable("devenv")` itself and returns
+`nil` when it fails, warning once per session. That keeps the two hooks agreeing:
+whatever `cmd` decided, `before_init` decides the same way, and the fallback is the
+whole pre-devenv behaviour rather than half of it.
+
+**Also:** the predicate is a global, defined in `luaConfigRC.nixd-devenv` with
+`entryBefore ["lsp-servers"]`. The ordering is load-bearing rather than cosmetic:
+`vim.lsp.enable` runs `doautoall FileType` for buffers that already exist, so a
+`nvim foo.nix` that resolves filetype during startup can reach `cmd` before an
+unconstrained DAG entry named `nixd-devenv` — which sorts *after* `lsp-servers`
+alphabetically — has run. It is the third global in the tree, after direnv's two.
+
 ## Reporting the precondition
 
 **Why:** the failure above is invisible from inside Neovim — `nixd` emits no
@@ -90,6 +151,15 @@ It is affordable because `builtins.attrNames` does not force the configurations
 themselves — 0.142 s warm for all three hosts, against the minutes a real
 evaluation costs. It runs once per session, `vim.system` is asynchronous, and
 nothing about it can delay a completion.
+
+A devenv buffer is not a session it applies to — nothing there reads the system
+flake, so warning that the flake is unreachable would name a precondition nothing
+depends on. Hence the same `_NIXD_DEVENV_ROOT` predicate gates the autocmd, and
+hence the autocmd no longer carries `once = true`: "once" would let the first Nix
+buffer opened decide for the whole session, and a devenv buffer first would mean a
+`~/.dotfiles` buffer opened later is never checked. `_NIXD_FLAKE_CHECKED` is set
+only on the path that actually runs the check, so "once per session" now means
+once per session *in which the flake is used*.
 
 **Breaks:** by returning to silence, which is the state this repo had before it
 and reads exactly the same. Deleting the autocmd does not fail any build or any
