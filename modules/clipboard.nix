@@ -1,9 +1,14 @@
 {
   flake.modules.nvf.core = {
+    pkgs,
+    lib,
+    ...
+  }: {
     vim.clipboard = {
       enable = true;
       registers = "unnamedplus";
-      providers = {
+      # load-bearing: docs/decisions/clipboard.md#providers-are-linux-only
+      providers = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         wl-copy.enable = true;
         xsel.enable = true;
       };
