@@ -32,6 +32,10 @@ in {
         (preferPathExe pkgs "typescript-language-server" (lib.getExe pkgs.typescript-language-server))
         "--stdio"
       ];
+
+      diagnostics.nvim-lint.linters.eslint_d.cmd =
+        lib.mkForce
+        (preferPathExe pkgs "eslint_d" (lib.getExe pkgs.eslint_d));
     };
   };
 }
