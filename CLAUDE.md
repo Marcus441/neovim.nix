@@ -143,9 +143,10 @@ pulls a toolchain into `min` is what justifies `gui`.**
 Do not claim a build works without having built it.
 
 ```bash
-./scripts/verify.sh build        # all three outputs — the real check
-nix flake check                  # cheap eval sweep
-./scripts/verify.sh <ref>        # structural: prove nothing changed but order
+./scripts/verify.sh build             # all three outputs — the real check
+nix flake check                       # cheap eval sweep
+./scripts/verify.sh <ref>             # structural: prove nothing changed but order
+./scripts/audit-path-resolution.sh    # the four PATH invariants that fail silently
 ```
 
 `verify.sh` compares **store paths**: identical paths are a proof, an eyeball
