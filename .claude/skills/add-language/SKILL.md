@@ -44,7 +44,8 @@ in {
 ```
 
 Drop the outer `{config, ...}: let … in` when the language needs no `cmd`
-override — `nix.nix` and `csharp.nix` are the two that don't.
+override — `csharp.nix` is the only one that doesn't, because roslyn-ls is a
+dotnet assembly nobody has on `$PATH`.
 
 | What | Aspect | Where |
 | --- | --- | --- |
