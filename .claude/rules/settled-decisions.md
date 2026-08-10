@@ -24,9 +24,14 @@ commit hash, never a plan filename.
   `homeModules.default`. The consumer wires it (`flake/modules/neovim.nix`,
   `flake/modules/neovide.nix`); `home-example.nix` documents the shape for
   anyone else.
-- **`core` resolves rustfmt and clang-format from `$PATH`, deliberately**
-  (`modules/formatter.nix`), so both builds do. Pinning them in `min` is a
-  ~4.5 GB closure regression. Not an oversight, not a `mkForce` to clean up.
+- **`core` resolves every formatter from `$PATH`, deliberately**
+  (`modules/formatter.nix`). `min` is opened from inside `nix develop`, so the
+  devshell supplies them; pinning rustfmt and clang-format alone is a ~4.5 GB
+  closure regression, and the other five cost a further 232 MiB. Not an
+  oversight, not a `mkForce` to clean up. **`gui` re-adds each as a
+  `preferPathExe` fallback** with `lib.mkOverride 40`, because it launches from a
+  desktop launcher with no devshell — except `rustfmt`, which `gui` does not need
+  and cannot afford.
 - **`preferPath` prefers the `$PATH` binary over the pinned one, deliberately.**
   It exists so a project's own toolchain wins inside a devshell. Its silent
   fallback is a known cost, not a bug to fix.

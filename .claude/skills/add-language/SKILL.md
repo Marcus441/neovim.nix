@@ -75,9 +75,12 @@ dotnet assembly nobody has on `$PATH`.
   (`modules/prefer-path.nix`), so **capture it in an outer `let` over the file's
   own arguments** — inside `flake.modules.*`, `config` is nvf's — and **pass
   `pkgs` as its first argument**.
-- **Do not pin a toolchain-sized formatter.** `core` resolves rustfmt and
-  clang-format from `$PATH` on purpose (`modules/formatter.nix`) — each pins
-  ~2 GB into `min`. Check the closure, not just the build.
+- **Do not pin a formatter in `core`.** It resolves all of them from `$PATH` on
+  purpose (`modules/formatter.nix`) — `min` is opened from inside `nix develop`,
+  and rustfmt or clang-format alone pins ~2 GB into it. A new language's
+  formatter goes in that file as `<name>.command = lib.mkForce "<name>"`, plus a
+  `preferPathExe` fallback in its `gui` half at `lib.mkOverride 40`. Check the
+  closure, not just the build.
 - **Some languages need an indent autocmd.** C# has one because treesitter ships
   no indent queries for it (`modules/auto-cmds.nix:32-43`). If indentation is
   wrong in practice, this is why.

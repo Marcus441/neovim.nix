@@ -31,3 +31,20 @@ routes the server through `preferPathExe` (`docs/decisions/prefer-path.md`).
 **Also:** `mkIf` gates a value but still evaluates it. When the excluded branch
 names a package that may not exist, exclude by attribute with
 `lib.optionalAttrs`, not by value with `lib.mkIf`.
+
+## a formatter command needs mkOverride 40
+
+**Why:** the ladder above assumes `core` can state its value with `mkDefault`.
+For `formatters.<name>.command` it cannot — nvf's conform presets set it at
+normal priority, so `core` is already spending `mkForce` (50) just to get a bare
+name. `gui` disagreeing therefore has to go *below* that, and `lib.mkOverride 40`
+is the only rung left. It is the sole place in the repo that needs one.
+
+**Breaks:** loudly. Two `mkForce`s on a `str` do not merge — the error names the
+option and both files, so it is the good kind. The quiet failure is the reverse:
+writing `gui`'s value as a plain assignment, which loses to `core`'s `mkForce`
+and leaves `gui` with the bare command it was meant to replace.
+
+**Also:** this only arises where `core` must fight nvf for a scalar. `lsp.enable`
+does not, because nvf leaves it at its default; `lsp.servers.<name>.cmd` does
+not, because `gui` is the only aspect that sets it at all.

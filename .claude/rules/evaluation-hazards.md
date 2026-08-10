@@ -78,10 +78,14 @@ arguments. Getting this wrong produces infinite recursion, not a clear error.
   for `vscode-extension-ms-dotnettools-csharp`. Lose it and the failure surfaces
   as an unfree refusal from inside the roslyn closure, nowhere near the line that
   dropped it.
-- **`core` resolves rustfmt and clang-format from `$PATH` on purpose**
-  (`modules/formatter.nix`), because pinning them drags ~2.4 GB and ~2.1 GB
-  of toolchain into `min`. A line that pins a formatter binary silently undoes
-  that. Check the closure size, not just the build.
+- **`core` resolves every formatter from `$PATH` on purpose**
+  (`modules/formatter.nix`), because pinning rustfmt and clang-format drags
+  ~2.4 GB and ~2.1 GB of toolchain into `min`, and prettier alone drags 190 MiB
+  of `nodejs`. A line that pins a formatter binary silently undoes that. Check
+  the closure size, not just the build. `gui` puts each back as a `preferPathExe`
+  fallback, and because `core` already spent `mkForce` there, **`gui` must use
+  `lib.mkOverride 40`** — a second `mkForce` is a conflict, and a plain value
+  silently loses.
 - **`preferPath` degrades quietly.** It execs the `$PATH` binary if present and
   the pinned one otherwise, so a broken devshell version wins over a working
   pinned one with no diagnostic.
