@@ -19,11 +19,12 @@ in {
         extensions.crates-nvim.enable = true;
       };
 
+      # load-bearing: docs/decisions/prefer-path.md#rustaceanvim-owns-activation
       lsp.servers.rust-analyzer = {
+        enable = false;
         cmd = lib.mkForce [
           (preferPathExe pkgs "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
         ];
-        filetypes = ["rust"];
       };
     };
   };

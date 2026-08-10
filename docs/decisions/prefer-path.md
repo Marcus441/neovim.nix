@@ -18,4 +18,27 @@ because the top-level flake-parts `config` is not per-system; a language file
 reaches it by capturing `config` in an outer `let`. Weak typing is the accepted
 cost of that shape, chosen over a `/_` expression so no language file carries a
 relative import path. See `docs/conventions/overrides.md` for the `mkForce` that
-every `lsp.servers.*.cmd` needs alongside it.
+every `lsp.servers.*.cmd` needs alongside it, and for the `mkOverride 40` that a
+formatter's `command` needs instead.
+
+## rustaceanvim owns activation
+
+**Why:** nvf's rust module does not route through `vim.lsp.servers` — it writes
+`vim.g.rustaceanvim.server.cmd` and rustaceanvim starts the client itself. The
+`vim.lsp.servers.rust-analyzer` entry in `modules/languages/rust.nix` exists only
+to *feed* it: rustaceanvim reads `vim.lsp.config["rust-analyzer"]` and merges it
+over its own `server` table with `force`, so the `preferPathExe` wrapper wins.
+`enable = false` keeps the entry out of nvf's `vim.lsp.enable(…)` list while
+still emitting the config table, because nvf emits every server it knows and
+filters only the enable list.
+
+**Breaks:** silently, by duplication. With `enable` left at its default `true`,
+Neovim's own `vim.lsp.enable` starts a *second* rust-analyzer alongside
+rustaceanvim's — two processes indexing one crate, doubled diagnostics. It looks
+like a slow editor, not a misconfiguration. `:lua =#vim.lsp.get_clients()` on a
+Rust buffer is the check; one is correct.
+
+**Also:** the `filetypes` field is what gives that second activation a trigger,
+so it goes when `enable = false` does. The `lib.mkForce` on `cmd` overrides
+nothing today — nvf ships no rust-analyzer preset — and is kept for symmetry
+with the five servers where it is load-bearing.
