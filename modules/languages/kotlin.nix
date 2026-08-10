@@ -107,7 +107,13 @@ in {
 
     # load-bearing: docs/decisions/kotlin-lsp.md#the-index-cache-is-persistent
     kotlinLspCached = lib.getExe (pkgs.writeShellScriptBin "kotlin-lsp-cached" ''
-      exec ${kotlinLspExe} --system-path "''${XDG_CACHE_HOME:-$HOME/.cache}/kotlin-lsp" "$@"
+      cache="''${XDG_CACHE_HOME:-$HOME/.cache}/kotlin-lsp"
+      mkdir -p "$cache"
+      exec 9>"$cache/.wrapper-lock"
+      if ${pkgs.util-linux}/bin/flock -n 9; then
+        exec ${kotlinLspExe} --system-path "$cache" "$@"
+      fi
+      exec ${kotlinLspExe} --system-path "$(mktemp -d -t kotlin-lsp-overflow.XXXXXX)" "$@"
     '');
   in {
     vim = {

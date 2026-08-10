@@ -188,8 +188,25 @@ reports "no active LSP" — that is a server still booting, not a failure to
 attach. The wrapper adds the flag *outside* `preferPathExe`, so it applies to a
 devshell's kotlin-lsp too.
 
+**Also:** the cache is **single-holder**. An IntelliJ system directory does not
+tolerate two processes: measured 2026-08-10, with one editor's kotlin-lsp
+attached and healthy, a second instance on the same cache sat uninitialized for
+9+ minutes with no error at all — silent serialization, which reads as "one
+editor blocks the other". So the wrapper takes a `flock` on
+`$cache/.wrapper-lock` (held by inheritance for the server's lifetime): the
+first instance gets the persistent cache, every concurrent one detects the held
+lock and falls back to a throwaway `mktemp -d` system path — cold and slow, the
+pre-cache behaviour, but functional instead of hung. One kotlin-lsp instance
+per machine is fast; run a second and it pays the old price. The
+JetBrains-intended fix for genuinely shared usage is one daemon in
+`--multi-client` socket mode with editors as `--client` bridges — a lifecycle
+this config has not taken on.
+
 **Breaks:** slowly and confusingly if the cache turns stale or corrupt after a
 kotlin-lsp upgrade — the symptom is an Alpha server behaving oddly on a project
 that used to work. `rm -rf ~/.cache/kotlin-lsp` is the reset; the next start
 pays one full re-index. The first start on any machine still pays it too — the
-flag makes the second start fast, nothing makes the first one fast.
+flag makes the second start fast, nothing makes the first one fast. And two
+editors importing the *same* project concurrently still contend on the
+project's own `.gradle` locks — that layer predates the cache and no wrapper
+fixes it.
