@@ -52,6 +52,7 @@
       # load-bearing: docs/decisions/csharp.md#organize-imports-goes-through-vimlspconfig
       luaConfigRC.roslyn-settings = ''
         vim.lsp.config("roslyn", {
+          cmd = { "Microsoft.CodeAnalysis.LanguageServer", "--stdio" },
           settings = {
             ["csharp|formatting"] = {
               dotnet_organize_imports_on_format = true,

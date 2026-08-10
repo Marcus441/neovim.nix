@@ -52,11 +52,23 @@ restarts it in a loop, so Razor-enabled meant no C# LSP at all (observed
 2026-08-10, `~/.local/state/nvf/lsp.log`). With the extension off, roslyn.nvim
 launches plain `{exe, --stdio}` and the server runs. `.razor` files still match
 the `roslyn` client's filetypes, just without Razor tooling. The unfree
-`vscode-extension-ms-dotnettools-csharp` predicate stays — re-enabling is one
-line once the pin's roslyn-ls understands the flags.
+`vscode-extension-ms-dotnettools-csharp` predicate stays — re-enabling once the
+pin's roslyn-ls understands the flags means flipping `razor.enabled` **and**
+removing the `cmd` override below.
 
-**Breaks:** loudly, the same way, if re-enabled before the pin moves: check
-`:checkhealth vim.lsp` / the lsp.log for "Unrecognized command or argument".
+The `cmd` in the `vim.lsp.config("roslyn", …)` merge-call is static —
+`{ "Microsoft.CodeAnalysis.LanguageServer", "--stdio" }`, resolved from the
+wrapper's `$PATH` where nvf puts roslyn-ls. That is the plugin's own migration
+path: its default cmd is a function (`get_default_cmd`) that both assembles the
+extension flags and fires a `vim.deprecate` notice whenever a non-empty
+`extensions` table exists — and nvf always passes one, even with razor
+disabled. The notice fires at client start, during buffer load, *before*
+`VimEnter` — so the fidget wrapper below cannot catch it. A static `cmd` means
+`get_default_cmd` never runs: no deprecate notice, no flags, same command line.
+
+**Breaks:** silently, in one specific way: re-enabling razor without removing
+the `cmd` override leaves the razor flags unbuilt — razor "on" but inert.
+Check `:lua =vim.lsp.get_clients({name="roslyn"})[1].config.cmd`.
 
 ## Roslyn notifications go through fidget
 
