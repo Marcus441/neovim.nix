@@ -3,6 +3,7 @@
     vim.languages.csharp = {
       enable = true;
       treesitter.enable = true;
+      format.type = ["csharpier"];
       lsp.enable = lib.mkDefault false;
     };
   };
@@ -13,7 +14,6 @@
         enable = true;
         servers = ["roslyn-ls"];
       };
-      format.enable = true;
       extensions.roslyn-nvim = {
         enable = true;
         setupOpts.filewatching = "roslyn";
