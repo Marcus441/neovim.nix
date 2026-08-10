@@ -104,12 +104,17 @@ in {
       if dists ? ${system}
       then preferPathExe pkgs "kotlin-lsp" (lib.getExe (mkKotlinLsp pkgs lib dists.${system}))
       else "kotlin-lsp";
+
+    # load-bearing: docs/decisions/kotlin-lsp.md#the-index-cache-is-persistent
+    kotlinLspCached = lib.getExe (pkgs.writeShellScriptBin "kotlin-lsp-cached" ''
+      exec ${kotlinLspExe} --system-path "''${XDG_CACHE_HOME:-$HOME/.cache}/kotlin-lsp" "$@"
+    '');
   in {
     vim = {
       languages.kotlin.extraDiagnostics.enable = true;
 
       lsp.servers.kotlin_lsp = {
-        cmd = [kotlinLspExe "--stdio"];
+        cmd = [kotlinLspCached "--stdio"];
         filetypes = ["kotlin"];
         workspace_required = true;
         root_markers = [

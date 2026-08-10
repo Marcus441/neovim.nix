@@ -172,3 +172,24 @@ would arrive as a hand-pinned `fetchFromGitHub` rev.
 **Breaks:** visibly, in the buffer, and only on completion accept. If it turns
 out to bite in practice, revisit; the alternative is a vendored plugin whose rev
 is maintained by hand against an Alpha server.
+
+## The index cache is persistent
+
+**Why:** the `cmd` in `modules/languages/kotlin.nix` runs through a
+`kotlin-lsp-cached` wrapper that passes
+`--system-path "$XDG_CACHE_HOME/kotlin-lsp"` (falling back to `~/.cache`).
+Without it, kotlin-lsp picks a fresh `/tmp/idea-system<random>` every launch
+and its IntelliJ engine re-indexes the whole project from zero — measured on an
+Android project (2026-08-10), the server was still unindexed and had not
+answered `initialize` after 280 s, on both the current build and `fd6b8c0`, so
+"kotlin worked before" was a warm-cache memory, not a regression. Until
+`initialize` completes, Neovim's `get_clients` hides the client and everything
+reports "no active LSP" — that is a server still booting, not a failure to
+attach. The wrapper adds the flag *outside* `preferPathExe`, so it applies to a
+devshell's kotlin-lsp too.
+
+**Breaks:** slowly and confusingly if the cache turns stale or corrupt after a
+kotlin-lsp upgrade — the symptom is an Alpha server behaving oddly on a project
+that used to work. `rm -rf ~/.cache/kotlin-lsp` is the reset; the next start
+pays one full re-index. The first start on any machine still pays it too — the
+flag makes the second start fast, nothing makes the first one fast.
