@@ -1,5 +1,9 @@
 {
-  flake.modules.nvf.gui = {pkgs, ...}: {
+  flake.modules.nvf.gui = {
+    pkgs,
+    lib,
+    ...
+  }: {
     vim = {
       extraPlugins = {
         vim-dadbod = {
@@ -94,6 +98,24 @@
           key = "<leader>D";
           action = "<CMD>DBUIToggle<CR>";
           desc = "[D]atabase UI";
+        }
+      ];
+
+      augroups = [{name = "DboutCleanup";}];
+
+      autocmds = [
+        {
+          event = ["FileType"];
+          pattern = ["dbout"];
+          desc = "Disable snacks indent/scope guides in query result buffers";
+          group = "DboutCleanup";
+          callback = lib.mkLuaInline ''
+            function(args)
+              vim.b[args.buf].snacks_indent = false
+              vim.b[args.buf].snacks_scope = false
+              vim.wo.wrap = false
+            end
+          '';
         }
       ];
     };

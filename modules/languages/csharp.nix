@@ -1,10 +1,28 @@
 {
   flake.modules.nvf.core = {lib, ...}: {
-    vim.languages.csharp = {
-      enable = true;
-      treesitter.enable = true;
-      format.type = ["csharpier"];
-      lsp.enable = lib.mkDefault false;
+    vim = {
+      languages.csharp = {
+        enable = true;
+        treesitter.enable = true;
+        format.type = ["csharpier"];
+        lsp.enable = lib.mkDefault false;
+      };
+
+      augroups = [{name = "CSharpIndent";}];
+      autocmds = [
+        {
+          event = ["FileType"];
+          pattern = ["cs"];
+          desc = "Use smartindent for C# since treesitter has no indent queries";
+          group = "CSharpIndent";
+          callback = lib.mkLuaInline ''
+            function()
+              vim.bo.indentexpr = ""
+              vim.bo.smartindent = true
+            end
+          '';
+        }
+      ];
     };
   };
 
