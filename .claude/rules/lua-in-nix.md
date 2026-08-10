@@ -21,7 +21,7 @@ stray trailing statement is a syntax error in `init.lua`, discovered at Neovim
 start rather than at build time.
 
 A large body belongs in a `.lua` file read with `builtins.readFile`
-(`modules/extra-plugins.nix:6` does this for the kanagawa setup). `import-tree`
+(`modules/kanagawa.nix:6` does this for the kanagawa setup). `import-tree`
 imports `.nix` only, so the `.lua` file needs no `/_` prefix.
 
 ## The escaping traps
@@ -44,7 +44,8 @@ or rewording one changes the output derivation. So:
 - **Two lines is the cap.** A third means it is an argument. A PostToolUse hook
   enforces the cap across `--`, `--[[ ]]`, `#`, `//` and `/* */`.
 - A one-line note like `-- The keep function is embedded directly within the Lua
-  string` (`modules/auto-cmds.nix:65`) is fine — it explains why the shape is odd.
+  string` (`modules/macro-recording.nix:16`) is fine — it explains why the shape
+is odd.
 
 The cap does not apply to Nix comments *outside* a `''` block. Those are governed
 by CLAUDE.md §10: one `# load-bearing: docs/decisions/<area>.md#anchor` pointer,
@@ -57,7 +58,7 @@ or nothing.
 `luaConfigRC.dadbod` between files leaves the output identical; renaming the key
 does not. `extraPlugins` is likewise ordered by its `after` field, and that field
 resolves **across files** — `modules/undo.nix` puts `undotree` after the
-`theme-plugin` that `modules/extra-plugins.nix` declares, and neither file's
+`theme-plugin` that `modules/kanagawa.nix` declares, and neither file's
 position matters.
 
 This is the opposite of `vim.autocmds` and friends, which are lists ordered by

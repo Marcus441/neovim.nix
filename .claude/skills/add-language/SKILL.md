@@ -54,8 +54,8 @@ dotnet assembly nobody has on `$PATH`.
 | `lsp.enable = true`, `servers`, extensions | `gui` | the language file |
 | `lsp.servers.<name>.cmd` override | `gui` | the language file |
 | treesitter query patch | `core` | the language file (`clang.nix` has the cpp one) |
-| `enableFormat` / `enableTreesitter` / `enableExtraDiagnostics` | both | `languages/defaults.nix` — language-wide, do not touch per language |
-| filetype/indent autocmd | `core` | `modules/auto-cmds.nix` today; the language file is defensible |
+| `enableFormat` / `enableTreesitter` / `enableExtraDiagnostics` | both | `languages/every-language.nix` — language-wide, do not touch per language |
+| filetype/indent autocmd | `core` | the language file, with its augroup |
 
 ## The rules that bite
 
@@ -82,14 +82,15 @@ dotnet assembly nobody has on `$PATH`.
   `preferPathExe` fallback in its `gui` half at `lib.mkOverride 40`. Check the
   closure, not just the build.
 - **Some languages need an indent autocmd.** C# has one because treesitter ships
-  no indent queries for it (`modules/auto-cmds.nix:32-43`). If indentation is
-  wrong in practice, this is why.
+  no indent queries for it (`modules/languages/csharp.nix:11-25`). If indentation
+  is wrong in practice, this is why. It lives in the language file along with its
+  `augroups` entry — the autocmd and the group it fires into stay together.
 
 ## Removing a language
 
 Delete the file — then grep the language name *and* the server name across the
-tree, because `defaults.nix`, `modules/auto-cmds.nix` and `modules/formatter.nix`
-can still mention it and none of them live in `languages/`.
+tree, because `languages/every-language.nix` and `modules/formatter.nix` can
+still mention it and neither is named after a language.
 
 ## Verify
 

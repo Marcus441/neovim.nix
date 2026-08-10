@@ -26,7 +26,7 @@ vim.extraPlugins = {
 
 `after` is the **only** ordering mechanism for these — file position does
 nothing, and it resolves across files: `modules/undo.nix` orders undotree after
-the `theme-plugin` that `modules/extra-plugins.nix` declares.
+the `theme-plugin` that `modules/kanagawa.nix` declares.
 
 ## 2. Which aspect?
 
@@ -81,6 +81,16 @@ and column-0 traps, and the two-line cap on comments inside `''`.
 Add a **new file** targeting the same aspect. Do not add an enable flag — split
 into two files and let variants differ by aspect. `mkEnableOption` per aspect is
 an anti-pattern: variants compose by *taking* aspects, not by enabling them.
+
+**A plugin that is really a suite gets a base file plus one sibling per facet**,
+named `<plugin>-<facet>.nix` and flat — `snacks.nix` holds `enable` and the
+toggles that are nothing but a boolean, while `snacks-picker.nix`,
+`snacks-indent.nix`, `snacks-notifier.nix`, `snacks-gitbrowse.nix`,
+`snacks-zen.nix` and `snacks-dashboard.nix` each own a facet and its keymaps.
+This is the shape `~/.dotfiles/flake` uses for the same problem (`hyprland.nix`
+beside `hyprland-binds.nix`, `hyprland-rules.nix`). Do **not** name the facet
+after the capability alone — a bare `picker.nix` does not say what provides it —
+and do not let the base file grow back into a list of toggles.
 
 Adding a keymap or an autocmd appends to a `listOf`, so it lands in file order
 and will move the store path. That is expected; see
