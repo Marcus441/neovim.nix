@@ -25,6 +25,8 @@ in {
         cmd = lib.mkForce [
           (preferPathExe pkgs "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
         ];
+        # load-bearing: docs/decisions/prefer-path.md#rustaceanvim-owns-activation
+        filetypes = ["rust"];
       };
     };
   };

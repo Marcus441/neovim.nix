@@ -38,7 +38,14 @@ rustaceanvim's — two processes indexing one crate, doubled diagnostics. It loo
 like a slow editor, not a misconfiguration. `:lua =#vim.lsp.get_clients()` on a
 Rust buffer is the check; one is correct.
 
-**Also:** the `filetypes` field is what gives that second activation a trigger,
-so it goes when `enable = false` does. The `lib.mkForce` on `cmd` overrides
-nothing today — nvf ships no rust-analyzer preset — and is kept for symmetry
-with the five servers where it is load-bearing.
+**Also:** the entry carries `filetypes = ["rust"]`, and not as a trigger — with
+`enable = false` nothing fires regardless. It is a blast radius limit: a config
+*without* `filetypes` matches **every** filetype, in both places that read it —
+`:lsp enable` with no arguments collects it into any buffer's enable list
+(`ex_cmd.lua` treats nil as match-all), and once enabled it attaches to every
+buffer. That was observed 2026-08-10: a bare `:lsp enable`, run to nudge a slow
+kotlin-lsp, put rust-analyzer on kotlin and C# buffers. Scoped to `rust`, the
+worst case of an accidental enable is the duplicated-client failure above, on
+rust buffers only. The `lib.mkForce` on `cmd` overrides nothing today — nvf
+ships no rust-analyzer preset — and is kept for symmetry with the five servers
+where it is load-bearing.
