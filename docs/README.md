@@ -24,9 +24,13 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Three values carry one today — `modules/nixpkgs.nix`, `modules/formatter.nix`
-and `modules/prefer-path.nix`. They are exactly the three whose **Breaks** line
-says *silently*; a value that fails loudly does not need a pointer.
+Five files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
+`modules/direnv.nix` (three), `modules/formatter.nix` (two) and
+`modules/languages/rust.nix`. The test is the **Breaks** line: a value that
+fails *silently* earns a pointer, one that fails loudly does not. The
+`mkOverride 40` in `modules/formatter.nix` is the one that looks like an
+exception and isn't — the wrong override *errors*, but the plausible mistake
+next to it, a plain assignment, loses to `core` without a word.
 
 A pointer to an entry that does not exist is worse than no pointer, so the two
 land in the same commit.
