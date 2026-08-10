@@ -6,23 +6,29 @@
 `kotlin-language-server`, the fwcd server this repo already tried and removed.
 JetBrains publishes kotlin-lsp only as a per-platform archive on its own CDN, so
 `modules/languages/kotlin.nix` fetches that archive and patches it. The version
-and both Linux hashes sit in the `dists` attrset at the top of the file; bumping
-the server is editing that one record.
+and all four per-system hashes sit in the `dists` attrset at the top of the
+file; bumping the server is editing that one record.
 
 The archive is not on GitHub. Releases are tagged `kotlin-lsp/vNNN.NNNN.N` in
 `Kotlin/kotlin-lsp` with **no** release assets — the body links to
 `download-cdn.jetbrains.com/language-server/kotlin-server/<version>/`, and
 `kotlin-server-<version>.tar.gz` is x86_64 while `-aarch64.tar.gz` is arm64
-(`.sit` is macOS, `.win.zip` is Windows). JetBrains publishes a `.sha256`
-beside each, so a bump needs no 376 MB download: `curl` the checksum and run
-`nix hash convert --to sri --hash-algo sha256 <hex>`.
+(`.sit` is the same pair for macOS, `.win.zip` is Windows). JetBrains publishes
+a `.sha256` beside each, so a bump needs no 376 MB download: `curl` the
+checksum and run `nix hash convert --to sri --hash-algo sha256 <hex>`.
 
-**Breaks:** at eval, loudly, on any platform outside `dists`. Only the two Linux
-tarballs are wired up; on darwin `kotlinLspExe` falls back to the bare string
-`kotlin-lsp` and the server is whatever is on `$PATH`, if anything. The guard is
-an `if dists ? ${system}` around a lazy `let`, not a `mkIf` — see
-`.claude/rules/evaluation-hazards.md` on excluding by attribute rather than by
-value, because the excluded branch names a derivation that cannot be built there.
+All four systems in `modules/systems.nix` are wired up: two Linux tarballs and
+the two macOS `.sit`s, `-aarch64.sit` for Apple silicon and the unsuffixed
+`.sit` for Intel. Note that nixpkgs 26.05 is the last release to support
+`x86_64-darwin`, so that entry has a known expiry.
+
+**Breaks:** at eval, loudly, on any platform outside `dists` — no such platform
+is currently in `modules/systems.nix`, so the guard is dormant rather than
+load-bearing. It is an `if dists ? ${system}` around a lazy `let`, not a
+`mkIf` — see `.claude/rules/evaluation-hazards.md` on excluding by attribute
+rather than by value, because the excluded branch names a derivation that
+cannot be built there. The fallback that guard selects is the bare string
+`kotlin-lsp`, i.e. whatever is on `$PATH`, if anything.
 
 **Also:** the entrypoint is **`bin/intellij-server`**, a native ELF launcher, not
 a jar and not a shell script. `kotlin-lsp.sh` still exists at the archive root
@@ -34,13 +40,47 @@ copied-around Neovim snippet says `cmd = { "kotlin-ls", "--stdio" }`. The
 wrapper here is named `kotlin-lsp`, matching the README's own "Install
 kotlin-lsp CLI" and the Homebrew formula.
 
+## The darwin archive is a zip
+
+**Why:** JetBrains names the macOS build `.sit`, but it is not StuffIt — the
+bytes are an ordinary zip (`PK\x03\x04`, a normal end-of-central-directory, 912
+entries under a single `kotlin-server-<version>/` root). stdenv's `unpackFile`
+dispatches on the *extension* of the store path, and no hook matches `.sit`, so
+the unmodified fetch dies with `do not know how to unpack source archive`. The
+fix is one line: `fetchurl` takes an explicit `name` ending in `.zip`, which is
+what `unzip`'s `_tryUnzip` hook matches on, and `unzip` joins
+`nativeBuildInputs`. Renaming the *store path* is all it takes; the URL keeps
+its `.sit`.
+
+The extracted tree is byte-for-byte the shape the Linux tarball has —
+`bin/intellij-server` (Mach-O, and marked `100755` in the zip's Unix external
+attributes, so it lands executable), `jbr/` holding the macOS
+`Contents/Home` bundle, and 221 symlinks that `unzip` restores. So the
+`installPhase` is shared with Linux unchanged.
+
+**Also:** the ELF apparatus is Linux-only and is now guarded as such —
+`autoPatchelfHook`, the `stdenv.cc.cc.lib`/`zlib` `buildInputs` and the
+`autoPatchelfIgnoreMissingDeps` soname list all sit behind
+`lib.optionals (!isDarwin)`. On Mach-O `autoPatchelfHook` is not an error, it
+is a silent no-op — `auto_patchelf_file` catches `ELFError` and returns nothing
+— so the guard buys correctness and a smaller darwin build closure, not a fixed
+build. The guards are written so the Linux lists are unchanged: verified by
+store path, `kotlin-lsp-262.9593.0` is identical before and after.
+
+**Breaks:** loudly at build time, on darwin only, if JetBrains ever switches
+the `.sit` to a real StuffIt container — the symptom is `unzip` failing on a
+bad signature rather than the old "do not know how to unpack". Check the magic
+with `curl -r 0-3` before assuming a hash bump is enough.
+
 ## The bundled runtime is headless
 
 **Why:** the archive ships its own JetBrains Runtime (`jbr/`, Java 25) and the
 launcher resolves it relative to itself, so the package keeps the tree intact
 under `$out/libexec/kotlin-lsp` and `makeWrapper`s the launcher into `$out/bin`.
 A symlink would not do — the launcher finds `IDE_HOME` from its own location.
-`autoPatchelfHook` fixes the interpreter and the JBR's shared objects.
+On Linux `autoPatchelfHook` fixes the interpreter and the JBR's shared objects;
+darwin needs no equivalent, because the Mach-O binaries resolve their libraries
+inside the preserved tree and against the system's own dyld cache.
 
 Ten of those shared objects want a GUI or an audio stack that a language server
 never loads: AWT under X11 and Wayland, `libsplashscreen`, `libfontmanager`,
@@ -225,13 +265,22 @@ not a thin bridge. Do not "fix" the config back to it.
 **Mechanics:** the ensure script serializes on a *blocking* `flock -w 30` of
 `$cache/.wrapper-lock`, held only for the check-and-start — the daemon is
 spawned with fd 9 closed and `setsid -f`, so it outlives and is unhooked from
-any editor; its output goes to `$cache/daemon.log`, its identity to
+any editor. Both of those survive the move to darwin: nixpkgs' `util-linux`
+builds on aarch64-darwin and its `bin/` really does carry `flock` and `setsid`,
+and the `/dev/tcp` port probe is a bash builtin, which `runtimeShell` is on
+both platforms; its output goes to `$cache/daemon.log`, its identity to
 `$cache/daemon.pid` and `$cache/daemon.port`. A daemon counts as alive only if
 its pid answers `kill -0` *and* its port accepts a connect; anything less —
 including a wedged JVM that holds the pid but not the socket — is killed
-(TERM, then KILL, only if `/proc/<pid>/cmdline` is really `intellij-server`)
-and replaced, never accreted beside, because two processes on one system path
-is the hang this design exists to prevent. Port choice: 9999 first
+(TERM, then KILL, only if `ps -p <pid> -o command=` is really
+`intellij-server`) and replaced, never accreted beside, because two processes
+on one system path is the hang this design exists to prevent. That identity
+check reads `ps` and not `/proc/<pid>/cmdline` because macOS has no `/proc`:
+there the `grep` simply never matched, so the stale-daemon branch silently
+declined to kill and the script went on to spawn a *second* daemon on the same
+`--system-path` — precisely the collision it exists to avoid. `ps` is pinned
+from `pkgs.procps`, which supplies `bin/ps` on both Linux and darwin, so there
+is one code path rather than a platform branch. Port choice: 9999 first
 (kotlin-lsp's own default), then 10999/11999/12999 if a foreign listener holds
 it — the winner is read from the port file at connect time, never hardcoded in
 Lua. The socket accepted ~0.6 s after spawn on a warm machine, and an editor

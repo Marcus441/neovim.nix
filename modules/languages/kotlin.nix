@@ -8,60 +8,82 @@
     x86_64-linux = {
       arch = "";
       hash = "sha256-LZnY4Zj75KqPRIHjd5lyTOlIA7TqEqYLQWBA4/zXzF4=";
+      extension = "tar.gz";
     };
     aarch64-linux = {
       arch = "-aarch64";
       hash = "sha256-IxeDHG5WB9BbfrwdplUzASXODj1m+/JFF9/ORC3rwU4=";
+      extension = "tar.gz";
+    };
+    aarch64-darwin = {
+      arch = "-aarch64";
+      hash = "sha256-a6YCGnBrIeZM7zP34refGHwJEDIHIrstPtBa0RFexD8=";
+      extension = "sit";
+    };
+    x86_64-darwin = {
+      arch = "";
+      hash = "sha256-Fzaf2pfIVBisJKs4qd9WshUio0aN/hk4Mv5FXBOSB0U=";
+      extension = "sit";
     };
   };
 
-  mkKotlinLsp = pkgs: lib: dist:
-    pkgs.stdenv.mkDerivation {
-      pname = "kotlin-lsp";
-      inherit version;
+  mkKotlinLsp = pkgs: lib: dist: let
+    inherit (pkgs.stdenv.hostPlatform) isDarwin;
+    archive = "kotlin-server-${version}${dist.arch}";
+  in
+    pkgs.stdenv.mkDerivation ({
+        pname = "kotlin-lsp";
+        inherit version;
 
-      src = pkgs.fetchurl {
-        url = "https://download-cdn.jetbrains.com/language-server/kotlin-server/${version}/kotlin-server-${version}${dist.arch}.tar.gz";
-        inherit (dist) hash;
-      };
+        src = pkgs.fetchurl ({
+            url = "https://download-cdn.jetbrains.com/language-server/kotlin-server/${version}/${archive}.${dist.extension}";
+            inherit (dist) hash;
+          }
+          # load-bearing: docs/decisions/kotlin-lsp.md#the-darwin-archive-is-a-zip
+          // lib.optionalAttrs (dist.extension == "sit") {name = "${archive}.zip";});
 
-      nativeBuildInputs = [pkgs.autoPatchelfHook pkgs.makeWrapper];
-      buildInputs = [pkgs.stdenv.cc.cc.lib pkgs.zlib];
+        nativeBuildInputs =
+          lib.optionals (!isDarwin) [pkgs.autoPatchelfHook]
+          ++ [pkgs.makeWrapper]
+          ++ lib.optionals isDarwin [pkgs.unzip];
 
+        buildInputs = lib.optionals (!isDarwin) [pkgs.stdenv.cc.cc.lib pkgs.zlib];
+
+        dontConfigure = true;
+        dontBuild = true;
+        dontStrip = true;
+
+        installPhase = ''
+          runHook preInstall
+          mkdir -p $out/libexec/kotlin-lsp
+          cp -r . $out/libexec/kotlin-lsp
+          makeWrapper $out/libexec/kotlin-lsp/bin/intellij-server $out/bin/kotlin-lsp
+          runHook postInstall
+        '';
+
+        meta = {
+          description = "Official JetBrains language server for Kotlin";
+          homepage = "https://github.com/Kotlin/kotlin-lsp";
+          license = lib.licenses.unfree;
+          mainProgram = "kotlin-lsp";
+          platforms = lib.attrNames dists;
+        };
+      }
       # load-bearing: docs/decisions/kotlin-lsp.md#the-bundled-runtime-is-headless
-      autoPatchelfIgnoreMissingDeps = [
-        "libasound.so.2"
-        "libfreetype.so.6"
-        "libwayland-client.so.0"
-        "libwayland-cursor.so.0"
-        "libX11.so.6"
-        "libXext.so.6"
-        "libXi.so.6"
-        "libxkbcommon.so.0"
-        "libXrender.so.1"
-        "libXtst.so.6"
-      ];
-
-      dontConfigure = true;
-      dontBuild = true;
-      dontStrip = true;
-
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out/libexec/kotlin-lsp
-        cp -r . $out/libexec/kotlin-lsp
-        makeWrapper $out/libexec/kotlin-lsp/bin/intellij-server $out/bin/kotlin-lsp
-        runHook postInstall
-      '';
-
-      meta = {
-        description = "Official JetBrains language server for Kotlin";
-        homepage = "https://github.com/Kotlin/kotlin-lsp";
-        license = lib.licenses.unfree;
-        mainProgram = "kotlin-lsp";
-        platforms = lib.attrNames dists;
-      };
-    };
+      // lib.optionalAttrs (!isDarwin) {
+        autoPatchelfIgnoreMissingDeps = [
+          "libasound.so.2"
+          "libfreetype.so.6"
+          "libwayland-client.so.0"
+          "libwayland-cursor.so.0"
+          "libX11.so.6"
+          "libXext.so.6"
+          "libXi.so.6"
+          "libxkbcommon.so.0"
+          "libXrender.so.1"
+          "libXtst.so.6"
+        ];
+      });
 in {
   flake.modules.nvf.core = {lib, ...}: {
     vim = {
@@ -127,7 +149,7 @@ in {
 
       if [ -r "$cache/daemon.pid" ]; then
         oldpid=$(cat "$cache/daemon.pid")
-        if grep -q intellij-server "/proc/$oldpid/cmdline" 2>/dev/null; then
+        if ${pkgs.procps}/bin/ps -p "$oldpid" -o command= 2>/dev/null | grep -q intellij-server; then
           kill "$oldpid" 2>/dev/null
           i=0
           while [ "$i" -lt 25 ] && kill -0 "$oldpid" 2>/dev/null; do

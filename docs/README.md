@@ -24,11 +24,12 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Six files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
-`modules/direnv.nix` (three), `modules/formatter.nix` (two),
-`modules/languages/rust.nix` and `modules/languages/nix.nix` (five). The test is
-the **Breaks** line: a value that
-fails *silently* earns a pointer, one that fails loudly does not. The
+Eight files carry one today — `modules/nixpkgs.nix` and
+`modules/prefer-path.nix`, `modules/formatter.nix` (two),
+`modules/languages/rust.nix` (two), `modules/direnv.nix` (three),
+`modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
+`modules/languages/csharp.nix` (eight). The test is the **Breaks** line: a value
+that fails *silently* earns a pointer, one that fails loudly does not. The
 `mkOverride 40` in `modules/formatter.nix` is the one that looks like an
 exception and isn't — the wrong override *errors*, but the plausible mistake
 next to it, a plain assignment, loses to `core` without a word.
