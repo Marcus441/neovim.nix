@@ -28,6 +28,10 @@
   };
 
   flake.modules.nvf.gui = {
+    pkgs,
+    lib,
+    ...
+  }: {
     vim = {
       languages.csharp = {
         lsp = {
@@ -54,6 +58,30 @@
           },
         })
       '';
+
+      debugger.nvim-dap = {
+        # load-bearing: docs/decisions/csharp.md#netcoredbg
+        adapters.coreclr = {
+          type = "executable";
+          command = "${pkgs.netcoredbg}/bin/netcoredbg";
+          args = ["--interpreter=vscode"];
+        };
+        configurations.cs = [
+          {
+            type = "coreclr";
+            name = "launch - netcoredbg";
+            request = "launch";
+            program = lib.mkLuaInline ''
+              function()
+                return vim.fn.input("Path to dll: ", vim.fn.getcwd() .. "/bin/Debug/", "file")
+              end
+            '';
+          }
+        ];
+      };
+
+      # load-bearing: docs/decisions/csharp.md#netcoredbg
+      extraPackages = [pkgs.netcoredbg pkgs.dotnet-sdk_8];
     };
   };
 }

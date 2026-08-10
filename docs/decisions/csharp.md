@@ -41,3 +41,27 @@ merge-call form composes regardless of order.
 `settings` from `setup()`. The check is
 `:lua =vim.lsp.get_clients({name="roslyn"})[1].config.settings` showing the
 `csharp|formatting` table.
+
+## netcoredbg
+
+**Why:** the coreclr debug adapter is Samsung's netcoredbg — MIT in nixpkgs, no
+`allowUnfreePredicate` entry. Microsoft's vsdbg is proprietary and licensed for
+use with Visual Studio products only, so it is not an option here.
+`--interpreter=vscode` is the DAP wire protocol nvim-dap speaks. The adapter
+and the cs launch configuration live in the csharp file (the language owns its
+debug config); the generic `nvim-dap` + UI enable is `modules/debugger.nix`.
+
+`dotnet-sdk_8` rides along in `vim.extraPackages` as a *fallback*, not a pin
+that wins: mnw appends `extraPackages` to `$PATH` (`vim.env.PATH = vim.env.PATH
+.. ":…"`), so a devshell's dotnet shadows it and the packaged SDK only serves a
+host without one — launching from a desktop with no shell still restores,
+builds and debugs. This is `gui` buying out-of-the-box weight `min` refuses,
+the same split as `docs/decisions/formatters.md#gui-re-adds-a-pinned-fallback-core-does-not`.
+roslyn-ls itself needs no `$PATH` dotnet — its nixpkgs wrapper falls back to a
+bundled runtime, and the Razor extension DLLs are loaded inside roslyn-ls via
+`--extension`, never `dotnet <dll>`'d.
+
+**Breaks:** at debug time, not build time. netcoredbg launches whatever DLL the
+prompt is given; a stale path fails in the adapter with no Nix-level signal.
+And the SDK fallback means a *broken* devshell dotnet still wins over the
+working packaged one — preferPathExe's known trade, inherited here.
