@@ -175,8 +175,7 @@ is maintained by hand against an Alpha server.
 
 ## The index cache is persistent
 
-**Why:** the `cmd` in `modules/languages/kotlin.nix` runs through a
-`kotlin-lsp-cached` wrapper that passes
+**Why:** the daemon (next section) is started with
 `--system-path "$XDG_CACHE_HOME/kotlin-lsp"` (falling back to `~/.cache`).
 Without it, kotlin-lsp picks a fresh `/tmp/idea-system<random>` every launch
 and its IntelliJ engine re-indexes the whole project from zero — measured on an
@@ -185,28 +184,93 @@ answered `initialize` after 280 s, on both the current build and `fd6b8c0`, so
 "kotlin worked before" was a warm-cache memory, not a regression. Until
 `initialize` completes, Neovim's `get_clients` hides the client and everything
 reports "no active LSP" — that is a server still booting, not a failure to
-attach. The wrapper adds the flag *outside* `preferPathExe`, so it applies to a
+attach. The flag is added *outside* `preferPathExe`, so it applies to a
 devshell's kotlin-lsp too.
 
 **Also:** the cache is **single-holder**. An IntelliJ system directory does not
 tolerate two processes: measured 2026-08-10, with one editor's kotlin-lsp
 attached and healthy, a second instance on the same cache sat uninitialized for
 9+ minutes with no error at all — silent serialization, which reads as "one
-editor blocks the other". So the wrapper takes a `flock` on
-`$cache/.wrapper-lock` (held by inheritance for the server's lifetime): the
-first instance gets the persistent cache, every concurrent one detects the held
-lock and falls back to a throwaway `mktemp -d` system path — cold and slow, the
-pre-cache behaviour, but functional instead of hung. One kotlin-lsp instance
-per machine is fast; run a second and it pays the old price. The
-JetBrains-intended fix for genuinely shared usage is one daemon in
-`--multi-client` socket mode with editors as `--client` bridges — a lifecycle
-this config has not taken on.
+editor blocks the other". That is why exactly one process may ever hold the
+cache, and why that process is a shared daemon rather than a per-editor server.
 
 **Breaks:** slowly and confusingly if the cache turns stale or corrupt after a
 kotlin-lsp upgrade — the symptom is an Alpha server behaving oddly on a project
-that used to work. `rm -rf ~/.cache/kotlin-lsp` is the reset; the next start
-pays one full re-index. The first start on any machine still pays it too — the
-flag makes the second start fast, nothing makes the first one fast. And two
-editors importing the *same* project concurrently still contend on the
-project's own `.gradle` locks — that layer predates the cache and no wrapper
-fixes it.
+that used to work. Kill the daemon (`kill $(cat ~/.cache/kotlin-lsp/daemon.pid)`),
+then `rm -rf ~/.cache/kotlin-lsp`; the next start pays one full re-index. The
+first start on any machine still pays it too — the flag makes the second start
+fast, nothing makes the first one fast.
+
+## One daemon serves every editor
+
+**Why:** per-editor `--stdio` servers cannot share the single-holder cache
+above; the earlier flock arrangement (`94a72b6`) gave the first editor the
+cache and every concurrent one a throwaway temp dir — cold at best, and for
+the same project not even that (see the limitation below). The shape JetBrains
+built is one long-lived server owning the cache and editors connecting to it:
+`kotlin-lsp-daemon` (in `modules/languages/kotlin.nix`) starts
+`kotlin-lsp --multi-client --socket 127.0.0.1:<port> --system-path $cache`
+exactly once, and each editor's `cmd` is a Lua function that runs the ensure
+script, reads the port off its stdout, and returns
+`vim.lsp.rpc.connect("127.0.0.1", port)` — Neovim's own TCP client is the
+stdio-to-socket bridge.
+
+**The bridge is *not* `kotlin-lsp --client`.** Measured 2026-08-10 against the
+pinned 262.9593.0: `--client` boots a *second* full JVM (2 GB Xmx), prints
+IntelliJ logs on stdout — which alone would corrupt LSP framing — and never
+answered an `initialize` sent on stdin in 60 s. It is a reverse-connection mode
+for editors that listen on a socket themselves (the VSCode extension's shape),
+not a thin bridge. Do not "fix" the config back to it.
+
+**Mechanics:** the ensure script serializes on a *blocking* `flock -w 30` of
+`$cache/.wrapper-lock`, held only for the check-and-start — the daemon is
+spawned with fd 9 closed and `setsid -f`, so it outlives and is unhooked from
+any editor; its output goes to `$cache/daemon.log`, its identity to
+`$cache/daemon.pid` and `$cache/daemon.port`. A daemon counts as alive only if
+its pid answers `kill -0` *and* its port accepts a connect; anything less —
+including a wedged JVM that holds the pid but not the socket — is killed
+(TERM, then KILL, only if `/proc/<pid>/cmdline` is really `intellij-server`)
+and replaced, never accreted beside, because two processes on one system path
+is the hang this design exists to prevent. Port choice: 9999 first
+(kotlin-lsp's own default), then 10999/11999/12999 if a foreign listener holds
+it — the winner is read from the port file at connect time, never hardcoded in
+Lua. The socket accepted ~0.6 s after spawn on a warm machine, and an editor
+attached through the running daemon in ~3 s; the script waits up to 30 s.
+
+**The daemon lingers, deliberately.** `--multi-client` never self-terminates
+and the binary has no idle-timeout flag, so a ~2 GB-heap JVM stays resident
+after the last editor closes. Accepted: killing on last disconnect would re-pay
+JVM boot and cache load every session, and an idle reaper is a
+process-lifecycle job — a systemd-user unit in the machine's own config, out of
+scope for a flake that only builds editor packages. Reclaim by hand with
+`kill $(cat ~/.cache/kotlin-lsp/daemon.pid)`.
+
+**What it does not fix: two editors in the same project.** Measured
+2026-08-10, fresh daemon, warm index, Android project: the first editor
+initialized in 3 s and held its session; a second editor on the same file
+starved for its full 300 s timeout. The daemon log says why — every LSP
+session opens a per-project workspace store at
+`~/.config/JetBrains/analyzer/workspaces/<hash-of-project-path>/rocks/`, and
+the second session dies at `RocksDB.open`: `lock hold by current process …
+LOCK: No locks available`, whereupon the server drops that client and Neovim's
+restart loop retries into the same wall. One session per project at a time,
+*even inside one multi-client daemon*. The store is keyed by project path and
+lives outside `--system-path`, so no wrapper arrangement dodges it — the
+9-minute silent serialization of two stdio processes (previous section) was
+this same store contending across processes instead of within one. Upstream
+closed the different-*project* variant (Kotlin/kotlin-lsp#108, late 2025);
+the pinned 262.9593.0 is the latest release and still has the same-project
+case (cf. #141) — re-measure on the next bump. What the daemon does buy:
+sequential editors re-attach in seconds instead of a JVM boot each, and
+concurrent editors on *different* projects get separate workspace hashes and
+one warm shared JVM (expected from the store layout; not yet measured).
+
+**Breaks:** if the daemon dies mid-session, every attached editor's client
+drops at once — Neovim reports the LSP exit, and the next client start
+(`:edit` the buffer, or restart the editor) re-runs the ensure script, which
+sees the dead pid and spawns a replacement — exercised, not assumed: the
+staggered measurement above began with a killed daemon and the first editor's
+own start respawned it. The stale pid/port files are overwritten, not trusted.
+During an upgrade overlap, an old-style `--stdio` instance from a still-open
+editor holds the same lock for its whole lifetime, so the new ensure script
+times out after 30 s until that editor closes.

@@ -105,22 +105,87 @@ in {
       then preferPathExe pkgs "kotlin-lsp" (lib.getExe (mkKotlinLsp pkgs lib dists.${system}))
       else "kotlin-lsp";
 
-    # load-bearing: docs/decisions/kotlin-lsp.md#the-index-cache-is-persistent
-    kotlinLspCached = lib.getExe (pkgs.writeShellScriptBin "kotlin-lsp-cached" ''
+    # load-bearing: docs/decisions/kotlin-lsp.md#one-daemon-serves-every-editor
+    kotlinLspDaemon = lib.getExe (pkgs.writeShellScriptBin "kotlin-lsp-daemon" ''
       cache="''${XDG_CACHE_HOME:-$HOME/.cache}/kotlin-lsp"
       mkdir -p "$cache"
+
+      probe() { (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null; }
+
       exec 9>"$cache/.wrapper-lock"
-      if ${pkgs.util-linux}/bin/flock -n 9; then
-        exec ${kotlinLspExe} --system-path "$cache" "$@"
+      if ! ${pkgs.util-linux}/bin/flock -w 30 9; then
+        echo "kotlin-lsp-daemon: timed out on $cache/.wrapper-lock" >&2
+        exit 1
       fi
-      exec ${kotlinLspExe} --system-path "$(mktemp -d -t kotlin-lsp-overflow.XXXXXX)" "$@"
+
+      if [ -r "$cache/daemon.pid" ] && [ -r "$cache/daemon.port" ] \
+        && kill -0 "$(cat "$cache/daemon.pid")" 2>/dev/null \
+        && probe "$(cat "$cache/daemon.port")"; then
+        cat "$cache/daemon.port"
+        exit 0
+      fi
+
+      if [ -r "$cache/daemon.pid" ]; then
+        oldpid=$(cat "$cache/daemon.pid")
+        if grep -q intellij-server "/proc/$oldpid/cmdline" 2>/dev/null; then
+          kill "$oldpid" 2>/dev/null
+          i=0
+          while [ "$i" -lt 25 ] && kill -0 "$oldpid" 2>/dev/null; do
+            sleep 0.2
+            i=$((i + 1))
+          done
+          kill -9 "$oldpid" 2>/dev/null
+        fi
+      fi
+
+      port=
+      for candidate in 9999 10999 11999 12999; do
+        if ! probe "$candidate"; then
+          port=$candidate
+          break
+        fi
+      done
+      if [ -z "$port" ]; then
+        echo "kotlin-lsp-daemon: ports 9999/10999/11999/12999 all busy" >&2
+        exit 1
+      fi
+
+      ${pkgs.util-linux}/bin/setsid -f ${pkgs.runtimeShell} -c \
+        'echo "$$" >"$1/daemon.pid" && exec ${kotlinLspExe} --multi-client --socket "127.0.0.1:$2" --system-path "$1"' \
+        kotlin-lsp-daemon "$cache" "$port" \
+        </dev/null >"$cache/daemon.log" 2>&1 9>&-
+      echo "$port" >"$cache/daemon.port"
+
+      i=0
+      while [ "$i" -lt 150 ]; do
+        if probe "$port"; then
+          echo "$port"
+          exit 0
+        fi
+        sleep 0.2
+        if [ -r "$cache/daemon.pid" ] && ! kill -0 "$(cat "$cache/daemon.pid")" 2>/dev/null; then
+          break
+        fi
+        i=$((i + 1))
+      done
+      echo "kotlin-lsp-daemon: no accept on 127.0.0.1:$port; see $cache/daemon.log" >&2
+      exit 1
     '');
   in {
     vim = {
       languages.kotlin.extraDiagnostics.enable = true;
 
       lsp.servers.kotlin_lsp = {
-        cmd = [kotlinLspCached "--stdio"];
+        cmd = lib.mkLuaInline ''
+          function(dispatchers)
+            local out = vim.fn.system({ "${kotlinLspDaemon}" })
+            if vim.v.shell_error ~= 0 then
+              error("kotlin-lsp-daemon failed: " .. out)
+            end
+            local port = assert(tonumber(vim.trim(out)), "kotlin-lsp-daemon printed no port: " .. out)
+            return vim.lsp.rpc.connect("127.0.0.1", port)(dispatchers)
+          end
+        '';
         filetypes = ["kotlin"];
         workspace_required = true;
         root_markers = [
