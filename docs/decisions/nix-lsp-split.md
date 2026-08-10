@@ -55,23 +55,56 @@ attribute name because the system flake sets `networking.hostName` from the same
 key it names the host by; `vim.env.USER` matches the `marcus@<host>` half of
 `homeConfigurations` for the same reason.
 
-`formatting.command` is set to `alejandra` for consistency with
-`modules/formatter.nix`, and is inert as written — `nixd`'s
-`documentFormattingProvider` is cleared by the partition above, and conform-nvim
-owns format-on-save. It is one line, and it is the line that would have to be
-right the moment the partition moves.
+There is no `formatting.command`. `nixd`'s `documentFormattingProvider` is
+cleared by the partition above and conform-nvim owns format-on-save, so the
+setting would never be read; if the partition ever moves, it comes back in the
+same edit that moves it.
 
-**Breaks:** silently, in the way that config reading the outside world always
-does. A missing `~/.dotfiles/flake`, an evaluation error in it, or a renamed
-host attribute does not stop `nixd` from attaching or produce a message — with
-`nixd`'s diagnostics suppressed there is nowhere for the complaint to surface.
-Completions just come back empty, which is indistinguishable from having nothing
-to complete. `:LspLog` after triggering a completion is the check; failing that,
-evaluating the `expr` string by hand under `nix eval --impure` reproduces it in
-one step.
+**Breaks:** loudly now, but only at the edges the check below covers. What
+remains silent is the case where the flake evaluates and names this host, yet
+`nixd` still cannot use it — a wrong or missing `inputs.nixpkgs` is the live
+example. `nixd` does not report that either; it falls back to a default
+`nixpkgs` off `NIX_PATH` and keeps completing, so `pkgs.` returns 25 plausible
+attributes from the wrong tree and nothing anywhere says so. Comparing a
+`pkgs.` completion against `nix eval --impure --expr 'builtins.attrNames (import
+(builtins.getFlake "~/.dotfiles/flake").inputs.nixpkgs { })'` is the only check
+that distinguishes them.
 
-**Also:** this is the second thing in the tree that reads the outside world and
-fails to an empty result rather than a report — `modules/database.nix` is the
-first, and `.claude/rules/lua-in-nix.md` asks that a third be argued for rather
-than added. The shared cost is that the build succeeds on a machine where the
-feature cannot possibly work.
+**Also:** the option half fails differently from the `nixpkgs` half, which is
+worth knowing before debugging one as the other. A bad `options` expr does not
+return empty — the request never returns at all, measured past 200 s, so
+completion simply never appears. Empty means *evaluated and found nothing*;
+absent means *hung*.
+
+## Reporting the precondition
+
+**Why:** the failure above is invisible from inside Neovim — `nixd` emits no
+`window/showMessage` and no `window/logMessage` when its flake is unreachable,
+measured at zero messages — and it cannot be detected by watching completions
+either, because the `nixpkgs` half lies plausibly and the options half hangs. So
+the check has to run against the *inputs*, before `nixd` is handed them:
+`luaConfigRC.nixd-flake-check` stats the flake on the first Nix buffer, then
+asks Nix for the two output name lists and confirms this host is in both.
+
+It is affordable because `builtins.attrNames` does not force the configurations
+themselves — 0.142 s warm for all three hosts, against the minutes a real
+evaluation costs. It runs once per session, `vim.system` is asynchronous, and
+nothing about it can delay a completion.
+
+**Breaks:** by returning to silence, which is the state this repo had before it
+and reads exactly the same. Deleting the autocmd does not fail any build or any
+test; it removes the only warning on a path that otherwise degrades invisibly.
+The `pcall` around `vim.system` is load-bearing for the same reason — `gui`
+launches from a desktop launcher with no devshell, and a missing `nix` on
+`$PATH` would otherwise throw inside the callback where nobody reads it.
+
+All five paths are checked: correct flake stays silent; missing flake,
+non-evaluating flake, host absent from either output, and `nix` absent from
+`$PATH` each name what is wrong.
+
+**Also:** this is the third thing in the tree that reads the outside world, after
+`modules/database.nix` and `modules/direnv.nix` — but it is the first that
+reports rather than failing to an empty result, which is what
+`.claude/rules/lua-in-nix.md` asks for when a fourth is proposed. The residual
+cost is unchanged: the build still succeeds on a machine where the feature
+cannot work. It now says so.

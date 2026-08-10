@@ -26,7 +26,7 @@ config.preferPathExe = pkgs: name: fallbackExe:
 
 Six files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
 `modules/direnv.nix` (three), `modules/formatter.nix` (two),
-`modules/languages/rust.nix` and `modules/languages/nix.nix` (two). The test is
+`modules/languages/rust.nix` and `modules/languages/nix.nix` (three). The test is
 the **Breaks** line: a value that
 fails *silently* earns a pointer, one that fails loudly does not. The
 `mkOverride 40` in `modules/formatter.nix` is the one that looks like an
@@ -41,8 +41,9 @@ no error anywhere, so the pointer is the only warning. This repo has several
 already: the `allowUnfreePredicate` that roslyn needs, the `$PATH` formatter
 resolution that keeps `min` small, `preferPath` preferring a possibly-broken
 devshell binary over the pinned one, and the Nix LSP split, where a dropped
-`handlers` entry doubles every diagnostic and a stale flake path empties
-completion without a word.
+`handlers` entry doubles every diagnostic. The Nix split is also the one place
+that answers the objection: its flake precondition is checked and *reported*,
+so deleting the check is what restores the silence.
 
 ## Where else things live
 
