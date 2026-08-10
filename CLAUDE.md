@@ -119,9 +119,10 @@ A working model, not a mechanism. **Measure; do not predict** — recipe in
 **Default to `core`. Justify the exception.** `min` ships to every host; `gui` is
 one program's launcher, so a line in `gui` that could have been `core` is a line
 the terminal editor does without for no reason. The counter-pressure is closure
-size: `core` resolves rustfmt and clang-format from `$PATH` rather than pinning
-them, because each drags ~2 GB into `min` (`docs/decisions/formatters.md`). **A
-`core` line that pulls a toolchain into `min` is what justifies `gui`.**
+size: `core` resolves **every** formatter from `$PATH` rather than pinning one,
+because `min` is opened from inside `nix develop` and rustfmt and clang-format
+alone drag ~2 GB each (`docs/decisions/formatters.md`). **A `core` line that
+pulls a toolchain into `min` is what justifies `gui`.**
 
 ## 7. Hazards and verification
 
