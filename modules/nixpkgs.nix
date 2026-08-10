@@ -9,6 +9,7 @@
       # load-bearing: docs/decisions/nixpkgs.md#allowunfreepredicate
       config.allowUnfreePredicate = pkg:
         builtins.elem (lib.getName pkg) [
+          "kotlin-lsp"
           "vscode-extension-ms-dotnettools-csharp"
         ];
     };
