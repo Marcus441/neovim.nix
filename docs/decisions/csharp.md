@@ -58,6 +58,37 @@ line once the pin's roslyn-ls understands the flags.
 **Breaks:** loudly, the same way, if re-enabled before the pin moves: check
 `:checkhealth vim.lsp` / the lsp.log for "Unrecognized command or argument".
 
+## Roslyn notifications go through fidget
+
+**Why:** roslyn.nvim narrates its lifecycle with `vim.notify` — "Initializing
+Roslyn for: …", "Roslyn project initialization complete", server-stopped, plus
+a once-per-session `vim.deprecate` notice fired because nvf always passes an
+`extensions` table to `setup()` (even with razor disabled, the table is
+non-empty). Those are progress, not alerts, so they belong in fidget's corner
+with the rest of the LSP chatter, while snacks-notifier keeps everything else
+(`modules/lsp-progress.nix` sets `override_vim_notify = false` for exactly that
+split). Every roslyn.nvim message carries `title = "roslyn.nvim"`, and the
+deprecate text embeds the plugin name, so a wrapper routes on those two keys.
+
+The wrapper installs from a `VimEnter` autocmd, not at config time: snacks
+replaces `vim.notify` wholesale during its setup, and module order between the
+two files is exactly the thing this repo refuses to predict (CLAUDE.md §5).
+And it is *self-healing*, because wrapping once is not enough: snacks installs
+a self-replacing shim — the first notification through it reassigns
+`vim.notify = Snacks.notifier.notify` (snacks/init.lua, `M.config.notifier`
+branch), which evicts a naive wrapper on the first passthrough. So on every
+delegated call the wrapper restores the delegate as `vim.notify`, lets it run
+(and self-replace if it wants), re-captures whatever `vim.notify` then is, and
+reinstalls itself. A later wholesale replacement is absorbed the same way on
+the next call. `lz.n` must trigger-load fidget before use — same as
+`modules/direnv.nix`.
+
+**Breaks:** silently, if roslyn.nvim retitles its notifications, or if
+something assigns `vim.notify` outside a notify call *and* no further
+passthrough notification ever fires. The check: `:LspRestart` in a cs buffer
+should put "Initializing Roslyn" in fidget's corner, not a snacks toast — and
+it must still do so after one unrelated notification has been shown.
+
 ## netcoredbg
 
 **Why:** the coreclr debug adapter is Samsung's netcoredbg — MIT in nixpkgs, no

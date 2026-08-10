@@ -83,6 +83,37 @@
 
       # load-bearing: docs/decisions/csharp.md#netcoredbg
       extraPackages = [pkgs.netcoredbg pkgs.dotnet-sdk_8];
+
+      augroups = [{name = "RoslynFidget";}];
+      autocmds = [
+        {
+          event = ["VimEnter"];
+          desc = "Divert roslyn.nvim notifications to fidget, wrapping whichever notify won startup";
+          group = "RoslynFidget";
+          # load-bearing: docs/decisions/csharp.md#roslyn-notifications-go-through-fidget
+          callback = lib.mkLuaInline ''
+            function()
+              local delegate = vim.notify
+              local wrapper
+              wrapper = function(msg, level, opts)
+                local roslyn = (opts and opts.title == "roslyn.nvim")
+                  or (type(msg) == "string" and msg:find("roslyn.nvim", 1, true))
+                if roslyn then
+                  require("lz.n").trigger_load("fidget-nvim")
+                  return require("fidget").notify(msg, level, opts)
+                end
+                vim.notify = delegate
+                local ok, res = pcall(delegate, msg, level, opts)
+                delegate = vim.notify
+                vim.notify = wrapper
+                assert(ok, res)
+                return res
+              end
+              vim.notify = wrapper
+            end
+          '';
+        }
+      ];
     };
   };
 }
