@@ -41,7 +41,8 @@
         extensions.roslyn-nvim = {
           enable = true;
           setupOpts.filewatching = "roslyn";
-          setupOpts.extensions.razor.enabled = true;
+          # load-bearing: docs/decisions/csharp.md#razor-is-disabled-until-the-pin-catches-up
+          setupOpts.extensions.razor.enabled = false;
         };
       };
 

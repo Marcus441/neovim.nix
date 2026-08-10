@@ -42,6 +42,22 @@ merge-call form composes regardless of order.
 `:lua =vim.lsp.get_clients({name="roslyn"})[1].config.settings` showing the
 `csharp|formatting` table.
 
+## Razor is disabled until the pin catches up
+
+**Why:** `extensions.razor.enabled = false`. The nixpkgs pin builds roslyn-ls
+5.9.0-1.26314.1, which accepts `--extension` but not the
+`--razorSourceGenerator=` / `--razorDesignTimePath=` flags nvf's Razor config
+appends — the server rejects them and exits 1 on every start, and roslyn.nvim
+restarts it in a loop, so Razor-enabled meant no C# LSP at all (observed
+2026-08-10, `~/.local/state/nvf/lsp.log`). With the extension off, roslyn.nvim
+launches plain `{exe, --stdio}` and the server runs. `.razor` files still match
+the `roslyn` client's filetypes, just without Razor tooling. The unfree
+`vscode-extension-ms-dotnettools-csharp` predicate stays — re-enabling is one
+line once the pin's roslyn-ls understands the flags.
+
+**Breaks:** loudly, the same way, if re-enabled before the pin moves: check
+`:checkhealth vim.lsp` / the lsp.log for "Unrecognized command or argument".
+
 ## netcoredbg
 
 **Why:** the coreclr debug adapter is Samsung's netcoredbg — MIT in nixpkgs, no
