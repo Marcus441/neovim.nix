@@ -26,6 +26,17 @@ it, so brightening the red makes *that* pairing worse — 2.66 at samuraiRed, 1.
 at waveRed. Its override here flips the foreground to `ui.bg`, dark on red,
 which is 5.61 and is what kanagawa itself does for `MiniHipatternsFixme`. Check
 whether a colour is ever read as a background before rebalancing it.
+**Also** `base08 #c4746e` is the obvious candidate and was rejected. base16
+convention makes base08 the error slot, but dragon is not a base16 scheme: it
+spends `dragonRed` on five syntax roles — `operator`, `preproc`, `regex`,
+`special2`, `special3` — before it reaches ANSI slot 1, and measured in the
+editor `Operator`, `@operator` and `PreProc` all resolve to it. An error in that
+colour is the colour of every `=` and `#include` on screen. `waveRed` carries
+exactly one role in dragon, ANSI slot 9, and no syntax role at all, which is
+what leaves it free. It is also the stronger fix, 5.61 against 5.21. Upstream's
+own answer to the same collision is `samuraiRed`, a red that appears nowhere in
+dragon's `term` table — so putting diagnostics *into* that table is this
+config's departure, and the reason is contrast.
 **Also** the terminal owns *how* the curl is drawn and this file owns *what
 colour* it is; the two are independent. `~/.dotfiles/flake` carries the other
 half at `docs/decisions/terminal.md#terminal-stroke-weight` — undercurl
