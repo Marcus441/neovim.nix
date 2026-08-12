@@ -24,8 +24,8 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Nine files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`
-and `modules/clipboard.nix`, `modules/formatter.nix` (two),
+Ten files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
+`modules/clipboard.nix` and `modules/auto-complete.nix`, `modules/formatter.nix` (two),
 `modules/languages/rust.nix` (two), `modules/direnv.nix` (three),
 `modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
 `modules/languages/csharp.nix` (eight). The test is the **Breaks** line: a value

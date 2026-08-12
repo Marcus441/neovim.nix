@@ -4,9 +4,19 @@
       autocomplete.blink-cmp = {
         enable = true;
         friendly-snippets.enable = true;
+        # load-bearing: docs/decisions/completion-keymaps.md#nulling-nvfs-mappings
+        mappings = {
+          confirm = null;
+          next = null;
+          previous = null;
+        };
         setupOpts = {
           keymap.preset = "default";
-          cmdline.keymap.preset = "default";
+          cmdline.keymap = {
+            preset = "default";
+            "<Tab>" = ["select_next" "show" "fallback"];
+            "<S-Tab>" = ["select_prev" "fallback"];
+          };
           signature.enabled = true;
           fuzzy.implementation = "prefer_rust_with_warning";
           sources = {
@@ -47,7 +57,10 @@
               auto_insert = false;
             };
             accept.auto_brackets.enabled = true;
-            ghost_text.enabled = false;
+            ghost_text = {
+              enabled = true;
+              show_without_selection = true;
+            };
             menu = {
               auto_show = true;
               winblend = 0;
