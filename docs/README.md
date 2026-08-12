@@ -29,7 +29,7 @@ Eleven files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix
 `modules/languages/rust.nix` (two), `modules/direnv.nix` (three),
 `modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
 `modules/languages/csharp.nix` (eight) and `modules/neovide.nix`. The twelfth is
-`modules/kanagawa-setup.lua`, where the pointer is a `--` rather than a `#`
+`modules/kanagawa-setup.lua` (two), where the pointer is a `--` rather than a `#`
 because the value it marks is Lua — subject to the two-line cap that governs
 everything shipping into `init.lua`, which a one-line pointer meets.
 The test is the **Breaks** line: a value

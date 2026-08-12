@@ -1,7 +1,27 @@
 {
-  flake.modules.nvf.core = {
+  flake.modules.nvf.core = {lib, ...}: {
     vim.utility.snacks-nvim.setupOpts.picker = {
       enabled = true;
+
+      layout = lib.generators.mkLuaInline ''
+        {
+          layout = {
+            box = "horizontal",
+            width = 0.9,
+            height = 0.85,
+            {
+              box = "vertical",
+              width = 0.5,
+              { win = "input", height = 1, border = "solid",
+                title = "{title} {live} {flags}", title_pos = "center" },
+              { win = "list", border = "solid", title = " Results ", title_pos = "center" },
+            },
+            { win = "preview", border = "solid",
+              title = "{preview}", title_pos = "center" },
+          },
+        }
+      '';
+
       sources.zoxide = {};
       sources.projects = {
         dev = ["~/Projects" "~/projects" "~/oss"];

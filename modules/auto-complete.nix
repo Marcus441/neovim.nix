@@ -17,7 +17,13 @@
             "<Tab>" = ["select_next" "show" "fallback"];
             "<S-Tab>" = ["select_prev" "fallback"];
           };
-          signature.enabled = true;
+          signature = {
+            enabled = true;
+            window = {
+              border = "solid";
+              winblend = 0;
+            };
+          };
           fuzzy.implementation = "prefer_rust_with_warning";
           sources = {
             default = ["lsp" "snippets" "path" "buffer"];
@@ -64,6 +70,7 @@
             menu = {
               auto_show = true;
               winblend = 0;
+              border = "solid";
               draw = {
                 treesitter = ["lsp"];
                 columns = [
@@ -77,6 +84,10 @@
             documentation = {
               auto_show = true;
               auto_show_delay_ms = 300;
+              window = {
+                border = "solid";
+                winblend = 0;
+              };
             };
           };
         };
