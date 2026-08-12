@@ -1,11 +1,18 @@
 {
-  flake.modules.nvf.core = {
+  flake.modules.nvf.core = {lib, ...}: {
     vim.diagnostics = {
       enable = true;
       config = {
         underline = true;
         severity_sort = true;
-        signs = true;
+        signs.text = lib.generators.mkLuaInline ''
+          {
+            [vim.diagnostic.severity.ERROR] = "󰅚 ",
+            [vim.diagnostic.severity.WARN] = "󰀪 ",
+            [vim.diagnostic.severity.INFO] = "󰋽 ",
+            [vim.diagnostic.severity.HINT] = "󰌶 ",
+          }
+        '';
         virtual_lines = {
           current_line = true;
           severity = {

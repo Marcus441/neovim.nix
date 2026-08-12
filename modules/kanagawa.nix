@@ -1,5 +1,7 @@
-{
+{lib, ...}: {
   flake.modules.nvf.core = {pkgs, ...}: {
+    vim.globals.theme_transparent = lib.mkDefault true;
+
     vim.extraPlugins = {
       theme-plugin = {
         package = pkgs.vimPlugins.kanagawa-nvim;
@@ -7,4 +9,6 @@
       };
     };
   };
+
+  flake.modules.nvf.gui.vim.globals.theme_transparent = false;
 }

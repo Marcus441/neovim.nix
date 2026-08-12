@@ -1,15 +1,5 @@
-local is_neovide = vim.g.neovide ~= nil
-local is_wsl = (vim.uv or vim.loop).os_uname().release:lower():find("microsoft") ~= nil
-
-if is_neovide and is_wsl then
-	vim.o.guifont = "IosevkaTerm Nerd Font Mono:h11"
-	if vim.fn.argc() == 0 then
-		vim.cmd.cd(vim.fn.expand("~"))
-	end
-end
-
 require("kanagawa").setup({
-	transparent = not is_neovide,
+	transparent = vim.g.theme_transparent,
 	colors = {
 		theme = {
 			all = {
