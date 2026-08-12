@@ -4,6 +4,8 @@
       enable = true;
       setupOpts = {
         notification.override_vim_notify = false;
+        # load-bearing: docs/decisions/theme.md#picker-blocks
+        notification.window.border = "none";
         progress = {
           suppress_on_insert = true;
           ignore_done_already = true;

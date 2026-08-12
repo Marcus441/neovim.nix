@@ -30,6 +30,21 @@ a visible frame in the wrong colour.
 and `vim.options.winborder` (`"single"`, still the global default) is what they
 would otherwise inherit. Colour and style have to change together or the block
 reads as a mis-coloured frame.
+**Also** fidget goes the *other* way, and the reason is that it has no
+neighbour. A block separates one pane from the next; LSP progress is a single
+transient corner toast with nothing beside it, so a block there is decoration.
+It also paints nothing — fidget's `winblend = 100` means the interior never
+renders, which is deliberate: a long progress message must not blank out the
+code under it. `modules/lsp-progress.nix` therefore sets
+`notification.window.border = "none"`, restoring fidget's *own* default.
+`vim.ui.borders.globalStyle` had overridden it to `"single"`, which framed a
+window that draws no background — buffer text visibly bleeding through a hard
+border. **Do not "fix" that by lowering `winblend`.**
+**Also** `modules/borders.nix` is now load-bearing for a reason it was not
+before: `vim.ui.borders.enable` is what switches noice's `lsp_doc_border` on,
+and the entry above depends on that frame existing in order to paint it out.
+Its only other live consumers are `:LspInfo`'s windows. Turning it off would
+silently flatten the hover doc against the buffer.
 **Also** the LSP hover doc is the exception that needs no style change, and the
 reason is worth knowing before touching it. noice owns `textDocument/hover` here
 — the float's `winhighlight` is `Normal:NoicePopup,FloatBorder:NoicePopupBorder`
