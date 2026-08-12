@@ -49,6 +49,13 @@ autocmd instead would land in `vim.autocmds`, whose order is load-bearing.
 the block translucent again; `modules/snacks-notifier.nix` sets it to 0. The
 notifier's *border* keeps its per-level diagnostic `fg` because the `fancy`
 style draws its rule with that group.
+**Also** `modules/session.nix` sets `usePicker = false` for this. nvf adds
+`dressing-nvim` to `startPlugins` whenever nvim-session-manager wants a picker
+UI, and dressing *patches* `vim.ui.input` and `vim.ui.select` at load, taking
+them off snacks. It carries its own `border = "rounded"` and nvf exposes no
+option to configure it, so the only lever is not loading it. With it gone,
+snacks owns both prompts in `gui` as it already did in `min`, and the session
+picker falls through `vim.ui.select` to the snacks picker.
 
 <a id="diag-error"></a>
 ## `kanagawa-setup.lua` — `diag.error` is waveRed, not dragon's own samuraiRed
