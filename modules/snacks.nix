@@ -8,6 +8,11 @@
         quickfile.enabled = true;
         scope.enabled = true;
         statuscolumn.enabled = true;
+
+        styles.input = {
+          border = "solid";
+          row = 2;
+        };
       };
     };
   };

@@ -8,6 +8,16 @@
           command_palette = true;
           bottom_search = false;
         };
+        views = {
+          cmdline_popup.border = {
+            style = "none";
+            padding = [1 2];
+          };
+          cmdline_popupmenu.border = {
+            style = "none";
+            padding = [1 2];
+          };
+        };
       };
     };
   };

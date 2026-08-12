@@ -2,6 +2,8 @@
   flake.modules.nvf.gui = {
     vim.session.nvim-session-manager = {
       enable = true;
+      # load-bearing: docs/decisions/theme.md#picker-blocks
+      usePicker = false;
       setupOpts = {
         autosave_last_session = true;
         autoload_mode = "Disabled";
