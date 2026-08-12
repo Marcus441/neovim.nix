@@ -1,0 +1,4 @@
+# nix build output symlinks — scripts/verify.sh runs `git add -A`, which stages
+# them into the flake source unless they are ignored.
+/result
+/result-*
