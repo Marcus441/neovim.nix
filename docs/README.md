@@ -24,11 +24,15 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Ten files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
+Eleven files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
 `modules/clipboard.nix` and `modules/auto-complete.nix`, `modules/formatter.nix` (two),
 `modules/languages/rust.nix` (two), `modules/direnv.nix` (three),
 `modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
-`modules/languages/csharp.nix` (eight). The test is the **Breaks** line: a value
+`modules/languages/csharp.nix` (eight). The eleventh is
+`modules/kanagawa-setup.lua`, where the pointer is a `--` rather than a `#`
+because the value it marks is Lua — subject to the two-line cap that governs
+everything shipping into `init.lua`, which a one-line pointer meets.
+The test is the **Breaks** line: a value
 that fails *silently* earns a pointer, one that fails loudly does not. The
 `mkOverride 40` in `modules/formatter.nix` is the one that looks like an
 exception and isn't — the wrong override *errors*, but the plausible mistake

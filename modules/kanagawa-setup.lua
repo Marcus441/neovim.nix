@@ -9,6 +9,10 @@ require("kanagawa").setup({
 						bg = "none",
 					},
 				},
+				-- load-bearing: docs/decisions/theme.md#diag-error
+				diag = {
+					error = "#e46876",
+				},
 			},
 		},
 	},
@@ -24,6 +28,9 @@ require("kanagawa").setup({
 			DiagnosticVirtualTextInfo = makeDiagnosticColor(theme.diag.info),
 			DiagnosticVirtualTextWarn = makeDiagnosticColor(theme.diag.warning),
 			DiagnosticVirtualTextError = makeDiagnosticColor(theme.diag.error),
+
+			-- Dark on red, since diag.error is read as a background here
+			["@comment.error"] = { fg = theme.ui.bg, bg = theme.diag.error, bold = true },
 
 			-------------------
 			-- Floating windows
