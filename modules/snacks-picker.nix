@@ -3,7 +3,10 @@
     vim.utility.snacks-nvim.setupOpts.picker = {
       enabled = true;
 
-      layout = lib.generators.mkLuaInline ''
+      layout.preset = "block";
+
+      # load-bearing: docs/decisions/theme.md#picker-blocks
+      layouts.block = lib.generators.mkLuaInline ''
         {
           layout = {
             box = "horizontal",
@@ -22,6 +25,40 @@
         }
       '';
 
+      layouts.select = lib.generators.mkLuaInline ''
+        {
+          hidden = { "preview" },
+          layout = {
+            backdrop = false,
+            width = 0.5, min_width = 80, max_width = 100,
+            height = 0.4, min_height = 2,
+            box = "vertical",
+            { win = "input", height = 1, border = "solid",
+              title = "{title}", title_pos = "center" },
+            { win = "list", border = "solid" },
+            { win = "preview", border = "solid" },
+          },
+        }
+      '';
+
+      layouts.vscode = lib.generators.mkLuaInline ''
+        {
+          hidden = { "preview" },
+          layout = {
+            backdrop = false,
+            row = 1,
+            width = 0.4, min_width = 80,
+            height = 0.4,
+            box = "vertical",
+            { win = "input", height = 1, border = "solid",
+              title = "{title} {live} {flags}", title_pos = "center" },
+            { win = "list", border = "solid" },
+            { win = "preview", border = "solid" },
+          },
+        }
+      '';
+
+      sources.lines.layout.preset = "block";
       sources.zoxide = {};
       sources.projects = {
         dev = ["~/Projects" "~/projects" "~/oss"];
