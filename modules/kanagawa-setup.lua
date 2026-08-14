@@ -118,13 +118,19 @@ require("kanagawa").setup({
 			SnacksInputTitle = prompt.title,
 
 			-------------------
-			-- Noice cmdline and LSP hover
+			-- Noice cmdline, confirm dialog and LSP hover
 			-------------------
 			NoicePopup = preview.normal,
 			NoicePopupBorder = preview.border,
 			NoiceCmdlinePopup = prompt.normal,
 			NoiceCmdlinePopupBorder = prompt.border,
 			NoiceCmdlinePopupTitle = prompt.title,
+
+			-- One group paints the padding and the " Confirm " title, so it takes
+			-- the title's fg rather than the border's
+			NoiceConfirm = prompt.normal,
+			NoiceConfirmBorder = prompt.title,
+
 			NoicePopupmenu = results.normal,
 			NoicePopupmenuBorder = results.border,
 			NoicePopupmenuSelected = { bg = theme.ui.bg_p2 },

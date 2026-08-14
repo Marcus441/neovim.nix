@@ -3,33 +3,46 @@
 kanagawa dragon, and the values this config does not take from it.
 
 <a id="picker-blocks"></a>
-## `kanagawa-setup.lua` — the picker, completion, input, cmdline and notifier are opaque blocks
+## `kanagawa-setup.lua` — the picker, completion, input, cmdline, notifier and confirm dialog are opaque blocks
 
 **Why** the same file sets `NormalFloat`, `FloatBorder` and `FloatTitle` to
-`bg = "none"`, so every float is a wire frame over the terminal. These five are
+`bg = "none"`, so every float is a wire frame over the terminal. These six are
 the deliberate exception: they are read as *panes*, and a pane is separated from
 its neighbour by shade, not by a drawn line. Three shades, one step apart in
 dragon, and each reused for the role it plays: `bg_p1 #282727` where you type
-(picker prompt, `vim.ui.input`, cmdline), `bg_m1 #1D1C19` for a list of choices
-(results, completion menu, notification), `bg_dim #12120f` for what a choice
-*is* (preview, completion docs, signature help). Each window's border is painted
-in its own colour, which is what turns `border = "solid"` from a frame into a
-cell of padding. Titles need that border row to render at all, so `"none"` is
-not the same thing.
+(picker prompt, `vim.ui.input`, cmdline, confirm dialog), `bg_m1 #1D1C19` for a
+list of choices (results, completion menu, notification), `bg_dim #12120f` for
+what a choice *is* (preview, completion docs, signature help). Each window's
+border is painted in its own colour, which is what turns `border = "solid"` from
+a frame into a cell of padding. Titles need that border row to render at all, so
+`"none"` is not the same thing.
 **Breaks** *Silently.* It works only because each plugin's `winhighlight`
 redirects `NormalFloat` away from the global group: snacks builds
 `SnacksPicker{,Input,List,Preview,Box}` from `picker/util/highlight.lua`, blink
 uses `BlinkCmp{Menu,Doc,SignatureHelp}`, and noice maps `NoiceCmdlinePopup` /
-`NoicePopupmenu`. Drop a `bg` here and the group falls back through that
-redirect to `bg = "none"` — the tiers collapse into one transparent pane, and
-nothing errors. Drop the matching `border` entry and the padding turns back into
-a visible frame in the wrong colour.
+`NoicePopupmenu` / `NoiceConfirm`. Drop a `bg` here and the group falls back
+through that redirect to `bg = "none"` — the tiers collapse into one transparent
+pane, and nothing errors. Drop the matching `border` entry and the padding turns
+back into a visible frame in the wrong colour.
 **Also** the *border style* is not set here. It lives with each plugin —
 `modules/snacks-picker.nix`, `modules/snacks.nix`, `modules/snacks-notifier.nix`,
 `modules/auto-complete.nix`, `modules/noice.nix` — because nvf sets none of them
 and `vim.options.winborder` (`"single"`, still the global default) is what they
 would otherwise inherit. Colour and style have to change together or the block
 reads as a mis-coloured frame.
+**Also** the confirm dialog is `solid` where noice's two cmdline views are
+`"none"`, and the inconsistency is forced. Both dialogs that reach it —
+nvim-session-manager's *Save changes?* (`session_manager/utils.lua`) and
+Neovim's W11 *has changed since editing started* — are `do_dialog` prompts,
+routed by `kind = "confirm"` to a view noice gives a static
+`border.text.top = " Confirm "`. nui treats `"none"` as *borderless*, not as a
+blank frame, and raises `text not supported for style:none` the moment a border
+carries text; its `solid` is a char map of eight spaces, so the text survives
+and lands on the padding row. The cmdline views escape this only because cmdline
+messages have no title, so noice never sets `border.text` for them. That same
+one group paints the padding *and* the title, which is why `NoiceConfirmBorder`
+takes the block's `title` entry rather than its `border` one — `fg = bg` there
+would hide the label it is meant to render.
 **Also** fidget goes the *other* way, and the reason is that it has no
 neighbour. A block separates one pane from the next; LSP progress is a single
 transient corner toast with nothing beside it, so a block there is decoration.

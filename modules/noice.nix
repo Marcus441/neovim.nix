@@ -17,6 +17,8 @@
             style = "none";
             padding = [1 2];
           };
+          # load-bearing: docs/decisions/theme.md#picker-blocks
+          confirm.border.style = "solid";
         };
       };
     };
