@@ -82,6 +82,20 @@ lives in the file that installs the plugin, not in a keymap directory.
 `decisions/` for why one file made its call. A `# load-bearing:` comment in a
 `.nix` file points at the entry explaining why that value cannot change freely.
 
+## Working on this repo
+
+Git hooks are tracked in `.githooks/` — `commit-msg` lints the commit message,
+`pre-push` refuses a force-push to `main`. They are enabled by `core.hooksPath`,
+which is per-clone local config and is **not** carried by a clone, so run this
+once per checkout:
+
+```bash
+./scripts/install-hooks.sh
+```
+
+`./scripts/test-githooks.sh` asserts what they do; `./scripts/verify.sh build`
+builds all three outputs.
+
 ## Keybindings
 
 Leader is `<Space>`.
