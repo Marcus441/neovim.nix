@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+# commit-msg: the mechanically checkable half of the commit standard -- subject
+# length, mood, and body wrap. The judgement half (one logical change, refactor
+# kept apart from behaviour, PR scope) is prose in CLAUDE.md 10 and is not
+# checked here: a hook cannot read a diff for coherence and should not pretend.
+#
+# Subject is measured in two parts because 38 of the last 40 subjects carry a
+# type(scope): prefix and the scope is long -- fix(languages/csharp): alone is
+# 23 chars. Measuring the whole line against 50 rejects 33 of 40 good commits;
+# measuring the description after the prefix rejects 15, all of them genuinely
+# over budget. Bodies are wrapped at 72 by convention but the repo writes to 80,
+# so 73-80 is a note and only >80 fails.
+set -uo pipefail
+set -f  # the body scan word-splits a line; a lone * must not glob
+
+msgfile=${1:-}
+[ -n "$msgfile" ] && [ -f "$msgfile" ] || exit 0
+
+# Bodies carry em dashes and arrows. ${#s} counts characters under a UTF-8
+# locale and bytes under C, which over-reports by 2 per em dash. A missing
+# UTF-8 locale can therefore only reject a line that fits, never pass one that
+# does not -- strict, never lax.
+dash=$'\xe2\x80\x94'
+if [ ${#dash} -ne 1 ]; then
+  saved=${LC_ALL:-}
+  for loc in C.UTF-8 C.utf8 en_US.UTF-8; do
+    export LC_ALL=$loc
+    [ ${#dash} -eq 1 ] && break
+  done
+  [ ${#dash} -eq 1 ] || { [ -n "$saved" ] && export LC_ALL="$saved" || unset LC_ALL; }
+fi
+
+SUBJECT_MAX=72
+DESC_MAX=50
+BODY_HARD=80
+BODY_SOFT=72
+UNBREAKABLE=25
+
+# Drop git's comment lines, and everything below the --verbose scissors, where
+# the diff that follows is not commented.
+msg=$(awk '/^#.*>8/ { exit } /^#/ { next } { print }' "$msgfile")
+
+# An aborted commit leaves nothing but whitespace. Git discards it anyway.
+[ -n "$(printf '%s' "$msg" | tr -d '[:space:]')" ] || exit 0
+
+# Leading blank lines are not the subject.
+stripped=$(printf '%s\n' "$msg" | sed -e '/./,$!d')
+subject=$(printf '%s\n' "$stripped" | head -n1)
+
+gitdir=$(git rev-parse --git-dir 2>/dev/null || printf '.git')
+[ -e "$gitdir/MERGE_HEAD" ] && exit 0
+
+# Machine-written subjects nobody gets to edit at commit time. fixup!/squash!/
+# amend! are consumed by rebase --autosquash; Merge and Revert are generated.
+case $subject in
+  'fixup! '*|'squash! '*|'amend! '*) exit 0 ;;
+  'Merge '*|'Revert '*) exit 0 ;;
+esac
+
+fail=0
+reject() {
+  printf 'commit-msg: %s\n' "$1" >&2
+  printf '    %s\n' "$2" >&2
+  fail=1
+}
+
+# ---- subject ---------------------------------------------------------------
+
+sublen=${#subject}
+
+case $subject in
+  *.) reject "subject ends with a period" "$subject" ;;
+esac
+
+[ "$sublen" -le "$SUBJECT_MAX" ] \
+  || reject "subject is $sublen chars, over the $SUBJECT_MAX limit" "$subject"
+
+# The type(scope): prefix is overhead, not part of the summary the reader gets.
+desc=$subject
+if [[ $subject =~ ^[a-z]+(\([^\)]*\))?!?:[[:space:]] ]]; then
+  desc=${subject#*: }
+fi
+desclen=${#desc}
+
+[ "$desclen" -le "$DESC_MAX" ] \
+  || reject "description is $desclen chars, over the $DESC_MAX limit (the type(scope): prefix is not counted)" "$desc"
+
+norm=$(printf '%s' "$desc" \
+  | tr '[:upper:]' '[:lower:]' \
+  | sed -e 's/^[[:space:]]*//' -e 's/[[:punct:][:space:]]*$//')
+
+first=${norm%% *}
+case $first in
+  fixed|added|updated|changed|removed|refactored)
+    reject "subject opens with '$first'; use the imperative -- the subject completes 'this commit will ...'" "$subject" ;;
+esac
+
+case $norm in
+  wip|'wip commit'|update|updates|'update file'|'update files'|fix|fixes|\
+  changes|'minor changes'|'more changes'|more|misc|'misc changes'|stuff|\
+  cleanup|'clean up'|tweak|tweaks|temp|tmp|typo|typos|formatting|format|\
+  lint|refactor|refactoring|chore|final|done|oops|asdf|test|tests)
+    reject "subject says nothing about what changed" "$subject" ;;
+esac
+
+# A bare tool invocation names the command, not the change it made. Every token
+# has to be tool-shaped for this to fire, so ordinary prose never matches -- its
+# second word is a preposition or a noun, not one of these verbs.
+if [[ $norm =~ ^(run[[:space:]]+)?[a-z0-9_.-]+([[:space:]]+(run|fmt|format|lint|check|build|test|install|ci|update|clean))*$ ]]; then
+  reject "subject repeats the command you ran; say what changed semantically" "$subject"
+fi
+
+# ---- body ------------------------------------------------------------------
+
+body=$(printf '%s\n' "$stripped" | tail -n +2)
+
+while IFS= read -r line; do
+  len=${#line}
+  [ "$len" -gt "$BODY_SOFT" ] || continue
+
+  # A trailer block is structured data. Co-Authored-By:, Signed-off-by:,
+  # Claude-Session: and this repo's Rationale: docs/... pointers all land here.
+  [[ $line =~ ^[A-Za-z][A-Za-z0-9-]*:[[:space:]] ]] && continue
+
+  # Wrapping a URL breaks it.
+  case $line in *http://*|*https://*|*git@*) continue ;; esac
+
+  # Long because of one token that cannot be broken -- a store hash, a
+  # docs/...#anchor. Drop it and the line would have fitted.
+  longest=0
+  for tok in $line; do
+    [ ${#tok} -gt "$longest" ] && longest=${#tok}
+  done
+  if [ "$longest" -ge "$UNBREAKABLE" ] && [ $((len - longest)) -le "$BODY_SOFT" ]; then
+    continue
+  fi
+
+  if [ "$len" -gt "$BODY_HARD" ]; then
+    reject "body line is $len chars, over the $BODY_HARD limit" "$line"
+  else
+    printf 'commit-msg: note: body line is %d chars; wrap at %d\n' "$len" "$BODY_SOFT" >&2
+    printf '    %s\n' "$line" >&2
+  fi
+done <<<"$body"
+
+if [ "$fail" -ne 0 ]; then
+  {
+    echo
+    echo "The subject completes 'this commit will ...' in the imperative, under"
+    echo "$DESC_MAX chars after any type(scope): prefix. The body explains why, not what --"
+    echo "the diff already shows what. Amend with 'git commit --amend'."
+  } >&2
+  exit 1
+fi
+
+exit 0
