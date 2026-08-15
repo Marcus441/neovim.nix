@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# pre-push: refuse a force-push to main or master.
+#
+# Git does not tell this hook whether --force was passed, so the flag cannot be
+# trapped. What it gives is the old and new tip of every ref being updated, and
+# that is the better test: a force-push is refused when it would actually
+# discard commits, and a --force that happens to fast-forward is allowed
+# because nothing is lost. Deleting the branch is refused outright.
+set -uo pipefail
+
+# [[ =~ ]] is ERE, so the brace quantifier must not be backslash-escaped. 40 or
+# more covers sha1 and sha256 repositories alike.
+ZERO='^0{40,}$'
+protected='main master'
+
+blocked=0
+
+# stdin: <local_ref> <local_sha> <remote_ref> <remote_sha>, one line per ref.
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ -n "${remote_ref:-}" ] || continue
+
+  branch=${remote_ref#refs/heads/}
+  [ "$branch" != "$remote_ref" ] || continue
+
+  case " $protected " in
+    *" $branch "*) ;;
+    *) continue ;;
+  esac
+
+  if [[ $local_sha =~ $ZERO ]]; then
+    printf 'pre-push: refusing to delete %s on the remote.\n' "$branch" >&2
+    blocked=1
+    continue
+  fi
+
+  # A branch that does not exist on the remote yet cannot lose anything.
+  [[ $remote_sha =~ $ZERO ]] && continue
+
+  if ! git merge-base --is-ancestor "$remote_sha" "$local_sha" 2>/dev/null; then
+    printf 'pre-push: refusing a force-push to %s.\n' "$branch" >&2
+    printf '    remote is at %s, which is not an ancestor of %s\n' \
+      "$(git rev-parse --short "$remote_sha" 2>/dev/null || echo "$remote_sha")" \
+      "$(git rev-parse --short "$local_sha" 2>/dev/null || echo "$local_sha")" >&2
+    blocked=1
+  fi
+done
+
+if [ "$blocked" -ne 0 ]; then
+  {
+    echo
+    echo "This would discard commits that are on the remote. Rebase onto the"
+    echo "remote tip and push a fast-forward instead. If the rewrite is genuinely"
+    echo "wanted, bypass deliberately with --no-verify."
+  } >&2
+  exit 1
+fi
+
+exit 0
