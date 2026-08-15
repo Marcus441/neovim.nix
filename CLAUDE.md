@@ -186,7 +186,31 @@ deliberate rather than an item (`.claude/rules/settled-decisions.md`,
   isolated context, returning conclusions rather than file dumps.
 - **Prefer adding a file to editing one**, especially when extending an aspect.
   Do not add an enable flag; split into two files and let variants differ by aspect.
-- **Small, single-concern commits.** Rationale in the commit message.
+- **Small, single-concern commits.** Rationale in the commit message — *why*,
+  not *what*; the diff already shows what. One logical change per commit: if the
+  subject needs the word "and", it is probably two. A change touching many files
+  for one reason is still one commit, and a coherent change is never split just
+  because its message would run long — a long body is fine, an incoherent
+  history is not. **Never mix a reformat or a rename with a behaviour change.**
+- **Commit with an explicit pathspec — `git commit -- <paths>`.** The PreToolUse
+  hook and `verify.sh` both run `git add -A`, so by commit time the whole tree is
+  usually staged; a pathspec commits those paths whatever the index holds. **This
+  includes `--amend`** — a bare `git commit --amend` re-uses the entire index and
+  silently widens the commit it is fixing. Read `git status` first and leave
+  anything that is not yours unstaged. Generated files, build artefacts and
+  editor config stay out unless the project expects them.
+- **Branch off `main`; rebase onto it before opening a PR if it has diverged.**
+  Keep the branch's commits atomic. Do not treat squash-merge as licence for
+  messy intermediates — either commit cleanly and preserve history at the merge,
+  or commit messily and write a good squash message. Not both.
+- **A PR is reviewable in one sitting, or it is too large** — split it into
+  stacked PRs or independent changes. The title follows the commit-subject
+  convention; the description is one sentence of context, then dot points
+  covering decisions rather than diffs. If it will be squash-merged, that
+  description *is* the squash commit body.
+- **`.githooks/` enforces the mechanical half** of the above; the judgement above
+  is yours. `core.hooksPath` is per-clone local config, so a fresh checkout runs
+  `./scripts/install-hooks.sh` once before any of it applies.
 - **A `.nix` file gets one kind of comment, and only one:** a one-line
   `# load-bearing: docs/<area>.md#anchor` at a value whose change breaks
   something non-obviously. No banners, no restating the line below, no
