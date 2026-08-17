@@ -1,36 +1,38 @@
 # decisions/statuscolumn
 
-## One icon slot, stock gutter width
+## Hand-rolled
 
-**Why:** snacks' default statuscolumn is `[mark/sign 2][number][fold/git 2]` —
-two icon slots, so the gutter runs 2 cells wider than stock neovim's
-`[sign 2][number 4]`. `modules/snacks-statuscolumn.nix` collapses to a single
-left slot carrying all four sign types by priority (`fold`, `sign`, `git`,
-`mark`) and the wrapper strips the now-constant 2-space right pad, bringing the
-total back to stock's 6 columns on files under 100 lines. The trade: one icon
-per line — a line with both a diagnostic and a git change shows only the
-diagnostic, and a closed fold's chevron beats both (closed folds are rare and
-deliberate, so the chevron is the higher signal).
+**Why:** the statuscolumn is a hand-written format function, not
+snacks.statuscolumn, even though snacks is already in the closure. The wanted
+behaviour is stock neovim's gutter — `[sign 2][number 4]`, same width, same
+sign-priority rules — plus exactly two extras stock cannot do: the cursor
+line's number left-aligns and juts out of the right-aligned relative numbers,
+and a closed fold shows its chevron without a dedicated `foldcolumn`. Getting
+that out of snacks meant fighting it: collapsing its two icon slots into one,
+regex surgery on its rendered string, and passing Lua *functions* where lists
+deep-merge against its defaults. Hand-rolled, the same result is ~25 lines
+against stable core APIs: `%s` renders the native sign column (gitsigns,
+diagnostics, priorities — true stock behaviour for free), `foldclosed()` is
+all the fold state needed when only closed folds get an icon, and the chevron
+sits in the number's trailing cell at zero extra width. No coupling to plugin
+internals — a snacks bump cannot move the gutter.
 
-**The number cell** is `max('numberwidth' - 1, digits(last line) + 1)` plus a
-trailing space — stock neovim's own formula, except the `+ 1` where stock has
-the last line's digits exactly. That extra column is the jut: the cursor line's
-absolute number left-aligns and needs one cell of slack to be visibly offset
-from the right-aligned relative numbers, whatever its digit count (`22c1d15`).
-So files of 100+ lines run exactly one column wider than stock. Shaving it
-reintroduces the bug `22c1d15` fixed.
+**Dropped, deliberately:** snacks' click-to-fold handler, mark signs, open-fold
+icons, and its fold/git highlight coupling. If one of those becomes wanted,
+that is the point to reconsider the plugin, not to grow this function.
 
-## Functions, not lists
+## Width
 
-**Why:** `left` and `right` are Lua *functions* returning the component lists,
-not the lists themselves, because snacks merges user config over its defaults
-with `vim.tbl_deep_extend` — and an empty table can-merge, so a literal
-`right = []` silently deep-merges into the default `{ "fold", "git" }` and
-changes nothing. A function is not mergeable and replaces the default cleanly;
-snacks calls it per render (statuscolumn.lua, `M._get`).
+**The number cell** is `max('numberwidth' - 1, digits(last line) + 1)` plus the
+trailing cell — stock neovim's own formula except the `+ 1`, where stock has
+the last line's digits exactly. That extra column is the jut: the cursor's
+absolute number needs one cell of slack to be visibly offset whatever its
+digit count (`22c1d15`). So files under 100 lines land on stock's 6 columns
+exactly, and 100+ run exactly one wider. Shaving the `+ 1` reintroduces the
+bug `22c1d15` fixed — the jut silently vanishing on lines whose number is as
+wide as the widest relative number.
 
-**Breaks:** silently. "Simplify" these to plain lists and the build still
-succeeds, but the right slot comes back for fold/git icons: the wrapper's
-2-space strip then no longer matches on lines with an icon, so the gutter
-widens by 2 whenever a closed fold or git change is on screen, and jumps as you
-scroll. Verify by rendering (pty + `screenstring()`), not by building.
+**Breaks:** visually and silently, never at build time. Verify by rendering
+(pty + `screenstring()`) at three points: a short file (stock width, jut), a
+150+ line file with the cursor on a 3-digit line (jut survives), and a closed
+fold (chevron in the trailing cell, no width change).

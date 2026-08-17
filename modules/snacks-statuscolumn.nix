@@ -1,30 +1,37 @@
 {
-  flake.modules.nvf.core = {lib, ...}: {
-    vim.utility.snacks-nvim.setupOpts.statuscolumn = {
-      enabled = false;
-      # load-bearing: docs/decisions/statuscolumn.md#functions-not-lists
-      left = lib.generators.mkLuaInline ''function() return { "fold", "sign", "git", "mark" } end'';
-      right = lib.generators.mkLuaInline ''function() return {} end'';
-    };
-
+  flake.modules.nvf.core = {
+    # load-bearing: docs/decisions/statuscolumn.md#hand-rolled
     vim.luaConfigRC.statuscolumn = ''
-      -- Wraps snacks' renderer into stock neovim's gutter width: one icon
-      -- slot, and a number cell the cursor line's number juts out left of
+      -- Native %s signs, relative numbers right-aligned, the cursor line's
+      -- number jutting out left, closed folds' chevron in the trailing cell
+      local foldicon
       _G.statuscolumn_jut = function()
-        local ret = require("snacks.statuscolumn").get()
         local win = vim.g.statusline_winid
+        local nu = vim.wo[win].number
+        local rnu = vim.wo[win].relativenumber
+        if vim.v.virtnum ~= 0 or not (nu or rnu) then
+          return "%s"
+        end
+        local lnum, relnum = vim.v.lnum, vim.v.relnum
+        local n = tostring(rnu and (relnum > 0 or not nu) and relnum or lnum)
         local buf = vim.api.nvim_win_get_buf(win)
         local w = math.max(
           vim.wo[win].numberwidth - 1,
           #tostring(vim.api.nvim_buf_line_count(buf)) + 1
         )
-        ret = ret:gsub("  %%T$", "%%T")
-        return (ret:gsub("%%=(%d+) ", function(n)
-          if vim.v.relnum == 0 then
-            return n .. "%= "
-          end
-          return "%=" .. (" "):rep(w - #n) .. n .. " "
-        end))
+        local trail = " "
+        local closed = vim.api.nvim_win_call(win, function()
+          return vim.fn.foldclosed(lnum)
+        end)
+        if closed == lnum then
+          foldicon = foldicon
+            or "%#Folded#" .. (vim.opt.fillchars:get().foldclose or "+") .. "%*"
+          trail = foldicon
+        end
+        if relnum == 0 then
+          return "%s" .. n .. "%=" .. trail
+        end
+        return "%s%=" .. (" "):rep(w - #n) .. n .. trail
       end
       vim.o.statuscolumn = "%!v:lua.statuscolumn_jut()"
     '';
