@@ -24,5 +24,5 @@ and changes nothing at all, at whichever font size it happens to round down on.
 **Also** these are vim globals, not `config.toml` keys — neovide's `Config`
 struct has no field for any of them, so the sibling flake's
 `programs.neovide.settings` cannot set them however plausible it looks. The
-colour half of the same problem is `theme.md#diag-error`, and the terminal half
-is `docs/decisions/terminal.md#terminal-stroke-weight` in `~/.dotfiles/flake`.
+terminal half of the same problem is
+`docs/decisions/terminal.md#terminal-stroke-weight` in `~/.dotfiles/flake`.
