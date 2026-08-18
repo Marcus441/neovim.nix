@@ -49,3 +49,19 @@ there as the clangd wrapper's fallback.
 
 
 
+
+## format-on-save gates on a global
+
+**Why:** conform's `format_on_save` is a function returning nothing when
+`vim.g.disable_autoformat` is set and `{}` otherwise, and `<leader>tf` (also in
+`modules/formatter.nix` — the file that installs a feature owns its keymap)
+flips that global. nvf has its own toggle machinery (`vim.g.formatsave`,
+buffer-local `<leader>ltf`), but all of it sits under `mkIf vim.lsp.enable`, so
+`min` never gets it — the gate has to live at the conform layer to exist in
+every build, and it deliberately ignores nvf's globals rather than half-reading
+them.
+
+**Breaks:** silently. Replacing the function with a plain `{}` (the old value)
+formats on every save again and the keymap keeps announcing states it no
+longer controls. The other direction — toggling and forgetting — is announced
+by `vim.notify` on each flip, which is the whole feedback.

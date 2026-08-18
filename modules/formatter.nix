@@ -6,7 +6,15 @@ in {
       formatter.conform-nvim = {
         enable = true;
         setupOpts = {
-          format_on_save = {};
+          # load-bearing: docs/decisions/formatters.md#format-on-save-gates-on-a-global
+          format_on_save = lib.mkLuaInline ''
+            function()
+              if vim.g.disable_autoformat then
+                return
+              end
+              return {}
+            end
+          '';
           # load-bearing: docs/decisions/formatters.md#path-resolution
           formatters = {
             alejandra.command = lib.mkForce "alejandra";
@@ -20,6 +28,16 @@ in {
           };
         };
       };
+
+      keymaps = [
+        {
+          mode = ["n"];
+          key = "<leader>tf";
+          action = "function() vim.g.disable_autoformat = not vim.g.disable_autoformat; vim.notify(\"Format on save \" .. (vim.g.disable_autoformat and \"disabled\" or \"enabled\")) end";
+          lua = true;
+          desc = "[T]oggle [F]ormat on save";
+        }
+      ];
     };
   };
 

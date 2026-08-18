@@ -27,7 +27,7 @@ config.preferPathExe = pkgs: name: fallbackExe:
 Seventeen files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
 `modules/clipboard.nix`, `modules/auto-complete.nix`, `modules/session.nix`,
 `modules/lsp-progress.nix`, `modules/noice.nix`, `modules/snacks-picker.nix` and
-`modules/neovide.nix`, `modules/formatter.nix` (three),
+`modules/neovide.nix`, `modules/formatter.nix` (four),
 `modules/languages/rust.nix` (two), `modules/direnv.nix` (three),
 `modules/images.nix` (three), `modules/splits.nix` (three),
 `modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and

@@ -118,6 +118,7 @@ Leader is `<Space>`.
 | `<leader>sp` / `<leader>sz` | Projects / zoxide |
 | `<leader>sm` | Marks |
 | `<leader>gs` / `<leader>gb` | Git status / browse |
+| `<leader>tf` | Toggle format on save |
 | `<leader>u` | Undotree |
 | `<leader>D` | Database UI |
 | `<leader>cs` / `<leader>cl` | Trouble symbols / LSP |
