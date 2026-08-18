@@ -21,7 +21,7 @@ in {
 
       # load-bearing: docs/decisions/prefer-path.md#rustaceanvim-owns-activation
       lsp.servers.rust-analyzer = {
-        enable = false;
+        enable = lib.mkForce false;
         cmd = lib.mkForce [
           (preferPathExe pkgs "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
         ];

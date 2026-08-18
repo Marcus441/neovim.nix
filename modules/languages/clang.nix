@@ -6,9 +6,9 @@ in {
       treesitter.queries = [
         {
           type = "highlights";
+          loadtype = "extends";
           filetypes = ["cpp"];
           query = ''
-            ;; extends
             (import_declaration "import" @keyword.import)
             (import_declaration name: (module_name) @module)
             (module_declaration "export"? @keyword.import "module" @keyword.import)

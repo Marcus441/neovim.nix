@@ -14,9 +14,9 @@ in {
     ...
   }: {
     vim = {
-      languages.lua.lsp = {
-        enable = true;
-        lazydev.enable = true;
+      languages.lua = {
+        lsp.enable = true;
+        extensions.lazydev.enable = true;
       };
 
       lsp.servers.lua-language-server.cmd = lib.mkForce [

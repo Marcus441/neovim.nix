@@ -46,6 +46,7 @@ Rust buffer is the check; one is correct.
 buffer. That was observed 2026-08-10: a bare `:lsp enable`, run to nudge a slow
 kotlin-lsp, put rust-analyzer on kotlin and C# buffers. Scoped to `rust`, the
 worst case of an accidental enable is the duplicated-client failure above, on
-rust buffers only. The `lib.mkForce` on `cmd` overrides nothing today — nvf
-ships no rust-analyzer preset — and is kept for symmetry with the five servers
-where it is load-bearing.
+rust buffers only. Since nvf `59b0dc3` ships a rust-analyzer preset, switched
+on through `languages.rust.lsp`, both `mkForce`s are load-bearing: the preset
+asserts `enable = true` and a `cmd` of its own at plain priority, so `enable`
+carries `lib.mkForce false` and the `cmd` override overrides something real.
