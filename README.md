@@ -1,7 +1,7 @@
 # neovim.nix
 
 Personal Neovim configuration built with [nvf](https://github.com/notashelf/nvf).
-Produces two derivations: a minimal terminal editor (`min`) and a full IDE build for [Neovide](https://neovide.github.io) (`gui`).
+Produces three derivations: a minimal terminal editor (`min`), a terminal development build with language servers (`full`), and a [Neovide](https://neovide.github.io) build (`gui`).
 
 ## Installation
 
@@ -57,7 +57,7 @@ never after a build, and says which **aspects** it belongs to:
 A concern that differs between builds is still **one file**, declaring both
 memberships — each `modules/languages/<lang>.nix` puts `enable`, treesitter and
 the formatter in `core`, and the LSP server and diagnostics in `dev`, and
-`modules/statusline.nix` gives `min` mini.statusline while `gui` swaps in
+`modules/statusline.nix` gives `min` mini.statusline while `dev` swaps in
 lualine. Those attribute sets merge, so a feature grows by adding a file rather
 than by editing a list, and adding a language means adding exactly one file.
 
@@ -72,9 +72,10 @@ aspect list, and nothing else:
 | :--- | :--- | :--- |
 | `min` | `core` | terminal editor — options, keymaps, theme, treesitter, formatters, mini.statusline |
 | `default` | `core` | alias of `min` |
-| `gui` | `core` `dev` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager |
+| `full` | `core` `dev` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager — for terminal development |
+| `gui` | `core` `dev` `neovide` | `full`'s feature set plus the Neovide-only lines, minus the terminal-only ones |
 
-Two derivations, three names. Directories such as `modules/languages/` are
+Three derivations, four names. Directories such as `modules/languages/` are
 navigation only — they carry no meaning for the module system. A plugin's keymap
 lives in the file that installs the plugin, not in a keymap directory.
 
@@ -94,7 +95,7 @@ once per checkout:
 ```
 
 `./scripts/test-githooks.sh` asserts what they do; `./scripts/verify.sh build`
-builds all three outputs.
+builds all four outputs.
 
 ## Keybindings
 

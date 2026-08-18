@@ -2,8 +2,8 @@
 description: >-
   Use when adding a new build variant (a new packages.<name> output), changing a
   variant's aspect list, or deciding whether a new aspect is earned. Covers the
-  variant record, the frozen output names, aspect ordering, and what a third
-  variant means for the core/dev split.
+  variant record, the frozen output names, aspect ordering, and when a new
+  variant earns a new aspect.
 ---
 
 # Adding a variant
@@ -24,7 +24,8 @@ The generator turns each record into `perSystem.packages.<name>`.
 ## The output names are public API
 
 `~/.dotfiles/flake` pins this flake and reads `packages.${system}.min` and
-`.gui`; `default` aliases `min`. **Adding** a name is a cheap,
+`.gui`; `default` aliases `min`; `full` is exported for terminal development
+and consumed by nothing yet. **Adding** a name is a cheap,
 backwards-compatible API addition. **Renaming or removing** one breaks the
 desktop, at the consumer's next input update, with an error naming this flake
 rather than the reason.
@@ -32,25 +33,25 @@ rather than the reason.
 Local edits do not reach the machine — the consumer pins a revision, not this
 working tree. Pushing and updating that input is the human's call.
 
-## A third variant is what earns a third aspect
+## A new variant is what earns a new aspect
 
-This is the point of the exercise. With `min` and `gui` only, one declining
-aspect is earned and it is `dev` (AGENTS.md §3). A third variant is the event
-that justifies splitting it — **split at the seam the new variant declines**, not
-along tidy-looking category lines.
-
-Worked example. A hypothetical `server` variant wanting LSP but not Neovide,
-dashboards or dadbod:
+This is the point of the exercise. An aspect is earned only when some variant
+declines it (AGENTS.md §3). A new variant is the event that justifies a split —
+**split at the seam the new variant declines**, not along tidy-looking category
+lines. That is how the current table came to be:
 
 ```
 min     [ core ]
-server  [ core lsp ]
-gui     [ core lsp ide db neovide ]
+full    [ core dev ]
+gui     [ core dev neovide ]
 ```
 
-`lsp`, `ide`, `db` and `neovide` are earned in that world because a variant says
-no to each. Inventing them *now*, with nothing declining them, is structure
-without a decision behind it, and the anti-pattern table rejects it.
+`dev` is earned because `min` declines it; `neovide` because `full` — a terminal
+build — declines it. The `full` variant and the `neovide` aspect arrived in the
+same commit, because a split with no variant exercising the seam is structure
+without a decision behind it, and the anti-pattern table rejects it. A further
+split of `dev` (into `lsp`/`ui`/`db`, say) waits for a variant that declines one
+of the pieces.
 
 If the new variant declines nothing that exists — it is just `core` plus one
 setting — it may not need an aspect at all. Ask whether it needs to be a variant
@@ -81,7 +82,7 @@ nix run .#<name>
 ```
 
 Adding a variant must leave the existing outputs **byte-identical** —
-`./scripts/verify.sh HEAD~1` should PASS on `min` and `gui`. If it doesn't, the
+`./scripts/verify.sh HEAD~1` should PASS on every pre-existing output. If it doesn't, the
 new record changed shared state instead of composing existing aspects.
 
 ## Before you finish

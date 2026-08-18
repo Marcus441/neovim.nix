@@ -21,8 +21,8 @@ paths: "modules/**/*.nix"
 5. **No manual import lists** except the variant wiring. `import-tree` discovers
    everything else.
 6. **Aspects are variant-agnostic.** A file must not ask which build loaded it.
-7. **`default`, `min` and `gui` are public API.** `~/.dotfiles/flake` reads
-   `packages.${system}.min` and `.gui`.
+7. **`default`, `min`, `full` and `gui` are public API.** `~/.dotfiles/flake`
+   reads `packages.${system}.min` and `.gui`.
 
 ## The merge runs in both directions
 

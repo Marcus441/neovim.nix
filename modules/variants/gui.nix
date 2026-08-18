@@ -1,3 +1,3 @@
 {
-  variants.gui.aspects = ["core" "dev"];
+  variants.gui.aspects = ["core" "dev" "neovide"];
 }
