@@ -50,6 +50,6 @@ commit hash, never a plan filename.
 ## Deliberately deferred — do not propose unasked
 
 - A `checks` output, a `formatter` output, or a `devShells` output. AGENTS.md §8
-  item 11 records the gap; nothing schedules it.
+  records the absence as deliberate rather than a divergence; nothing schedules it.
 - Migrating the C# stack away from roslyn, or dropping the
   `allowUnfreePredicate` that makes it build.
