@@ -30,7 +30,8 @@ pane, and nothing errors. Drop the matching `border` entry and the padding turns
 back into a visible frame in the wrong colour.
 **Also** the *border style* is not set here. It lives with each plugin —
 `modules/snacks-picker.nix`, `modules/snacks.nix`, `modules/snacks-notifier.nix`,
-`modules/auto-complete.nix`, `modules/noice.nix`, `modules/oil.nix` — because nvf sets none of them
+`modules/auto-complete.nix`, `modules/noice.nix`, `modules/oil.nix`,
+`modules/diagnostics.nix` — because nvf sets none of them
 and `vim.options.winborder` (`"single"`, still the global default) is what they
 would otherwise inherit. Colour and style have to change together or the block
 reads as a mis-coloured frame.
@@ -57,6 +58,19 @@ the block's plain `border` entry (`fg = bg`), not the noice title trick. Left
 alone it would not even be a wire frame in the wrong colour: with no
 `winhighlight`, the window falls to the global transparent `NormalFloat`, and
 `solid` padding painted `bg = "none"` is invisible.
+**Also** the native diagnostic float (`vim.diagnostic.open_float`) is a block
+on the `preview` tier — it plays the hover-doc role, showing what a diagnostic
+*is*. It inverts oil's split one step further: the float registers no highlight
+groups and, unlike oil, exposes no `winhighlight` option either — the opts
+`open_float` forwards to `open_floating_preview` have no such key — so the
+redirect cannot be declared as config at all. Instead the `<leader>e` keymap in
+`modules/diagnostics.nix` wraps the call and sets `winhighlight` on the winid
+`open_float` returns, targeting `DiagnosticFloat` / `DiagnosticFloatBorder`,
+which exist nowhere but this file's overrides. Style lives with the plugin as
+ever: `float.border = "solid"` in `modules/diagnostics.nix`'s
+`vim.diagnostics.config`. The builtin `<C-w>d` bypasses the wrapper and falls
+to the transparent global `NormalFloat` — solid padding painted `bg = "none"`,
+invisible, the same silent failure shape as oil's would-be.
 **Also** fidget goes the *other* way, and the reason is that it has no
 neighbour. A block separates one pane from the next; LSP progress is a single
 transient corner toast with nothing beside it, so a block there is decoration.

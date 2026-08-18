@@ -134,6 +134,13 @@ require("kanagawa").setup({
 			-- Oil registers no float groups; oil.nix's winhighlight redirects here
 			OilConfirm = prompt.normal,
 			OilConfirmBorder = prompt.border,
+
+			-------------------
+			-- Diagnostic float
+			-------------------
+			-- Native float, no groups of its own; diagnostics.nix's <leader>e redirects here
+			DiagnosticFloat = preview.normal,
+			DiagnosticFloatBorder = preview.border,
 		}
 
 		-- The notifier border keeps its per-level colour and gains the block's bg,
