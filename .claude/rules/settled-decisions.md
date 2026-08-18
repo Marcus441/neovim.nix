@@ -13,13 +13,14 @@ commit hash, never a plan filename.
   table as a side effect of the dendritic refactor.
 - **flake-parts and import-tree only.** No `snowfall`, `den`, `flake-file`,
   `easy-hosts`, or any other framework, unless asked.
-- **`default`, `min` and `gui` are the output names**, and `default` aliases
-  `min`. `~/.dotfiles/flake` reads two of them by name. Adding a variant is fine;
-  renaming one is a breaking change to another repo.
-- **Two aspects: `core` and `dev`.** An aspect earns its existence when some
-  variant declines it, and there are two variants. Do not pre-split `dev` into
-  `lsp`/`ui`/`db`/`neovide` — that is structure without a decision behind it.
-  When a third variant appears, split at the seam *that variant* declines.
+- **`default`, `min`, `full` and `gui` are the output names**, and `default`
+  aliases `min`. `~/.dotfiles/flake` reads `min` and `gui` by name. Adding a
+  variant is fine; renaming one is a breaking change to another repo.
+- **Three aspects: `core`, `dev` and `neovide`.** An aspect earns its existence
+  when some variant declines it: `min` declines `dev`, `full` declines
+  `neovide`. Do not pre-split `dev` into `lsp`/`ui`/`db` — that is structure
+  without a decision behind it. When a new variant appears, split at the seam
+  *that variant* declines.
 - **Home Manager consumption stays out of this repo.** It exports packages, not a
   `homeModules.default`. The consumer wires it (`flake/modules/neovim.nix`,
   `flake/modules/neovide.nix`); `home-example.nix` documents the shape for
@@ -29,9 +30,9 @@ commit hash, never a plan filename.
   devshell supplies them; pinning rustfmt and clang-format alone is a ~4.5 GB
   closure regression, and the other five cost a further 232 MiB. Not an
   oversight, not a `mkForce` to clean up. **`dev` re-adds each as a
-  `preferPathExe` fallback** with `lib.mkOverride 40`, because it launches from a
-  desktop launcher with no devshell — except `rustfmt`, which `gui` does not need
-  and cannot afford.
+  `preferPathExe` fallback** with `lib.mkOverride 40`, because the builds that
+  take it launch with no devshell — Neovide from a desktop launcher, `full` from
+  any terminal — except `rustfmt`, which `dev` does not need and cannot afford.
 - **`preferPath` prefers the `$PATH` binary over the pinned one, deliberately.**
   It exists so a project's own toolchain wins inside a devshell. Its silent
   fallback is a known cost, not a bug to fix.

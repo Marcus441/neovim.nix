@@ -8,13 +8,13 @@ paths: "scripts/*"
 predict. The proof of equivalence is that two builds produce the **same store
 path** — not that a diff looked small.
 
-There are two distinct outputs to check. `default` is an alias of `min`, so
+There are three distinct outputs to check. `default` is an alias of `min`, so
 checking it is free but not informative.
 
 ```bash
 git worktree add ../neovim-prev <previous-commit>
 
-for a in min gui; do
+for a in min full gui; do
   echo "=== $a ==="
   old=$(nix build --no-link --print-out-paths "../neovim-prev#$a")
   new=$(nix build --no-link --print-out-paths ".#$a")

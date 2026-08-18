@@ -12,9 +12,10 @@ got here is finished (`2ea202f`…`24e4cc7`), so §1 describes the tree as it is
 | --- | --- | --- |
 | `min` | `core` | `home.packages` on every host |
 | `default` | `core` | alias of `min` |
-| `gui` | `core` `dev` | `programs.neovide.settings.neovim-bin` |
+| `full` | `core` `dev` | nothing yet — terminal development, servers included |
+| `gui` | `core` `dev` `neovide` | `programs.neovide.settings.neovim-bin` |
 
-Two derivations, three output names. **The names are public API** —
+Three derivations, four output names. **The names are public API** —
 `~/.dotfiles/flake` pins `github:Marcus441/neovim.nix` and reads
 `packages.${system}.min` and `.gui`, so renaming one breaks the desktop. **Local
 edits do not reach the machine:** that flake pins a GitHub revision, not this
@@ -51,8 +52,8 @@ open them directly.
    never an aspect. Directories are navigation, not structure.
 5. **No manual import lists** except the variant wiring. `import-tree` finds the rest.
 6. **Aspects are variant-agnostic.** Per-build facts live in the variant record.
-7. **`default`, `min` and `gui` are public API.** Adding an output is an API
-   addition; renaming one is a breaking change.
+7. **`default`, `min`, `full` and `gui` are public API.** Adding an output is an
+   API addition; renaming one is a breaking change.
 
 Full prose, exemplars, the directory test: `.claude/rules/nvf-file-conventions.md`.
 
@@ -70,16 +71,18 @@ the sibling flake's three, so nothing but the aspects keeps files honest.
 ## 3. Aspects
 
 An aspect is a **decision or a capability**, never a magnitude and never a build
-name. **An aspect earns its existence when some variant says no.** With two variants,
-exactly one declining aspect is earned, and it is `dev`. Everything else is
-`core`. Files still decompose freely by concern — `modules/languages/rust.nix`
-declares both memberships — but a third aspect needs a third variant to decline
-it, or it is structure without a decision behind it.
+name. **An aspect earns its existence when some variant says no.** With three
+variants, two declining aspects are earned: `dev` (declined by `min`) and
+`neovide` (declined by `full`). Everything else is `core`. Files still decompose
+freely by concern — `modules/languages/rust.nix` declares both memberships — but
+a new aspect needs a variant to decline it, or it is structure without a
+decision behind it.
 
 Good, when earned: `dev`, `db`, `neovide`. Bad: `minimal`, `extras`, `heavy` —
 magnitude names rot; `terminal`, `ide` — a build archetype, and the archetype is
-the *list*. When a third variant appears, split `dev` at the seam *that variant*
-declines and put the new names where `dev` sat (§5). Until then, do not pre-split.
+the *list*. When a new variant appears, split the aspect at the seam *that
+variant* declines and put the new names where the old one sat (§5). Until then,
+do not pre-split.
 
 ## 4. Layout
 
@@ -133,11 +136,15 @@ A working model, not a mechanism. **Measure; do not predict** — recipe in
 | --- | --- |
 | options, keymaps that work without a server | LSP servers, `lsp.*`, diagnostics extensions |
 | treesitter, formatters, `languages.<x>.enable` | completion, dashboard, session, statusline |
-| theme, clipboard, oil, snacks picker | anything that assumes Neovide or a big closure |
+| theme, clipboard, oil, snacks picker | anything that needs a server or a big closure |
 
-**Default to `core`. Justify the exception.** `min` ships to every host; `gui` is
-one program's launcher, so a line in `dev` that could have been `core` is a line
-the terminal editor does without for no reason. The counter-pressure is closure
+A line that only makes sense under Neovide — a `neovide_*` global, a
+display-medium fact — goes in `neovide`, never `dev`: `full` is a terminal build
+and must stay agnostic of it.
+
+**Default to `core`. Justify the exception.** `min` ships to every host, so a
+line in `dev` that could have been `core` is a line the minimal editor does
+without for no reason. The counter-pressure is closure
 size: `core` resolves **every** formatter from `$PATH` rather than pinning one,
 because `min` is opened from inside `nix develop` and rustfmt and clang-format
 alone drag ~2 GB each (`docs/decisions/formatters.md`). **A `core` line that
@@ -162,7 +169,7 @@ pulls a toolchain into `min` is what justifies `dev`.**
 Do not claim a build works without having built it.
 
 ```bash
-./scripts/verify.sh build        # all three outputs — the real check
+./scripts/verify.sh build        # all four outputs — the real check
 nix flake check                  # cheap eval sweep
 ./scripts/verify.sh <ref>        # structural: prove nothing changed but order
 ```

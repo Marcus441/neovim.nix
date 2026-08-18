@@ -11,12 +11,12 @@
 # committing.
 #
 # `min` is the control: it takes only the core aspect, so a change confined to
-# gui must leave it identical. `default` aliases min, so comparing it costs
+# dev must leave it identical. `default` aliases min, so comparing it costs
 # nothing and asserts the alias still holds.
 
 set -uo pipefail
 
-TARGETS=(default min gui)
+TARGETS=(default min gui full)
 REPO=$(git rev-parse --show-toplevel) || exit 2
 
 fail=0
@@ -122,5 +122,5 @@ done
 
 echo
 echo "$pass passed, $fail failed"
-[[ $fail -eq 0 ]] || echo "DO NOT COMMIT until this is 3 PASS or the difference is understood."
+[[ $fail -eq 0 ]] || echo "DO NOT COMMIT until this is ${#TARGETS[@]} PASS or the difference is understood."
 exit $((fail > 0))

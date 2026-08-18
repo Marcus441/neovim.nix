@@ -25,7 +25,7 @@ metastasises.
 4. File paths name the feature and carry no system-meaning.
 5. No manual import lists except the variant wiring.
 6. Aspects are variant-agnostic.
-7. `default`, `min` and `gui` are public API.
+7. `default`, `min`, `full` and `gui` are public API.
 
 ## 2. Anti-pattern scan
 

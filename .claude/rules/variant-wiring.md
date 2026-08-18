@@ -13,7 +13,7 @@ else.
 ```nix
 # modules/variants/gui.nix
 {
-  variants.gui.aspects = [ "core" "dev" ];
+  variants.gui.aspects = [ "core" "dev" "neovide" ];
 }
 ```
 
@@ -31,6 +31,8 @@ packages.${name} = (inputs.nvf.lib.neovimConfiguration {
 `~/.dotfiles/flake/flake.nix:11` pins `github:Marcus441/neovim.nix`;
 `flake/modules/neovim.nix` reads `packages.${system}.min` and
 `flake/modules/neovide.nix` reads `.gui`. `default` must stay an alias of `min`.
+`full` is exported for terminal development and consumed by nothing yet — still
+public API once published.
 
 **Adding** a variant is an API addition and is cheap. **Renaming or removing**
 one breaks the desktop at the next `nix flake update` on that side, with an error

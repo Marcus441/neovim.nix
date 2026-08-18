@@ -25,7 +25,7 @@ erroring. Settled — see `.claude/rules/settled-decisions.md`.
 
 ## dev re-adds a pinned fallback, core does not
 
-**Why:** `gui` is launched from a desktop launcher with no shell and no
+**Why:** the builds that take `dev` launch with no shell and no
 devshell, so the bare command `core` sets would leave it with no formatter at
 all. Its half of `modules/formatter.nix` routes each one back through
 `preferPathExe` — `$PATH` still wins, the pinned package is the floor. `min`
@@ -39,7 +39,7 @@ priority — a conflict, not an override. `dev` needs `lib.mkOverride 40`. See
 **Also:** `rustfmt` is deliberately absent from the `dev` half, on closure
 size. It would drag the rust toolchain in and is not needed anyway — nvf
 disables rust's conform formatter whenever `lsp.enable` is set, so `gui`
-formats Rust through rust-analyzer. It stays bare in both builds: on `$PATH` or
+formats Rust through rust-analyzer. It stays bare in every build: on `$PATH` or
 not at all. C# is no conform formatter's job in either build — csharpier is
 gone and cs formats through roslyn-ls, see
 `docs/decisions/csharp.md#formatting-is-the-lsps-job`. `clang-format` is the
