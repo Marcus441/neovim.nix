@@ -28,7 +28,7 @@ in {
     };
   };
 
-  flake.modules.nvf.gui = {pkgs, lib, ...}: {
+  flake.modules.nvf.dev = {pkgs, lib, ...}: {
     vim = {
       languages.rust = {
         lsp.enable = true;
@@ -51,16 +51,16 @@ dotnet assembly nobody has on `$PATH`.
 | --- | --- | --- |
 | `enable`, treesitter, formatter | `core` | the language file |
 | `lsp.enable = lib.mkDefault false` | `core` | the language file |
-| `lsp.enable = true`, `servers`, extensions | `gui` | the language file |
-| `lsp.servers.<name>.cmd` override | `gui` | the language file |
+| `lsp.enable = true`, `servers`, extensions | `dev` | the language file |
+| `lsp.servers.<name>.cmd` override | `dev` | the language file |
 | treesitter query patch | `core` | the language file (`clang.nix` has the cpp one) |
 | `enableFormat` / `enableTreesitter` / `enableExtraDiagnostics` | both | `languages/every-language.nix` — language-wide, do not touch per language |
 | filetype/indent autocmd | `core` | the language file, with its augroup |
 
 ## The rules that bite
 
-- **`core` writes `lsp.enable = lib.mkDefault false`; `gui` writes plain
-  `true`.** A plain `false` in `core` is a definition conflict the moment `gui`
+- **`core` writes `lsp.enable = lib.mkDefault false`; `dev` writes plain
+  `true`.** A plain `false` in `core` is a definition conflict the moment `dev`
   disagrees. `mkDefault` on both sides is the same error. See
   `.claude/rules/evaluation-hazards.md`.
 - **`lsp.servers.<name>.cmd` needs `lib.mkForce`.** nvf sets `cmd` itself at
@@ -79,7 +79,7 @@ dotnet assembly nobody has on `$PATH`.
   purpose (`modules/formatter.nix`) — `min` is opened from inside `nix develop`,
   and rustfmt or clang-format alone pins ~2 GB into it. A new language's
   formatter goes in that file as `<name>.command = lib.mkForce "<name>"`, plus a
-  `preferPathExe` fallback in its `gui` half at `lib.mkOverride 40`. Check the
+  `preferPathExe` fallback in its `dev` half at `lib.mkOverride 40`. Check the
   closure, not just the build.
 - **Some languages need an indent autocmd.** C# has one because treesitter ships
   no indent queries for it (`modules/languages/csharp.nix:11-25`). If indentation
@@ -106,7 +106,7 @@ failure**, and no Nix-level check catches it.
 ## Before you finish
 
 - One file, both aspects, `lsp.servers.<name>.cmd` included.
-- `lib.mkDefault` in `core`, plain value in `gui`, `lib.mkForce` on any `cmd`.
+- `lib.mkDefault` in `core`, plain value in `dev`, `lib.mkForce` on any `cmd`.
 - Small, single-concern commit. Rationale in the message, not in comments.
 - If the change touched a file listed under AGENTS.md §8, migrate it in the same
   change or say why not.

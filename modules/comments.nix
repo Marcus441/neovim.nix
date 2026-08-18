@@ -3,7 +3,7 @@
     vim.comments.comment-nvim.enable = true;
   };
 
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim.notes.todo-comments.enable = true;
   };
 }

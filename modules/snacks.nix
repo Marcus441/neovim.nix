@@ -16,7 +16,7 @@
     };
   };
 
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim.utility.snacks-nvim.setupOpts = {
       dim.enabled = true;
       rename.enabled = true;

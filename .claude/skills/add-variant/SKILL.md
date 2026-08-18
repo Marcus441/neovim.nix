@@ -3,7 +3,7 @@ description: >-
   Use when adding a new build variant (a new packages.<name> output), changing a
   variant's aspect list, or deciding whether a new aspect is earned. Covers the
   variant record, the frozen output names, aspect ordering, and what a third
-  variant means for the core/gui split.
+  variant means for the core/dev split.
 ---
 
 # Adding a variant
@@ -15,7 +15,7 @@ preferences and conditionals do not live here — aspects are variant-agnostic
 ```nix
 # modules/variants/<name>.nix
 {
-  variants.<name>.aspects = [ "core" "gui" ];
+  variants.<name>.aspects = [ "core" "dev" ];
 }
 ```
 
@@ -35,7 +35,7 @@ working tree. Pushing and updating that input is the human's call.
 ## A third variant is what earns a third aspect
 
 This is the point of the exercise. With `min` and `gui` only, one declining
-aspect is earned and it is `gui` (AGENTS.md §3). A third variant is the event
+aspect is earned and it is `dev` (AGENTS.md §3). A third variant is the event
 that justifies splitting it — **split at the seam the new variant declines**, not
 along tidy-looking category lines.
 

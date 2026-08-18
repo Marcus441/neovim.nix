@@ -13,7 +13,7 @@ else.
 ```nix
 # modules/variants/gui.nix
 {
-  variants.gui.aspects = [ "core" "gui" ];
+  variants.gui.aspects = [ "core" "dev" ];
 }
 ```
 

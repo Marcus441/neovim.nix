@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.gui = {lib, ...}: {
+  flake.modules.nvf.dev = {lib, ...}: {
     vim = {
       utility.direnv.enable = true;
 

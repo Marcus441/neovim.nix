@@ -18,12 +18,12 @@ saves rustfmt ~2.4 GB, clang-format ~2.1 GB, **prettier 190.5 MiB** (it drags
 `nodejs`), ruff 31.5 MiB, stylua 8.9 MiB, alejandra 1.7 MiB. All of them
 together took `min` from 543.0 MiB to 310.4 MiB.
 
-**Also:** this is the counter-pressure that earns the `gui` aspect at all
+**Also:** this is the counter-pressure that earns the `dev` aspect at all
 (AGENTS.md §6). The trade is deliberate: a host without a formatter on `$PATH`
 gets no formatting for that language, and conform skips it silently rather than
 erroring. Settled — see `.claude/rules/settled-decisions.md`.
 
-## gui re-adds a pinned fallback, core does not
+## dev re-adds a pinned fallback, core does not
 
 **Why:** `gui` is launched from a desktop launcher with no shell and no
 devshell, so the bare command `core` sets would leave it with no formatter at
@@ -32,11 +32,11 @@ all. Its half of `modules/formatter.nix` routes each one back through
 gets no such half on purpose: forcing the dev to run `nix develop` is the point.
 
 **Breaks:** loudly at eval, in the one place worth knowing. `core` states these
-with `mkForce` (50), so a `gui` `mkForce` is two definitions at the same
-priority — a conflict, not an override. `gui` needs `lib.mkOverride 40`. See
+with `mkForce` (50), so a `dev` `mkForce` is two definitions at the same
+priority — a conflict, not an override. `dev` needs `lib.mkOverride 40`. See
 `docs/conventions/overrides.md#a-formatter-command-needs-mkoverride-40`.
 
-**Also:** `rustfmt` is deliberately absent from the `gui` half, on closure
+**Also:** `rustfmt` is deliberately absent from the `dev` half, on closure
 size. It would drag the rust toolchain in and is not needed anyway — nvf
 disables rust's conform formatter whenever `lsp.enable` is set, so `gui`
 formats Rust through rust-analyzer. It stays bare in both builds: on `$PATH` or

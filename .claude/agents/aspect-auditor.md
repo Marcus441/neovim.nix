@@ -12,7 +12,7 @@ tools: Bash, Read, Grep, Glob
 You audit aspect declarations in an nvf Neovim configuration that is being
 refactored to the dendritic flake-parts pattern. In the target shape, every
 `.nix` file under `modules/` is a flake-parts module that declares membership by
-setting `flake.modules.nvf.<aspect>`, where the aspect is `core` or `gui`.
+setting `flake.modules.nvf.<aspect>`, where the aspect is `core` or `dev`.
 
 **The profile split is gone (`094bc3e`).** Membership is declared, not implied by
 a path, and a file may declare both aspects.
@@ -27,7 +27,7 @@ never bulk file contents. Keep the report under ~40 lines.
 - `modules/variants/*.nix` holds each variant's aspect list; its order is
   load-bearing.
 - `scripts/recount-aspects.sh` produces the multi-membership counts.
-- `nix repl` → `:lf .` → `config.flake.modules.nvf.gui` inspects a merged aspect.
+- `nix repl` → `:lf .` → `config.flake.modules.nvf.dev` inspects a merged aspect.
 - `nix build .#gui` and read the generated `init.lua` under `result/` when a
   question is about ordering or about what actually reached the output.
 
@@ -38,7 +38,7 @@ never bulk file contents. Keep the report under ~40 lines.
   merge working as intended.
 - An aspect no variant takes, or that every variant takes (the latter is `core`).
 - **An unearned aspect** — one no variant declines. With two variants, only
-  `gui` is earned.
+  `dev` is earned.
 - An aspect name that is a magnitude (`minimal`, `extras`, `heavy`) or a build
   archetype (`ide`, `terminal`) rather than a decision or capability.
 - A directory under `modules/` in which every file declares the same declining
@@ -46,7 +46,7 @@ never bulk file contents. Keep the report under ~40 lines.
   "several aspects".
 - A `default.nix` whose only content is `imports`, or any `imports = [ ./… ]`
   under `modules/` (Inv. 5).
-- A plain `false` in `core` at a key `gui` overrides — it needs `lib.mkDefault`.
+- A plain `false` in `core` at a key `dev` overrides — it needs `lib.mkDefault`.
   Conversely a `lib.mkDefault` in `core` that nothing overrides is dead ceremony.
 - An `lsp.servers.<name>.cmd` assignment missing `lib.mkForce`.
 - A keymap declared in a different file from the plugin it drives.

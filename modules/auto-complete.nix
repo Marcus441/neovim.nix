@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim = {
       autocomplete.blink-cmp = {
         enable = true;

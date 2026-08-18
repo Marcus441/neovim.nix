@@ -16,8 +16,8 @@ commit hash, never a plan filename.
 - **`default`, `min` and `gui` are the output names**, and `default` aliases
   `min`. `~/.dotfiles/flake` reads two of them by name. Adding a variant is fine;
   renaming one is a breaking change to another repo.
-- **Two aspects: `core` and `gui`.** An aspect earns its existence when some
-  variant declines it, and there are two variants. Do not pre-split `gui` into
+- **Two aspects: `core` and `dev`.** An aspect earns its existence when some
+  variant declines it, and there are two variants. Do not pre-split `dev` into
   `lsp`/`ui`/`db`/`neovide` — that is structure without a decision behind it.
   When a third variant appears, split at the seam *that variant* declines.
 - **Home Manager consumption stays out of this repo.** It exports packages, not a
@@ -28,7 +28,7 @@ commit hash, never a plan filename.
   (`modules/formatter.nix`). `min` is opened from inside `nix develop`, so the
   devshell supplies them; pinning rustfmt and clang-format alone is a ~4.5 GB
   closure regression, and the other five cost a further 232 MiB. Not an
-  oversight, not a `mkForce` to clean up. **`gui` re-adds each as a
+  oversight, not a `mkForce` to clean up. **`dev` re-adds each as a
   `preferPathExe` fallback** with `lib.mkOverride 40`, because it launches from a
   desktop launcher with no devshell — except `rustfmt`, which `gui` does not need
   and cannot afford.

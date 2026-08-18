@@ -26,7 +26,7 @@ in {
     };
   };
 
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     pkgs,
     lib,
     ...

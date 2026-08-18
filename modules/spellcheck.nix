@@ -19,7 +19,7 @@
     };
   };
 
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim.spellcheck = {
       enable = true;
       languages = ["en"];

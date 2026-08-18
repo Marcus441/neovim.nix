@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim = {
       globals = {
         neovide_scroll_animation_length = 0.1;

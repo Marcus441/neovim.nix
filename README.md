@@ -56,13 +56,13 @@ never after a build, and says which **aspects** it belongs to:
 
 A concern that differs between builds is still **one file**, declaring both
 memberships — each `modules/languages/<lang>.nix` puts `enable`, treesitter and
-the formatter in `core`, and the LSP server and diagnostics in `gui`, and
+the formatter in `core`, and the LSP server and diagnostics in `dev`, and
 `modules/statusline.nix` gives `min` mini.statusline while `gui` swaps in
 lualine. Those attribute sets merge, so a feature grows by adding a file rather
 than by editing a list, and adding a language means adding exactly one file.
 
 Where both aspects set the same option, `core` states its value with
-`lib.mkDefault` and `gui` states a plain value — the only combination that
+`lib.mkDefault` and `dev` states a plain value — the only combination that
 merges. See `docs/conventions/overrides.md`.
 
 `modules/variants/` is the only place that names a build. Each variant is an
@@ -72,7 +72,7 @@ aspect list, and nothing else:
 | :--- | :--- | :--- |
 | `min` | `core` | terminal editor — options, keymaps, theme, treesitter, formatters, mini.statusline |
 | `default` | `core` | alias of `min` |
-| `gui` | `core` `gui` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager |
+| `gui` | `core` `dev` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager |
 
 Two derivations, three names. Directories such as `modules/languages/` are
 navigation only — they carry no meaning for the module system. A plugin's keymap

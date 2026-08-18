@@ -4,10 +4,10 @@
 
 **Why:** `format.enable = false` in `modules/languages/csharp.nix`, and no
 csharpier entry in `modules/formatter.nix`. csharpier was the one formatter
-whose `gui` fallback was refused on closure size, so it was the one language
+whose `dev` fallback was refused on closure size, so it was the one language
 where `gui` formatting depended on a `$PATH` binary no desktop launcher
 provides — while the roslyn-ls that `gui` already runs formats for free,
-.editorconfig-driven. So `gui` sets
+.editorconfig-driven. So `dev` sets
 `formatter.conform-nvim.setupOpts.formatters_by_ft.cs = {lsp_format = "prefer";}`
 and conform hands cs buffers to the attached LSP.
 
@@ -16,7 +16,7 @@ what makes that `cs` key safe to define: `formatters_by_ft` is `types.attrs`,
 whose merge is an `//`-fold — two definitions of `cs` resolve by definition
 order, silently, and a *nested* `mkForce` leaks its `_type` marker into the
 generated Lua. With `format.enable = false`, nvf never defines `cs` and the
-`gui` half is the sole owner.
+`dev` half is the sole owner.
 
 **Breaks:** silently, and differently per build. `min` has no LSP, so C# is
 entirely unformatted there — before this, a devshell csharpier on `$PATH` would
@@ -112,7 +112,7 @@ that wins: mnw appends `extraPackages` to `$PATH` (`vim.env.PATH = vim.env.PATH
 .. ":…"`), so a devshell's dotnet shadows it and the packaged SDK only serves a
 host without one — launching from a desktop with no shell still restores,
 builds and debugs. This is `gui` buying out-of-the-box weight `min` refuses,
-the same split as `docs/decisions/formatters.md#gui-re-adds-a-pinned-fallback-core-does-not`.
+the same split as `docs/decisions/formatters.md#dev-re-adds-a-pinned-fallback-core-does-not`.
 The version is the newest LTS the pin carries, not the oldest supported: an SDK
 design-time builds every *lower* target, never a higher one, so a too-old
 fallback fails exactly when it is reached. Observed 2026-08-10 with `sdk_8`

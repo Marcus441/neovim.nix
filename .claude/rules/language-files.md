@@ -21,9 +21,9 @@ after a language.
 ## The split inside one file
 
 `core` gets `enable`, treesitter, formatter routing, and any filetype/indent
-autocmd with its augroup; `gui` gets `lsp.enable = true`, `servers`, extensions
+autocmd with its augroup; `dev` gets `lsp.enable = true`, `servers`, extensions
 and `cmd` overrides (AGENTS.md §6). `core` writes `lsp.enable = lib.mkDefault
-false`; `gui` writes a plain `true` — the only combination that merges.
+false`; `dev` writes a plain `true` — the only combination that merges.
 
 **`lsp.servers.<name>` is keyed by the *server's* name, not the language's**
 (`basedpyright`, not python), at a different option path — and stays in the
@@ -31,7 +31,7 @@ same file anyway; that is the point of Inv. 3. Its `cmd` needs `lib.mkForce`,
 and `preferPathExe` is flake-parts config captured in an outer `let`
 (`nvf-file-conventions.md`; `rust.nix` is the exemplar).
 
-## Formatters: `min` is `$PATH`-only; `gui` may pin a fallback
+## Formatters: `min` is `$PATH`-only; `dev` may pin a fallback
 
 **Never pin a formatter binary in `core`** — it resolves every one from `$PATH`
 deliberately, and a pin silently drags a toolchain into `min`
@@ -41,11 +41,11 @@ formatter is two halves of `modules/formatter.nix`:
 ```nix
 # core — name only, resolved from $PATH
 <name>.command = lib.mkForce "<name>";
-# gui — pinned fallback; mkOverride 40, not a second mkForce
+# dev — pinned fallback; mkOverride 40, not a second mkForce
 <name>.command = lib.mkOverride 40 (preferPathExe pkgs "<name>" (lib.getExe pkgs.<name>));
 ```
 
-The `gui` half is optional per formatter — `rustfmt` deliberately has none
+The `dev` half is optional per formatter — `rustfmt` deliberately has none
 (`settled-decisions.md`). Check the closure, not just the build.
 
 ## These files are the densest `# load-bearing:` carriers

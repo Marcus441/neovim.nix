@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim.session.nvim-session-manager = {
       enable = true;
       # load-bearing: docs/decisions/theme.md#picker-blocks
