@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Recount how many files declare more than one aspect (CLAUDE.md 2).
+# Recount how many files declare more than one aspect (AGENTS.md 2).
 # The figure goes stale silently and nothing in the build checks it.
 # Files declaring no aspect are not counted.
 set -euo pipefail

@@ -108,5 +108,5 @@ failure**, and no Nix-level check catches it.
 - One file, both aspects, `lsp.servers.<name>.cmd` included.
 - `lib.mkDefault` in `core`, plain value in `gui`, `lib.mkForce` on any `cmd`.
 - Small, single-concern commit. Rationale in the message, not in comments.
-- If the change touched a file listed under CLAUDE.md §8, migrate it in the same
+- If the change touched a file listed under AGENTS.md §8, migrate it in the same
   change or say why not.

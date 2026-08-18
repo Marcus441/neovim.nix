@@ -4,7 +4,7 @@ description: >-
   Use to audit aspect membership across the Neovim config in an isolated context
   — which files declare which aspects, whether a concern is split across files,
   whether a directory is redundant with an aspect name, whether an aspect is
-  unearned, or whether a CLAUDE.md divergence has silently closed or grown.
+  unearned, or whether a AGENTS.md divergence has silently closed or grown.
   Returns a summary with file paths, not file dumps.
 tools: Bash, Read, Grep, Glob
 ---
@@ -50,13 +50,13 @@ never bulk file contents. Keep the report under ~40 lines.
   Conversely a `lib.mkDefault` in `core` that nothing overrides is dead ceremony.
 - An `lsp.servers.<name>.cmd` assignment missing `lib.mkForce`.
 - A keymap declared in a different file from the plugin it drives.
-- A CLAUDE.md §8 divergence that has silently closed (delete the item) or that
+- A AGENTS.md §8 divergence that has silently closed (delete the item) or that
   now understates the problem.
 
 ## What is not a finding
 
 Anything in `.claude/rules/settled-decisions.md`, and anything listed under
-CLAUDE.md §8 *Known divergences* — report those as **known**, with the stage that
+AGENTS.md §8 *Known divergences* — report those as **known**, with the stage that
 closes them, not as defects. Re-arguing a scheduled item at length is not an
 audit.
 

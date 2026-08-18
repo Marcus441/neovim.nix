@@ -19,7 +19,7 @@ saves rustfmt ~2.4 GB, clang-format ~2.1 GB, **prettier 190.5 MiB** (it drags
 together took `min` from 543.0 MiB to 310.4 MiB.
 
 **Also:** this is the counter-pressure that earns the `gui` aspect at all
-(CLAUDE.md §6). The trade is deliberate: a host without a formatter on `$PATH`
+(AGENTS.md §6). The trade is deliberate: a host without a formatter on `$PATH`
 gets no formatting for that language, and conform skips it silently rather than
 erroring. Settled — see `.claude/rules/settled-decisions.md`.
 

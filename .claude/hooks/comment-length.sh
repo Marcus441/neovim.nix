@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PostToolUse(Write|Edit): a comment inside a '' block is a label, not an
-# argument. CLAUDE.md 10 caps it at two lines.
+# argument. AGENTS.md 10 caps it at two lines.
 #
 # PostToolUse rather than PreToolUse because the check needs the whole file:
 # whether a '--' is a comment at all depends on it sitting inside a '' block,

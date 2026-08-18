@@ -113,7 +113,7 @@ for t in "${TARGETS[@]}"; do
     echo "  innocent: the generated init.lua differs only in the ORDER of"
     echo "  autocmds, augroups, keymaps or treesitter queries. Those are listOf"
     echo "  options that concatenate in module order, so any file move or merge"
-    echo "  reorders them (CLAUDE.md 5)."
+    echo "  reorders them (AGENTS.md 5)."
     echo "  not innocent: a plugin appears or disappears, a version moves, a Lua"
     echo "  body differs in content, or the closure grows by ~2 GB (a formatter"
     echo "  stopped resolving from PATH)."

@@ -1,7 +1,7 @@
 # Find comment runs longer than two lines inside '' blocks.
 #
 # Text in a '' block is content: it ships into the generated init.lua, the
-# treesitter query file, or a wrapper script. CLAUDE.md 10 caps a comment there
+# treesitter query file, or a wrapper script. AGENTS.md 10 caps a comment there
 # at two lines -- a label, not an argument. This finds the violations.
 #
 # Two passes. The first lexes Nix to learn which lines sit inside an indented

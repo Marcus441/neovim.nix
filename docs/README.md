@@ -55,7 +55,7 @@ so deleting the check is what restores the silence.
 
 ## Where else things live
 
-- **`CLAUDE.md`** — the invariants. What must stay true.
+- **`AGENTS.md`** — the invariants. What must stay true.
 - **`.claude/rules/*.md`** — hazards and mechanics, loaded automatically by file
   path.
 - **`docs/`** — the rationale.
@@ -65,4 +65,4 @@ so deleting the check is what restores the silence.
 **A decision changes ⇒ its entry changes, in the same commit.** Don't restate the
 code: an entry that survives *"a careful reader would already know this from the
 file"* is the only kind worth adding. Finished plans go to git history
-(`CLAUDE.md` §10).
+(`AGENTS.md` §10).

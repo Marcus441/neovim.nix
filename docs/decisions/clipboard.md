@@ -32,5 +32,5 @@ variant-agnostic and the system axis is already `packages.<system>.<variant>`.
 A `darwin-core` aspect could not express this even if it were wanted —
 `variants.<name>.aspects` is a static `listOf str` evaluated outside
 `perSystem`, so no variant can decline an aspect per system, and nothing would
-decline it anyway (CLAUDE.md §3). Platform belongs in `pkgs`, alongside the
+decline it anyway (AGENTS.md §3). Platform belongs in `pkgs`, alongside the
 `isDarwin` and `dists ? ${system}` tests in `modules/languages/kotlin.nix`.

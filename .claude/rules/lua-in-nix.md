@@ -48,7 +48,7 @@ or rewording one changes the output derivation. So:
 is odd.
 
 The cap does not apply to Nix comments *outside* a `''` block. Those are governed
-by CLAUDE.md §10: one `# load-bearing: docs/decisions/<area>.md#anchor` pointer,
+by AGENTS.md §10: one `# load-bearing: docs/decisions/<area>.md#anchor` pointer,
 or nothing.
 
 ## Ordering

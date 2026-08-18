@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # commit-msg: the mechanically checkable half of the commit standard -- subject
 # length, mood, and body wrap. The judgement half (one logical change, refactor
-# kept apart from behaviour, PR scope) is prose in CLAUDE.md 10 and is not
+# kept apart from behaviour, PR scope) is prose in AGENTS.md 10 and is not
 # checked here: a hook cannot read a diff for coherence and should not pretend.
 #
 # Subject is measured in two parts because 38 of the last 40 subjects carry a

@@ -97,7 +97,7 @@ against a Gradle project logs no exception at all, and that is the check.
 **Also:** this costs **1.2 GiB** in `gui`'s closure — 4.2 GiB to 5.4 GiB — and
 nothing in `min`, which stays at 315 MiB. It is the single largest thing `gui`
 pulls in, ahead of roslyn. That is the price of an IntelliJ-derived server and
-the reason it is a `gui` line and could never be a `core` one (CLAUDE.md §6).
+the reason it is a `gui` line and could never be a `core` one (AGENTS.md §6).
 
 ## It is unfree
 

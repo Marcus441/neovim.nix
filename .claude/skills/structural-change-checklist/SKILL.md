@@ -106,7 +106,7 @@ the assembled `init.lua` is the ground truth for every ordering question.
 - If a file gained or lost an aspect membership, run
   `scripts/recount-aspects.sh` and update the figure in
   `.claude/rules/nvf-file-conventions.md` if it has one.
-- If a task touched a file listed under CLAUDE.md §8 *Known divergences*, migrate
+- If a task touched a file listed under AGENTS.md §8 *Known divergences*, migrate
   it in the same change or state why not. Close the item when it is done.
 - Finished plans go to git history. Cite a §-number or commit hash, never a plan
   filename.

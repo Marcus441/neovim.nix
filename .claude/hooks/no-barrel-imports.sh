@@ -32,7 +32,7 @@ out=$(awk '
     echo "$out"
     echo
     echo "import-tree already loaded every .nix file under modules/, so a manual"
-    echo "imports list is a list to forget to edit (CLAUDE.md Inv. 5). Delete it"
+    echo "imports list is a list to forget to edit (AGENTS.md Inv. 5). Delete it"
     echo "and let discovery do the work. The one permitted central wiring point"
     echo "is modules/variants/generator.nix, which maps over aspect names rather"
     echo "than over paths."

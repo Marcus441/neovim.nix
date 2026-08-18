@@ -42,7 +42,7 @@ Two reasons to put a line in `gui`: it **needs a language server**, or it drags 
 toolchain-sized closure into `min`. "It feels like an IDE thing" is not one.
 
 **Do not invent a third aspect.** With two variants only `gui` is earned
-(CLAUDE.md §3). A plugin nothing declines is `core`.
+(AGENTS.md §3). A plugin nothing declines is `core`.
 
 ## 3. One file, every aspect it touches
 
@@ -108,6 +108,6 @@ is the normal failure; no Nix-level check catches it.
 
 ## Before you finish
 
-- Check CLAUDE.md §8 before treating a neighbouring file as an example — today
+- Check AGENTS.md §8 before treating a neighbouring file as an example — today
   most of them are divergences, not exemplars.
 - Small, single-concern commit. Rationale in the message, not in comments.
