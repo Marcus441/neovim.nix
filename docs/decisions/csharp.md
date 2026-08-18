@@ -1,28 +1,33 @@
 # decisions/csharp
 
-## Formatting is the LSP's job
+## csharpier formats, roslyn is the fallback
 
-**Why:** `format.enable = false` in `modules/languages/csharp.nix`, and no
-csharpier entry in `modules/formatter.nix`. csharpier was the one formatter
-whose `dev` fallback was refused on closure size, so it was the one language
-where `gui` formatting depended on a `$PATH` binary no desktop launcher
-provides — while the roslyn-ls that `gui` already runs formats for free,
-.editorconfig-driven. So `dev` sets
-`formatter.conform-nvim.setupOpts.formatters_by_ft.cs = {lsp_format = "prefer";}`
-and conform hands cs buffers to the attached LSP.
+**Why:** `format.type = ["csharpier"]` in `modules/languages/csharp.nix`
+routes cs buffers to csharpier, but the command stays a bare `$PATH` name in
+**every** build — the rustfmt shape, with the `dev` half of
+`modules/formatter.nix` deliberately absent (decided 2026-08-18, replacing the
+formatting-is-the-LSP's-job entry: a pinned fallback was measured at 923.9 MiB
+— csharpier bundles its own dotnet runtime, sharing nothing with the SDK the
+C# stack already ships — and refused). The degradation is what makes the bare
+name affordable: conform skips a formatter it cannot execute, and the global
+`default_format_opts.lsp_format = "fallback"` then hands the buffer to
+roslyn-ls, .editorconfig-driven — so a desktop launch with no devshell still
+formats on save, just not through csharpier.
 
-Disabling nvf's `format` section, rather than setting `format.type = []`, is
-what makes that `cs` key safe to define: `formatters_by_ft` is `types.attrs`,
-whose merge is an `//`-fold — two definitions of `cs` resolve by definition
-order, silently, and a *nested* `mkForce` leaks its `_type` marker into the
-generated Lua. With `format.enable = false`, nvf never defines `cs` and the
-`dev` half is the sole owner.
+**Breaks:** two ways. Without csharpier on `$PATH`, cs buffers silently format
+through roslyn instead — a style flip with no error anywhere; `:ConformInfo`
+is the diagnostic. And the entry must stay `command`-only: nvf's csharpier
+preset already provides `args = ["format"]` and `stdin`, and `setupOpts` is a
+freeform type whose lists concatenate, so restating `args` beside the command
+yields `csharpier format format` — "no file or directory found at format" in
+`conform.log` on every save. Observed 2026-08-18; the preset's static args are
+also what keeps conform's builtin `dotnet csharpier` runtime probe out of the
+picture.
 
-**Breaks:** silently, and differently per build. `min` has no LSP, so C# is
-entirely unformatted there — before this, a devshell csharpier on `$PATH` would
-format it. That trade is accepted: `min` does C# as treesitter-plus-indent
-only. Re-adding an external cs formatter means re-enabling `format` and putting
-a name in `format.type`, not editing conform.
+**Also:** csharpier does not organize imports, so
+`dotnet_organize_imports_on_format` (next entry) fires on an explicit LSP
+format, and on save only when the roslyn fallback is the one formatting.
+`min` has no LSP: there, no csharpier on `$PATH` means cs goes unformatted.
 
 ## Organize imports goes through vim.lsp.config
 

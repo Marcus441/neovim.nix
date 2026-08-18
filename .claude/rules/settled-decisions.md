@@ -32,7 +32,8 @@ commit hash, never a plan filename.
   oversight, not a `mkForce` to clean up. **`dev` re-adds each as a
   `preferPathExe` fallback** with `lib.mkOverride 40`, because the builds that
   take it launch with no devshell — Neovide from a desktop launcher, `full` from
-  any terminal — except `rustfmt`, which `dev` does not need and cannot afford.
+  any terminal — except `rustfmt` and `csharpier`, which `dev` cannot afford;
+  both fall back to their language server.
 - **`preferPath` prefers the `$PATH` binary over the pinned one, deliberately.**
   It exists so a project's own toolchain wins inside a devshell. Its silent
   fallback is a known cost, not a bug to fix.

@@ -4,8 +4,8 @@
       languages.csharp = {
         enable = true;
         treesitter.enable = true;
-        # load-bearing: docs/decisions/csharp.md#formatting-is-the-lsps-job
-        format.enable = false;
+        # load-bearing: docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback
+        format.type = ["csharpier"];
         lsp.enable = lib.mkDefault false;
       };
 
@@ -47,9 +47,6 @@
           setupOpts.silent = true;
         };
       };
-
-      # load-bearing: docs/decisions/csharp.md#formatting-is-the-lsps-job
-      formatter.conform-nvim.setupOpts.formatters_by_ft.cs = {lsp_format = "prefer";};
 
       # load-bearing: docs/decisions/csharp.md#organize-imports-goes-through-vimlspconfig
       luaConfigRC.roslyn-settings = ''

@@ -40,8 +40,12 @@ priority — a conflict, not an override. `dev` needs `lib.mkOverride 40`. See
 size. It would drag the rust toolchain in and is not needed anyway — nvf
 disables rust's conform formatter whenever `lsp.enable` is set, so `gui`
 formats Rust through rust-analyzer. It stays bare in every build: on `$PATH` or
-not at all. C# is no conform formatter's job in either build — csharpier is
-gone and cs formats through roslyn-ls, see
-`docs/decisions/csharp.md#formatting-is-the-lsps-job`. `clang-format` is the
-opposite case and free — `pkgs.clang-tools` is already there as the clangd
-wrapper's fallback.
+not at all. csharpier joined that same shape on 2026-08-18 — routed for cs but
+bare in every build, a 923.9 MiB pin refused, with roslyn-ls formatting when
+it is absent, see
+`docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback`.
+`clang-format` is the opposite case and free — `pkgs.clang-tools` is already
+there as the clangd wrapper's fallback.
+
+
+

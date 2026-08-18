@@ -11,6 +11,8 @@ in {
           formatters = {
             alejandra.command = lib.mkForce "alejandra";
             clang-format.command = lib.mkForce "clang-format";
+            # load-bearing: docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback
+            csharpier.command = lib.mkForce "csharpier";
             prettier.command = lib.mkForce "prettier";
             ruff.command = lib.mkForce "ruff";
             rustfmt.command = lib.mkForce "rustfmt";
