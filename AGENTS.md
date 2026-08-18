@@ -20,6 +20,25 @@ Two derivations, three output names. **The names are public API** —
 edits do not reach the machine:** that flake pins a GitHub revision, not this
 working tree, and moving the pin is the human's call, not yours.
 
+## 0. Task guides
+
+Read the matching guide before starting. Claude Code loads the `.claude/rules`
+files automatically by path (`paths:` frontmatter); every other agent should
+open them directly.
+
+| Working on | Read |
+| --- | --- |
+| any `.nix` under `modules/` — file shape, the merge | `.claude/rules/nvf-file-conventions.md` |
+| any `.nix` under `modules/` — priorities, ordering, silent failures | `.claude/rules/evaluation-hazards.md` |
+| a `''` block, anything shipping into `init.lua` | `.claude/rules/lua-in-nix.md` |
+| `modules/languages/`, `modules/formatter.nix` | `.claude/rules/language-files.md` |
+| `modules/variants/`, `aspects.nix`, `flake.nix` | `.claude/rules/variant-wiring.md` |
+| output names, aspect count, anything "settled" | `.claude/rules/settled-decisions.md` |
+| `scripts/`, proving a change moved nothing | `.claude/rules/structural-verification.md` |
+| `docs/` — entries, anchors, `# load-bearing:` pointers | `.claude/rules/pointer-sync.md` |
+| adding a language, plugin, or variant; structural change | `.claude/skills/*/SKILL.md` |
+| why a specific line is the way it is | `docs/` — see §10 |
+
 ## 1. Invariants
 
 1. **Every `.nix` file under `modules/` is a flake-parts module.** One
