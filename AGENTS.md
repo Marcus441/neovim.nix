@@ -12,7 +12,7 @@ got here is finished (`2ea202f`…`24e4cc7`), so §1 describes the tree as it is
 | --- | --- | --- |
 | `min` | `core` | `home.packages` on every host |
 | `default` | `core` | alias of `min` |
-| `gui` | `core` `gui` | `programs.neovide.settings.neovim-bin` |
+| `gui` | `core` `dev` | `programs.neovide.settings.neovim-bin` |
 
 Two derivations, three output names. **The names are public API** —
 `~/.dotfiles/flake` pins `github:Marcus441/neovim.nix` and reads
@@ -46,7 +46,7 @@ open them directly.
 2. **`flake.nix` is a manifest.** Inputs + `mkFlake` + `import-tree`, no
    configuration logic. Edited only to add an input.
 3. **One file = one concern, across every aspect it touches.** One file
-   declaring both `core` and `gui` is the merge working as intended.
+   declaring both `core` and `dev` is the merge working as intended.
 4. **File paths name the feature but carry no system-meaning.** Never a variant,
    never an aspect. Directories are navigation, not structure.
 5. **No manual import lists** except the variant wiring. `import-tree` finds the rest.
@@ -71,15 +71,15 @@ the sibling flake's three, so nothing but the aspects keeps files honest.
 
 An aspect is a **decision or a capability**, never a magnitude and never a build
 name. **An aspect earns its existence when some variant says no.** With two variants,
-exactly one declining aspect is earned, and it is `gui`. Everything else is
+exactly one declining aspect is earned, and it is `dev`. Everything else is
 `core`. Files still decompose freely by concern — `modules/languages/rust.nix`
 declares both memberships — but a third aspect needs a third variant to decline
 it, or it is structure without a decision behind it.
 
-Good, when earned: `gui`, `db`, `neovide`. Bad: `minimal`, `extras`, `heavy` —
+Good, when earned: `dev`, `db`, `neovide`. Bad: `minimal`, `extras`, `heavy` —
 magnitude names rot; `terminal`, `ide` — a build archetype, and the archetype is
-the *list*. When a third variant appears, split `gui` at the seam *that variant*
-declines and put the new names where `gui` sat (§5). Until then, do not pre-split.
+the *list*. When a third variant appears, split `dev` at the seam *that variant*
+declines and put the new names where `dev` sat (§5). Until then, do not pre-split.
 
 ## 4. Layout
 
@@ -96,7 +96,7 @@ modules/
 ```
 
 A directory is permitted when its name does not predict the aspect of every file
-inside: `languages/` is fine, a `gui/` holding only `gui` files is not. §9 lists
+inside: `languages/` is fine, a `dev/` holding only `dev` files is not. §9 lists
 the prohibited shapes.
 
 `import-tree` imports **`.nix` files only** — a `.lua`, `.json` or `.md` asset
@@ -129,25 +129,25 @@ A working model, not a mechanism. **Measure; do not predict** — recipe in
 
 ## 6. Which aspect a line belongs to
 
-| Goes in `core` | Goes in `gui` |
+| Goes in `core` | Goes in `dev` |
 | --- | --- |
 | options, keymaps that work without a server | LSP servers, `lsp.*`, diagnostics extensions |
 | treesitter, formatters, `languages.<x>.enable` | completion, dashboard, session, statusline |
 | theme, clipboard, oil, snacks picker | anything that assumes Neovide or a big closure |
 
 **Default to `core`. Justify the exception.** `min` ships to every host; `gui` is
-one program's launcher, so a line in `gui` that could have been `core` is a line
+one program's launcher, so a line in `dev` that could have been `core` is a line
 the terminal editor does without for no reason. The counter-pressure is closure
 size: `core` resolves **every** formatter from `$PATH` rather than pinning one,
 because `min` is opened from inside `nix develop` and rustfmt and clang-format
 alone drag ~2 GB each (`docs/decisions/formatters.md`). **A `core` line that
-pulls a toolchain into `min` is what justifies `gui`.**
+pulls a toolchain into `min` is what justifies `dev`.**
 
 ## 7. Hazards and verification
 
 - **Every *file* is evaluated once** — a syntax error anywhere breaks both
   builds. But an **aspect's contents are only evaluated by variants that take it.**
-- **`core` sets `lib.mkDefault false`; `gui` overrides with a plain value.** The
+- **`core` sets `lib.mkDefault false`; `dev` overrides with a plain value.** The
   only combination that merges, and this repo's sharpest edge —
   `docs/conventions/overrides.md`, `.claude/rules/evaluation-hazards.md`.
 - **`config` inside `flake.modules.*` is nvf's, not flake-parts'.**
@@ -183,7 +183,7 @@ deliberate rather than an item (`.claude/rules/settled-decisions.md`,
 
 | Anti-pattern | Why |
 | --- | --- |
-| `core/`, `gui/`, `min/` directories | Paths encode the variant (Inv. 4) |
+| `core/`, `dev/`, `min/` directories | Paths encode the variant (Inv. 4) |
 | `lib/` directory of helpers | Not a flake-parts module (Inv. 1) |
 | `default.nix` listing siblings, or any `imports = [ ./foo.nix ]` under `modules/` | `import-tree` already loaded them (Inv. 5) — a hook rejects it |
 | `_` to group related `.nix` modules | `/_` is for non-modules only (§4) |
@@ -193,7 +193,7 @@ deliberate rather than an item (`.claude/rules/settled-decisions.md`,
 | `mkEnableOption` per aspect | Variants compose by taking aspects, not by enabling |
 | One file branching on which variant loaded it | Aspects are variant-agnostic (Inv. 6) |
 | Editing two files to add one language | Wrongly decomposed (Inv. 3) — but one file declaring two aspects is not this |
-| Plain `false` in `core` where `gui` must override | Needs `lib.mkDefault` (§7) |
+| Plain `false` in `core` where `dev` must override | Needs `lib.mkDefault` (§7) |
 
 ## 10. Working style
 

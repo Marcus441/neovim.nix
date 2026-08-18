@@ -13,7 +13,7 @@ paths: "modules/**/*.nix"
 2. **`flake.nix` is a manifest.** Inputs plus `mkFlake` plus `import-tree`. No
    configuration logic. Edited only to add an input.
 3. **One file = one concern, across every aspect it touches.** A single file may
-   declare both `core` and `gui` — that is the merge working as intended. The
+   declare both `core` and `dev` — that is the merge working as intended. The
    violation is one concern spread across several files.
 4. **File paths name the feature but carry no system-meaning.** A path never
    encodes a variant or an aspect — the module system does not read it. Files
@@ -34,7 +34,7 @@ attribute sets **merge**.
 - **Many files → one aspect.** Growing a feature means *adding a file*, never
   editing a list.
 - **One file → many aspects.** A single concern can contribute to `core` and
-  `gui` at once. This is the direction that gets forgotten.
+  `dev` at once. This is the direction that gets forgotten.
 
 Two independent axes: the unit of **concern** is the *file*; the unit of
 **applicability** is the *aspect*. Neither contains the other.
@@ -59,7 +59,7 @@ watch.
     };
   };
 
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim.languages.rust.lsp.enable = true;
   };
 }
@@ -89,8 +89,8 @@ the directory is pure navigation and is fine. **`core` does not count toward
 "several aspects"** — every variant takes `core`.
 
 `modules/languages/` passes, for the strongest reason available — every file in
-it declares both `core` and `gui`, so the path predicts nothing. A `gui/`
-directory holding only `gui` files is exactly what Inv. 4 forbids.
+it declares both `core` and `dev`, so the path predicts nothing. A `dev/`
+directory holding only `dev` files is exactly what Inv. 4 forbids.
 
 Passing the directory test is necessary, not sufficient. `modules/keymaps/`
 passed it — its files spanned both aspects — and was still deleted, because a
@@ -125,7 +125,7 @@ In order of preference:
 {config, ...}: let
   inherit (config) preferPathExe;   # flake-parts config, captured outside
 in {
-  flake.modules.nvf.gui = {pkgs, lib, ...}: {
+  flake.modules.nvf.dev = {pkgs, lib, ...}: {
     vim.lsp.servers.rust-analyzer.cmd = lib.mkForce [
       (preferPathExe pkgs "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
     ];

@@ -31,7 +31,7 @@ metastasises.
 
 | Anti-pattern | Why |
 | --- | --- |
-| `core/`, `gui/`, `min/` directories | Paths encode the variant (Inv. 4) |
+| `core/`, `dev/`, `min/` directories | Paths encode the variant (Inv. 4) |
 | `lib/` directory of helpers | Not a flake-parts module (Inv. 1) |
 | `default.nix` that only lists siblings | `import-tree` already loaded them (Inv. 5) |
 | `imports = [ ./foo.nix ]` inside `modules/` | Same (Inv. 5) — a hook rejects it |
@@ -41,7 +41,7 @@ metastasises.
 | `mkEnableOption` per aspect | Variants compose by taking aspects |
 | A file asking which variant loaded it | Aspects are variant-agnostic (Inv. 6) |
 | Editing two files to add one language | Wrongly decomposed (Inv. 3) — but one file declaring two aspects is not this |
-| Plain `false` in `core` where `gui` overrides | Needs `lib.mkDefault` |
+| Plain `false` in `core` where `dev` overrides | Needs `lib.mkDefault` |
 
 **Directory test:** if every file inside declares the same *declining* aspect,
 the directory is redundant and the files should be flat. `core` does not count
@@ -76,7 +76,7 @@ nix flake check                  # cheap eval sweep
   differs in content, or the closure size jumps (~2 GB means a formatter stopped
   resolving from `$PATH`).
 
-`min` is the control: a change confined to `gui` must leave `min` identical.
+`min` is the control: a change confined to `dev` must leave `min` identical.
 
 **A pure file move must be byte-identical on both outputs.** It moves
 files and changes no content, so a FAIL there is always a bug — most likely the
@@ -92,7 +92,7 @@ Do not claim a build works without having built it.
 recovers. Undo before committing.
 
 **Inspect a merged aspect:** `nix repl` → `:lf .` →
-`config.flake.modules.nvf.gui`.
+`config.flake.modules.nvf.dev`.
 
 **Read the generated config:** `nix build .#gui`, then look inside `result/` —
 the assembled `init.lua` is the ground truth for every ordering question.

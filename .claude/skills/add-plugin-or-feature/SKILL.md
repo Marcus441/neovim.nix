@@ -33,15 +33,15 @@ the `theme-plugin` that `modules/kanagawa.nix` declares.
 **Default to `core`. Justify the exception.** `min` is the editor that ships to
 every host; `gui` is one program's launcher.
 
-| `core` | `gui` |
+| `core` | `dev` |
 | --- | --- |
 | options, motions, clipboard, oil, picker, theme | LSP, completion, dashboard, session, statusline |
 | treesitter, formatters | anything assuming Neovide, or a big closure |
 
-Two reasons to put a line in `gui`: it **needs a language server**, or it drags a
+Two reasons to put a line in `dev`: it **needs a language server**, or it drags a
 toolchain-sized closure into `min`. "It feels like an IDE thing" is not one.
 
-**Do not invent a third aspect.** With two variants only `gui` is earned
+**Do not invent a third aspect.** With two variants only `dev` is earned
 (AGENTS.md §3). A plugin nothing declines is `core`.
 
 ## 3. One file, every aspect it touches
@@ -52,11 +52,11 @@ declaring two memberships:
 ```nix
 {
   flake.modules.nvf.core.vim.utility.oil-nvim.enable = true;
-  flake.modules.nvf.gui.vim.utility.oil-nvim.setupOpts.view_options.show_hidden = true;
+  flake.modules.nvf.dev.vim.utility.oil-nvim.setupOpts.view_options.show_hidden = true;
 }
 ```
 
-Splitting that across a `core` file and a `gui` file is the Inv. 3 violation this
+Splitting that across a `core` file and a `dev` file is the Inv. 3 violation this
 whole refactor exists to remove.
 
 ## 4. Its keymap and its Lua go with it

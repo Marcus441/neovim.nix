@@ -6,23 +6,23 @@ paths: "modules/**/*.nix"
 
 ## Overriding across aspects is the central mechanic
 
-`core` and `gui` are merged into one nvf evaluation. Where both set the same
+`core` and `dev` are merged into one nvf evaluation. Where both set the same
 key, the module system's priorities decide, and only one combination works:
 
-| `core` says | `gui` says | Result |
+| `core` says | `dev` says | Result |
 | --- | --- | --- |
-| `lib.mkDefault false` | `true` | **gui wins.** The intended shape. |
+| `lib.mkDefault false` | `true` | **dev wins.** The intended shape. |
 | `false` | `true` | **Error** — two definitions at the same priority, no merge for a bool. |
 | `lib.mkDefault false` | `lib.mkDefault true` | **Error** — same priority again. |
 | `lib.mkForce false` | `true` | core wins. Almost always a mistake. |
 
 Priorities: `mkDefault` = 1000, a plain value = 100, `mkForce` = 50. **Lower
 wins.** So the rule is: **`core` states the `min` behaviour with `mkDefault`;
-`gui` states its own with a plain value.**
+`dev` states its own with a plain value.**
 
 Every `lsp.enable` in the `core` half of a `modules/languages/*.nix` is `lib.mkDefault false` for this
 reason, and so is `enableExtraDiagnostics`. A plain `false` there fails loudly
-the first time `gui` disagrees — which is the good case. The bad case is a
+the first time `dev` disagrees — which is the good case. The bad case is a
 `mkDefault` that nothing ever overrides: it looks deliberate and is just noise.
 
 **`lsp.servers.<name>.cmd` needs `lib.mkForce`.** nvf sets `cmd` itself at normal
@@ -82,15 +82,15 @@ arguments. Getting this wrong produces infinite recursion, not a clear error.
   (`modules/formatter.nix`), because pinning rustfmt and clang-format drags
   ~2.4 GB and ~2.1 GB of toolchain into `min`, and prettier alone drags 190 MiB
   of `nodejs`. A line that pins a formatter binary silently undoes that. Check
-  the closure size, not just the build. `gui` puts each back as a `preferPathExe`
-  fallback, and because `core` already spent `mkForce` there, **`gui` must use
+  the closure size, not just the build. `dev` puts each back as a `preferPathExe`
+  fallback, and because `core` already spent `mkForce` there, **`dev` must use
   `lib.mkOverride 40`** — a second `mkForce` is a conflict, and a plain value
   silently loses.
 - **`preferPath` degrades quietly.** It execs the `$PATH` binary if present and
   the pinned one otherwise, so a broken devshell version wins over a working
   pinned one with no diagnostic.
 - **An aspect's contents are only evaluated by variants that take it.** A type
-  error inside `gui` cannot break `min`. Conversely `verify.sh build` passing on
+  error inside `dev` cannot break `min`. Conversely `verify.sh build` passing on
   `min` says nothing about `gui`; build both.
 - **Every *file* is evaluated once**, so a syntax error anywhere breaks both
   builds regardless of which aspect it declares.
@@ -107,7 +107,7 @@ just the config — exclude by attribute (`lib.optionalAttrs`), not by value
   `import-tree` skips any path matching `/_`. Halve the tree until the build
   recovers. Undo before committing.
 - **Inspect a merged aspect:** `nix repl` → `:lf .` →
-  `config.flake.modules.nvf.gui`.
+  `config.flake.modules.nvf.dev`.
 - **Read the generated config:** `nix build .#gui` then look inside
   `result/` — the assembled `init.lua` is the ground truth for every ordering
   question above.

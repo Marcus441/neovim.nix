@@ -6,7 +6,7 @@
     };
   };
 
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim.visuals.nvim-cursorline.enable = true;
   };
 }

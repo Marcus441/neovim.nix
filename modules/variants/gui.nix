@@ -1,3 +1,3 @@
 {
-  variants.gui.aspects = ["core" "gui"];
+  variants.gui.aspects = ["core" "dev"];
 }

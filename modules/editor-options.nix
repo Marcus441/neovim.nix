@@ -17,7 +17,7 @@
     };
   };
 
-  flake.modules.nvf.gui = {
+  flake.modules.nvf.dev = {
     vim.options = {
       tabstop = 2;
       shiftwidth = 2;

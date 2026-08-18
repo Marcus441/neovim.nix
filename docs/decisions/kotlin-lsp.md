@@ -97,7 +97,7 @@ against a Gradle project logs no exception at all, and that is the check.
 **Also:** this costs **1.2 GiB** in `gui`'s closure — 4.2 GiB to 5.4 GiB — and
 nothing in `min`, which stays at 315 MiB. It is the single largest thing `gui`
 pulls in, ahead of roslyn. That is the price of an IntelliJ-derived server and
-the reason it is a `gui` line and could never be a `core` one (AGENTS.md §6).
+the reason it is a `dev` line and could never be a `core` one (AGENTS.md §6).
 
 ## It is unfree
 
@@ -126,7 +126,7 @@ freeform and which nvf enables on its own — `vim.lsp.enable` gates
 **Breaks:** loudly, and that is the point. `lsp.enable` is a plain `false` here,
 not the `lib.mkDefault false` every other language file in `modules/languages/`
 writes, because no aspect is meant to override it — a later `lsp.enable = true`
-in `gui` is a definition conflict rather than a silently resurrected fwcd
+in `dev` is a definition conflict rather than a silently resurrected fwcd
 server. See `.claude/rules/evaluation-hazards.md` for why a `mkDefault` nothing
 overrides is noise.
 
@@ -166,7 +166,7 @@ lambda bodies, multi-line parameter lists, if/else) comes out correct. The
 autocmd falls back to `smartindent` if `GetKotlinIndent` is ever absent, because
 an `indentexpr` naming a missing function errors on every single line.
 
-**Also:** the autocmd is `core`, not `gui` — `min` has treesitter indent too, so
+**Also:** the autocmd is `core`, not `dev` — `min` has treesitter indent too, so
 it has the same broken indent, and the fix costs nothing. In `gui` the residual
 chain-continuation case is repaired on save by the server's own formatter; see
 the next section. `min` keeps the 10-line residual, having no server.

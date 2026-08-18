@@ -10,5 +10,5 @@
     };
   };
 
-  flake.modules.nvf.gui.vim.globals.theme_transparent = false;
+  flake.modules.nvf.dev.vim.globals.theme_transparent = false;
 }

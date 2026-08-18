@@ -83,7 +83,7 @@ and `03123e9` resolved it. Check the contested keys, not just the record counts.
 
 ## `min` is the control
 
-`min` takes only `core`. Any change confined to the `gui` aspect must leave `min`
+`min` takes only `core`. Any change confined to the `dev` aspect must leave `min`
 identical — if it doesn't, something leaked into `core`.
 
 ## Flakes only see tracked files
