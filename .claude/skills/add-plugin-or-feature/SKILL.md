@@ -41,8 +41,9 @@ every host; `gui` is one program's launcher.
 Two reasons to put a line in `dev`: it **needs a language server**, or it drags a
 toolchain-sized closure into `min`. "It feels like an IDE thing" is not one.
 
-**Do not invent a third aspect.** With two variants only `dev` is earned
-(AGENTS.md §3). A plugin nothing declines is `core`.
+**Do not invent a fifth aspect.** `dev`, `neovide` and `images` are earned
+because a variant declines each (AGENTS.md §3). A plugin nothing declines is
+`core`; a Neovide-only fact is `neovide`; terminal image rendering is `images`.
 
 ## 3. One file, every aspect it touches
 

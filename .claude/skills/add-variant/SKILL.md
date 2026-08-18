@@ -42,13 +42,14 @@ lines. That is how the current table came to be:
 
 ```
 min     [ core ]
-full    [ core dev ]
+full    [ core dev images ]
 gui     [ core dev neovide ]
 ```
 
 `dev` is earned because `min` declines it; `neovide` because `full` — a terminal
-build — declines it. The `full` variant and the `neovide` aspect arrived in the
-same commit, because a split with no variant exercising the seam is structure
+build — declines it; `images` because `gui` declines it (Neovide cannot render
+kitty-graphics images). The `full` variant and the `neovide` aspect arrived in
+the same commit, because a split with no variant exercising the seam is structure
 without a decision behind it, and the anti-pattern table rejects it. A further
 split of `dev` (into `lsp`/`ui`/`db`, say) waits for a variant that declines one
 of the pieces.

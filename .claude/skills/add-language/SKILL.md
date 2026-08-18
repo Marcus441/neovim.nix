@@ -95,8 +95,8 @@ still mention it and neither is named after a language.
 ## Verify
 
 ```bash
-./scripts/verify.sh build     # all three outputs build
-nix build .#gui && nix run .#gui -- some-file.<ext>
+./scripts/verify.sh build     # all four outputs build
+nix build .#full && nix run .#full -- some-file.<ext>
 ```
 
 Then in the editor: `:checkhealth`, `:LspInfo` (server attached), and a
