@@ -28,6 +28,11 @@ picture.
 `dotnet_organize_imports_on_format` (next entry) fires on an explicit LSP
 format, and on save only when the roslyn fallback is the one formatting.
 `min` has no LSP: there, no csharpier on `$PATH` means cs goes unformatted.
+cs is also the one filetype that formats *after* save rather than on it
+(`docs/decisions/formatters.md#format-on-save-gates-on-a-global`): csharpier
+pays dotnet startup per invocation, so the buffer reformats a beat after `:w`
+instead of blocking it, and conform rewrites the file itself — no second
+write needed.
 
 ## Organize imports goes through vim.lsp.config
 

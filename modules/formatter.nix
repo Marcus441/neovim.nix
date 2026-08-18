@@ -8,8 +8,17 @@ in {
         setupOpts = {
           # load-bearing: docs/decisions/formatters.md#format-on-save-gates-on-a-global
           format_on_save = lib.mkLuaInline ''
-            function()
-              if vim.g.disable_autoformat then
+            function(bufnr)
+              if vim.g.disable_autoformat or vim.bo[bufnr].filetype == "cs" then
+                return
+              end
+              return {}
+            end
+          '';
+          # load-bearing: docs/decisions/formatters.md#format-on-save-gates-on-a-global
+          format_after_save = lib.mkLuaInline ''
+            function(bufnr)
+              if vim.g.disable_autoformat or vim.bo[bufnr].filetype ~= "cs" then
                 return
               end
               return {}

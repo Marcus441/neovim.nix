@@ -52,16 +52,23 @@ there as the clangd wrapper's fallback.
 
 ## format-on-save gates on a global
 
-**Why:** conform's `format_on_save` is a function returning nothing when
-`vim.g.disable_autoformat` is set and `{}` otherwise, and `<leader>tf` (also in
+**Why:** conform's `format_on_save` and `format_after_save` are a
+complementary pair of functions: both return nothing when
+`vim.g.disable_autoformat` is set — `<leader>tf` (also in
 `modules/formatter.nix` — the file that installs a feature owns its keymap)
-flips that global. nvf has its own toggle machinery (`vim.g.formatsave`,
-buffer-local `<leader>ltf`), but all of it sits under `mkIf vim.lsp.enable`, so
-`min` never gets it — the gate has to live at the conform layer to exist in
-every build, and it deliberately ignores nvf's globals rather than half-reading
-them.
+flips that global — and they split the filetypes between them: cs formats
+*after* save, asynchronously, because csharpier boots the dotnet runtime per
+invocation (~0.27 s warm, measured 2026-08-18) and would block every `:w`;
+everything else formats synchronously on save. nvf has its own toggle
+machinery (`vim.g.formatsave`, buffer-local `<leader>ltf`), but all of it sits
+under `mkIf vim.lsp.enable`, so `min` never gets it — the gate has to live at
+the conform layer to exist in every build, and it deliberately ignores nvf's
+globals rather than half-reading them.
 
-**Breaks:** silently. Replacing the function with a plain `{}` (the old value)
-formats on every save again and the keymap keeps announcing states it no
-longer controls. The other direction — toggling and forgetting — is announced
-by `vim.notify` on each flip, which is the whole feedback.
+**Breaks:** silently, in three ways. Replacing `format_on_save` with a plain
+`{}` (the pre-toggle value) formats on every save again and the keymap keeps
+announcing states it no longer controls. Dropping the `format_after_save`
+override resurrects nvf's default for it, which is gated on `vim.g.formatsave`
+— every save in a `dev` build then formats twice, sync and async, which is
+what this pair replaced. And the two filetype conditions are complements by
+hand — if they drift, a filetype formats twice per save or not at all.
