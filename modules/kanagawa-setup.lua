@@ -127,6 +127,13 @@ require("kanagawa").setup({
 			NoicePopupmenu = results.normal,
 			NoicePopupmenuBorder = results.border,
 			NoicePopupmenuSelected = { bg = theme.ui.bg_p2 },
+
+			-------------------
+			-- Oil confirmation window
+			-------------------
+			-- Oil registers no float groups; oil.nix's winhighlight redirects here
+			OilConfirm = prompt.normal,
+			OilConfirmBorder = prompt.border,
 		}
 
 		-- The notifier border keeps its per-level colour and gains the block's bg,
