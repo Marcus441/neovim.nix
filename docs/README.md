@@ -24,14 +24,14 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Sixteen files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
+Seventeen files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
 `modules/clipboard.nix`, `modules/auto-complete.nix`, `modules/session.nix`,
 `modules/lsp-progress.nix`, `modules/noice.nix`, `modules/snacks-picker.nix` and
 `modules/neovide.nix`, `modules/formatter.nix` (two),
 `modules/languages/rust.nix` (two), `modules/direnv.nix` (three),
-`modules/splits.nix` (three), `modules/languages/nix.nix` (five),
-`modules/languages/kotlin.nix` (six) and
-`modules/languages/csharp.nix` (eight). The seventeenth is
+`modules/images.nix` (three), `modules/splits.nix` (three),
+`modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
+`modules/languages/csharp.nix` (eight). The eighteenth is
 `modules/kanagawa-setup.lua`, where the pointer is a `--` rather than a `#`
 because the value it marks is Lua — subject to the two-line cap that governs
 everything shipping into `init.lua`, which a one-line pointer meets.

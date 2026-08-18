@@ -16,11 +16,11 @@ commit hash, never a plan filename.
 - **`default`, `min`, `full` and `gui` are the output names**, and `default`
   aliases `min`. `~/.dotfiles/flake` reads `min` and `gui` by name. Adding a
   variant is fine; renaming one is a breaking change to another repo.
-- **Three aspects: `core`, `dev` and `neovide`.** An aspect earns its existence
-  when some variant declines it: `min` declines `dev`, `full` declines
-  `neovide`. Do not pre-split `dev` into `lsp`/`ui`/`db` — that is structure
-  without a decision behind it. When a new variant appears, split at the seam
-  *that variant* declines.
+- **Four aspects: `core`, `dev`, `neovide` and `images`.** An aspect earns its
+  existence when some variant declines it: `min` declines `dev`, `full` declines
+  `neovide`, `gui` declines `images`. Do not pre-split `dev` into `lsp`/`ui`/`db`
+  — that is structure without a decision behind it. When a new variant appears,
+  split at the seam *that variant* declines.
 - **Home Manager consumption stays out of this repo.** It exports packages, not a
   `homeModules.default`. The consumer wires it (`flake/modules/neovim.nix`,
   `flake/modules/neovide.nix`); `home-example.nix` documents the shape for

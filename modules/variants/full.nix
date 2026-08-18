@@ -1,3 +1,3 @@
 {
-  variants.full.aspects = ["core" "dev"];
+  variants.full.aspects = ["core" "dev" "images"];
 }

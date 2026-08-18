@@ -72,7 +72,7 @@ aspect list, and nothing else:
 | :--- | :--- | :--- |
 | `min` | `core` | terminal editor — options, keymaps, theme, treesitter, formatters, mini.statusline |
 | `default` | `core` | alias of `min` |
-| `full` | `core` `dev` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager — for terminal development |
+| `full` | `core` `dev` `images` | adds LSP, blink-cmp, lualine, snacks extras, dashboard, session manager, inline images — for terminal development |
 | `gui` | `core` `dev` `neovide` | `full`'s feature set plus the Neovide-only lines, minus the terminal-only ones |
 
 Three derivations, four names. Directories such as `modules/languages/` are

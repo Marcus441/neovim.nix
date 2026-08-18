@@ -12,7 +12,7 @@ got here is finished (`2ea202f`…`24e4cc7`), so §1 describes the tree as it is
 | --- | --- | --- |
 | `min` | `core` | `home.packages` on every host |
 | `default` | `core` | alias of `min` |
-| `full` | `core` `dev` | nothing yet — terminal development, servers included |
+| `full` | `core` `dev` `images` | nothing yet — terminal development, servers included |
 | `gui` | `core` `dev` `neovide` | `programs.neovide.settings.neovim-bin` |
 
 Three derivations, four output names. **The names are public API** —
@@ -72,8 +72,9 @@ the sibling flake's three, so nothing but the aspects keeps files honest.
 
 An aspect is a **decision or a capability**, never a magnitude and never a build
 name. **An aspect earns its existence when some variant says no.** With three
-variants, two declining aspects are earned: `dev` (declined by `min`) and
-`neovide` (declined by `full`). Everything else is `core`. Files still decompose
+variants, three declining aspects are earned: `dev` (declined by `min`),
+`neovide` (declined by `full`) and `images` (declined by `gui` — Neovide cannot
+render kitty-graphics images). Everything else is `core`. Files still decompose
 freely by concern — `modules/languages/rust.nix` declares both memberships — but
 a new aspect needs a variant to decline it, or it is structure without a
 decision behind it.
@@ -140,7 +141,9 @@ A working model, not a mechanism. **Measure; do not predict** — recipe in
 
 A line that only makes sense under Neovide — a `neovide_*` global, a
 display-medium fact — goes in `neovide`, never `dev`: `full` is a terminal build
-and must stay agnostic of it.
+and must stay agnostic of it. Image rendering goes in `images`, never `core` or
+`dev`: it is terminal-only — Neovide cannot draw it — and its `magick` pin is
+closure weight (`docs/decisions/images.md`).
 
 **Default to `core`. Justify the exception.** `min` ships to every host, so a
 line in `dev` that could have been `core` is a line the minimal editor does
