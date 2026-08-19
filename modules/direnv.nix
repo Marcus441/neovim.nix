@@ -5,6 +5,27 @@
 
       globals.direnv_silent_load = 1;
 
+      # load-bearing: docs/decisions/direnv.md#its-own-group
+      luaConfigRC.direnv-fidget-group = ''
+        -- The fidget group direnv reports through, registered on first use.
+        _DIRENV_FIDGET_GROUP = function()
+          local frame = require("fidget.spinner").animate("dots", 1)
+          require("fidget.notification").set_config("direnv", {
+            name = "direnv",
+            icon = function(now, items)
+              for _, item in ipairs(items) do
+                if not item.data then
+                  return frame(now)
+                end
+              end
+              return "✓"
+            end,
+            annote_style = "Comment",
+            ttl = 3,
+          }, false)
+        end
+      '';
+
       augroups = [{name = "DirenvFidget";}];
 
       autocmds = [
@@ -20,32 +41,6 @@
                   let g:direnv_stderr = get(g:, 'direnv_stderr', []) + a:data
                 endfunction
               ]])
-            end
-          '';
-        }
-        # load-bearing: docs/decisions/direnv.md#its-own-group
-        {
-          event = ["VimEnter"];
-          desc = "Define the fidget group direnv reports through, registered on first use";
-          group = "DirenvFidget";
-          callback = lib.mkLuaInline ''
-            function()
-              _DIRENV_FIDGET_GROUP = function()
-                local frame = require("fidget.spinner").animate("dots", 1)
-                require("fidget.notification").set_config("direnv", {
-                  name = "direnv",
-                  icon = function(now, items)
-                    for _, item in ipairs(items) do
-                      if not item.data then
-                        return frame(now)
-                      end
-                    end
-                    return "✓"
-                  end,
-                  annote_style = "Comment",
-                  ttl = 3,
-                }, false)
-              end
             end
           '';
         }

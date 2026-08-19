@@ -56,6 +56,20 @@ and was not: a fast export cancels the spinner, so the result notification
 created the group from `configs.default` instead, taking the default header,
 icon and `ttl = 5`.
 
+**Also breaks by not existing yet, which is why it is defined in `luaConfigRC`
+and not, like its two callers, from `VimEnter`.** `DirenvLoaded` is not fired
+only by an export. `plugin/direnv.vim` also registers
+`autocmd BufEnter * call direnv#extra_vimrc#check()`, and `check()` calls
+`direnv#post_direnv_load()` — which fires `DirenvLoaded` — whenever `$DIRENV_DIR`
+is non-empty and the buffer sits under it. Launching nvim from a shell direnv
+has already loaded satisfies both, out of the inherited environment and before
+any export has run. The first `BufEnter` precedes `VimEnter` at startup, so a
+`VimEnter`-registered definition left the handler calling a nil global and the
+error surfaced as a traceback through `direnv#extra_vimrc#check`. Assigning the
+global from `luaConfigRC` is safe in a way the `direnv#on_stderr` redefinition
+above is not: nothing sources a Lua global a second time, and package loading
+cannot clobber it.
+
 **Also:** three item states, distinguished without borrowing anything from LSP.
 `annote_style = "Comment"` mutes an item while it is in flight (a `nil` level
 falls through to `annote_style`); a finished item takes the default
