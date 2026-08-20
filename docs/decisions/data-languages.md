@@ -42,3 +42,63 @@ restores exactly that silence.
 which means restating an upstream default in order to disagree with it, and
 breaking quietly if nvf renames or re-scopes them. Routing the filetype is
 additive and survives a pin bump either way.
+
+## scss declines some-sass
+
+**Why:** nvf defaults `vim.languages.scss` to `some-sass-language-server`, which
+is the better SCSS server — it resolves variables and mixins across files, where
+the VSCode CSS server treats each buffer alone. It is also not in nixpkgs: nvf
+builds it as one of its own flake packages, against **nvf's** nixpkgs rather than
+this repo's. Measured 2026-08-20, that second `nodejs` costs **255.4 MiB**, where
+pointing SCSS at `vscode-css-language-server` costs nothing at all — the CSS
+server is already pinned, and `vscode-langservers-extracted` is one derivation
+shipping the JSON, CSS, HTML and ESLint servers together.
+
+**Breaks:** visibly, and `verify.sh` reports the number. Dropping the `servers`
+line takes nvf's default back and the closure jumps by a quarter of a gigabyte
+for one language's cross-file completion.
+
+**Also:** this is the same trade `markdown.md#the-closure-cost-lands-in-dev-not-min`
+made in the other direction — marksman is pinned at 95.5 MiB because it has no
+substitute, and some-sass is declined because it has one that is already paid
+for. If nixpkgs ever packages some-sass against this repo's nixpkgs, re-measure:
+the objection is the duplicate nodejs, not the server.
+
+## html uses superhtml for lsp only
+
+**Why:** nvf's html module offers `superhtml`, `emmet-ls` and
+`stimulus-language-server`, and defaults `format.type` to `superhtml` as well.
+The VSCode HTML server is *not* in that enum, even though it ships in the
+`vscode-langservers-extracted` this repo now pins for JSON and CSS — so the
+server is superhtml by elimination, at 3.1 MiB. The formatter is prettier
+because `core` must never name a store path
+(`#prettier-everywhere`), and `superhtml` as the formatter would put one there.
+
+**Breaks:** silently, in the `min` direction only — see `#prettier-everywhere`.
+The LSP half is `dev`, so it cannot reach `min` however it is set.
+
+**Also:** superhtml is strict about malformed markup by design; it reports errors
+where a template engine's output would be fine. If a Jinja or Razor fragment is
+noisy, that is the server, not a misconfiguration.
+
+## the linters stay off
+
+**Why:** `languages/every-language.nix` sets `enableExtraDiagnostics = true` in
+`dev`, and nvf's scss and html modules each carry a default diagnostics provider
+— `stylelint` and `htmlhint`. So enabling those two languages *opts in* to two
+linters nobody asked for. `stylelint` exits with an error when a project has no
+`.stylelintrc`, which is most of them, so its default state is a diagnostic that
+is always wrong; `htmlhint` (6.1 MiB) is turned off beside it for symmetry
+rather than for a cost.
+
+**Breaks:** loudly, which is why these two lines are the plain `false` they look
+like — the option's own default is `config.vim.languages.enableExtraDiagnostics`,
+so an ordinary value overrides it and no `mkDefault` or `mkForce` is involved.
+Deleting either line switches its linter on.
+
+**Also:** this is the one place `dev`'s language-wide switch is a liability
+rather than a convenience. Every language file added from here on inherits it,
+so check whether the language nvf is enabling has a `defaultDiagnosticsProvider`
+before assuming diagnostics are opt-in. `markdown.nix` is the opposite case —
+it names `markdownlint-cli2` deliberately and routes its `cmd` through
+`preferPathExe`, which is what enabling one properly costs.
