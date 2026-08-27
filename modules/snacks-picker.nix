@@ -58,6 +58,11 @@
         }
       '';
 
+      formatters.file = {
+        filename_first = true;
+        truncate = "left";
+      };
+
       sources.lines.layout.preset = "block";
       sources.zoxide = {};
       sources.projects = {
