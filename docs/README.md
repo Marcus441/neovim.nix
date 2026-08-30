@@ -24,7 +24,7 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Twenty-seven files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
+Twenty-eight files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
 `modules/clipboard.nix`, `modules/auto-complete.nix`, `modules/session.nix`,
 `modules/lsp-progress.nix`, `modules/noice.nix`, `modules/snacks-picker.nix`,
 `modules/oil.nix`, `modules/diagnostics.nix`, `modules/statuscolumn.nix`,
@@ -32,11 +32,12 @@ Twenty-seven files carry one today — `modules/nixpkgs.nix`, `modules/prefer-pa
 `modules/languages/json.nix` and `modules/neovide.nix`,
 `modules/formatter.nix` (five), `modules/languages/rust.nix` (two),
 `modules/languages/yaml.nix` (two), `modules/languages/html.nix` (two),
+`modules/languages/typescript.nix` (two),
 `modules/languages/css.nix` (three), `modules/languages/openapi.nix` (three),
 `modules/direnv.nix` (three),
 `modules/images.nix` (three), `modules/splits.nix` (three),
 `modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
-`modules/languages/csharp.nix` (seven). The twenty-eighth is
+`modules/languages/csharp.nix` (seven). The twenty-ninth is
 `modules/kanagawa-setup.lua`, where the pointer is a `--` rather than a `#`
 because the value it marks is Lua — subject to the two-line cap that governs
 everything shipping into `init.lua`, which a one-line pointer meets.
