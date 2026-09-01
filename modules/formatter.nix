@@ -9,21 +9,17 @@ in {
           # load-bearing: docs/decisions/formatters.md#format-on-save-gates-on-a-global
           format_on_save = lib.mkLuaInline ''
             function(bufnr)
-              if vim.g.disable_autoformat or vim.bo[bufnr].filetype == "cs" then
+              if vim.g.disable_autoformat then
                 return
+              end
+              if vim.bo[bufnr].filetype == "cs" then
+                return { timeout_ms = 3000 }
               end
               return {}
             end
           '';
           # load-bearing: docs/decisions/formatters.md#format-on-save-gates-on-a-global
-          format_after_save = lib.mkLuaInline ''
-            function(bufnr)
-              if vim.g.disable_autoformat or vim.bo[bufnr].filetype ~= "cs" then
-                return
-              end
-              return {}
-            end
-          '';
+          format_after_save = null;
           # load-bearing: docs/decisions/formatters.md#path-resolution
           formatters = {
             alejandra.command = lib.mkForce "alejandra";

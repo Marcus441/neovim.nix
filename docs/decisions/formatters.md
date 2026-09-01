@@ -54,24 +54,25 @@ there as the clangd wrapper's fallback.
 
 ## format-on-save gates on a global
 
-**Why:** conform's `format_on_save` and `format_after_save` are a
-complementary pair of functions: both return nothing when
+**Why:** conform's `format_on_save` returns nothing when
 `vim.g.disable_autoformat` is set — `<leader>tf` (also in
 `modules/formatter.nix` — the file that installs a feature owns its keymap)
-flips that global — and they split the filetypes between them: cs formats
-*after* save, asynchronously, because the first format of a session can wait
-on the csharpier server booting
-(`docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback`);
-everything else formats synchronously on save. nvf has its own toggle
+flips that global — and otherwise formats every filetype synchronously on
+save. cs gets `timeout_ms = 3000` instead of conform's 1000 default, sitting
+above the csharpier daemon's internal 2.5 s wait-for-boot deadline
+(`docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback`), so the
+one save that can land before the server binds still formats instead of
+timing out. `format_after_save = null` retires the async half entirely — cs
+formatted there until 2026-09-01, when the daemon removed the per-invocation
+dotnet boot that justified the split (`f9959b5`). nvf has its own toggle
 machinery (`vim.g.formatsave`, buffer-local `<leader>ltf`), but all of it sits
 under `mkIf vim.lsp.enable`, so `min` never gets it — the gate has to live at
 the conform layer to exist in every build, and it deliberately ignores nvf's
 globals rather than half-reading them.
 
-**Breaks:** silently, in three ways. Replacing `format_on_save` with a plain
+**Breaks:** silently, in two ways. Replacing `format_on_save` with a plain
 `{}` (the pre-toggle value) formats on every save again and the keymap keeps
-announcing states it no longer controls. Dropping the `format_after_save`
-override resurrects nvf's default for it, which is gated on `vim.g.formatsave`
-— every save in a `dev` build then formats twice, sync and async, which is
-what this pair replaced. And the two filetype conditions are complements by
-hand — if they drift, a filetype formats twice per save or not at all.
+announcing states it no longer controls. And `format_after_save` must stay a
+defined `null`, never deleted: dropping the definition resurrects nvf's
+default for it, which is gated on `vim.g.formatsave` — every save in a `dev`
+build then formats twice, sync and async, which is what this gate replaced.

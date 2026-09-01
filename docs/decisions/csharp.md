@@ -51,11 +51,12 @@ removed.
 `dotnet_organize_imports_on_format` (next entry) fires on an explicit LSP
 format, and on save only when the roslyn fallback is the one formatting.
 `min` has no LSP: there, no csharpier on `$PATH` means cs goes unformatted.
-cs still formats *after* save rather than on it
-(`docs/decisions/formatters.md#format-on-save-gates-on-a-global`); the daemon
-just makes the reformat land near-instantly. The idle server costs about a
-dotnet runtime of RSS per Neovim instance — the startup cost moved into
-memory, accepted.
+cs formats on save like every other filetype since 2026-09-01 — the daemon
+retired the after-save split (`f9959b5`), and `:w` blocks for the low tens of
+milliseconds a warm format costs
+(`docs/decisions/formatters.md#format-on-save-gates-on-a-global`). The idle
+server costs about a dotnet runtime of RSS per Neovim instance — the startup
+cost moved into memory, accepted.
 
 ## Organize imports goes through vim.lsp.config
 
