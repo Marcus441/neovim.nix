@@ -29,7 +29,20 @@ in {
             alejandra.command = lib.mkForce "alejandra";
             clang-format.command = lib.mkForce "clang-format";
             # load-bearing: docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback
-            csharpier.command = lib.mkForce "csharpier";
+            csharpier = {
+              command = lib.mkForce null;
+              "inherit" = false;
+              format = lib.mkLuaInline ''
+                function(self, ctx, lines, callback)
+                  return require("csharpier-daemon").format(self, ctx, lines, callback)
+                end
+              '';
+              condition = lib.mkLuaInline ''
+                function()
+                  return require("csharpier-daemon").available()
+                end
+              '';
+            };
             prettier.command = lib.mkForce "prettier";
             ruff.command = lib.mkForce "ruff";
             rustfmt.command = lib.mkForce "rustfmt";
@@ -37,6 +50,24 @@ in {
           };
         };
       };
+
+      luaConfigRC.csharpier-daemon = builtins.readFile ./csharpier-daemon.lua;
+
+      augroups = [{name = "CsharpierDaemon";}];
+      autocmds = [
+        {
+          event = ["FileType"];
+          pattern = ["cs"];
+          desc = "Start the csharpier server before the first save needs it";
+          group = "CsharpierDaemon";
+          # load-bearing: docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback
+          callback = lib.mkLuaInline ''
+            function()
+              require("csharpier-daemon").start()
+            end
+          '';
+        }
+      ];
 
       keymaps = [
         {

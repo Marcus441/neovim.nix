@@ -6,6 +6,8 @@
 bare name with `lib.mkForce`, so conform resolves each from `$PATH` at runtime
 instead of taking nvf's pinned store path. The `mkForce` is required — nvf sets
 them at normal priority, so a plain assignment conflicts rather than overriding.
+csharpier's is `mkForce null`, not a name — its daemon resolves the bare name
+itself (`docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback`).
 `min` is meant to be opened from inside `nix develop`, so the devshell is where
 its formatters come from; a pinned one is weight that is never the version the
 project wants.
@@ -57,8 +59,9 @@ complementary pair of functions: both return nothing when
 `vim.g.disable_autoformat` is set — `<leader>tf` (also in
 `modules/formatter.nix` — the file that installs a feature owns its keymap)
 flips that global — and they split the filetypes between them: cs formats
-*after* save, asynchronously, because csharpier boots the dotnet runtime per
-invocation (~0.27 s warm, measured 2026-08-18) and would block every `:w`;
+*after* save, asynchronously, because the first format of a session can wait
+on the csharpier server booting
+(`docs/decisions/csharp.md#csharpier-formats-roslyn-is-the-fallback`);
 everything else formats synchronously on save. nvf has its own toggle
 machinery (`vim.g.formatsave`, buffer-local `<leader>ltf`), but all of it sits
 under `mkIf vim.lsp.enable`, so `min` never gets it — the gate has to live at

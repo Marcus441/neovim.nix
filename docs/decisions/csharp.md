@@ -3,36 +3,59 @@
 ## csharpier formats, roslyn is the fallback
 
 **Why:** `format.type = ["csharpier"]` in `modules/languages/csharp.nix`
-routes cs buffers to csharpier, but the command stays a bare `$PATH` name in
-**every** build — the rustfmt shape, with the `dev` half of
-`modules/formatter.nix` deliberately absent (decided 2026-08-18, replacing the
-formatting-is-the-LSP's-job entry: a pinned fallback was measured at 923.9 MiB
-— csharpier bundles its own dotnet runtime, sharing nothing with the SDK the
-C# stack already ships — and refused). The degradation is what makes the bare
-name affordable: conform skips a formatter it cannot execute, and the global
+routes cs buffers to csharpier, and the invocation goes through a per-instance
+`csharpier server` — an HTTP daemon spawned via `jobstart` on the first cs
+buffer (`modules/csharpier-daemon.lua`, delivered by
+`luaConfigRC.csharpier-daemon`), its port parsed from the `Started on` banner,
+each format a curl POST of `{fileName, fileContents}` to `/format`, with
+`fileName` resolving `.csharpierrc`/`.editorconfig` per file. This replaced
+per-invocation `csharpier format` on 2026-09-01: every format paid the dotnet
+runtime boot (~0.27 s warm, measured 2026-08-18); the daemon pays it once per
+session. It is `jobstart`, not kotlin-lsp.md's flock/setsid machinery, because
+SIGHUP-on-exit is the whole lifecycle a formatter needs — the daemon dies with
+its editor, and a replacement costs about a second, not minutes.
+
+The binary stays a bare `$PATH` name in **every** build — the rustfmt shape,
+with the `dev` half of `modules/formatter.nix` deliberately absent (decided
+2026-08-18, replacing the formatting-is-the-LSP's-job entry: a pinned fallback
+was measured at 923.9 MiB — csharpier bundles its own dotnet runtime, sharing
+nothing with the SDK the C# stack already ships — and refused) — but the
+resolution now happens in the daemon's `jobstart`, not conform's `command`.
+`command = lib.mkForce null` still beats the preset's normal-priority
+`getExe pkgs.csharpier` and is what keeps that store path out of `min`; nvf
+strips the null, and it must render absent — conform refuses a formatter
+defining both `command` and a `format` function (observed 2026-09-01).
+`"inherit" = false` (quoted; Nix keyword) keeps conform from merging its
+builtin csharpier config — and its `dotnet csharpier` version probe — back
+under the `format` function. The degradation is what makes the bare name
+affordable: the `condition` requires csharpier *and* curl on `$PATH`, conform
+skips the formatter when either is missing, and the global
 `default_format_opts.lsp_format = "fallback"` then hands the buffer to
 roslyn-ls, .editorconfig-driven — so a desktop launch with no devshell still
 formats on save, just not through csharpier.
 
-**Breaks:** two ways. Without csharpier on `$PATH`, cs buffers silently format
-through roslyn instead — a style flip with no error anywhere; `:ConformInfo`
-is the diagnostic. And the entry must stay `command`-only: nvf's csharpier
-preset already provides `args = ["format"]` and `stdin`, and `setupOpts` is a
-freeform type whose lists concatenate, so restating `args` beside the command
-yields `csharpier format format` — "no file or directory found at format" in
-`conform.log` on every save. Observed 2026-08-18; the preset's static args are
-also what keeps conform's builtin `dotnet csharpier` runtime probe out of the
-picture.
+**Breaks:** three ways. Without csharpier (or curl) on `$PATH`, cs buffers
+silently format through roslyn instead — a style flip with no error anywhere;
+`:ConformInfo` is the diagnostic. A csharpier below 1.0 has no `server`
+subcommand: one WARN notify on the first cs buffer, then that same silent
+roslyn fallback for the rest of the session. And the entry's three keys are a
+unit: a real name in `command` beside `format` trips conform's "Cannot define
+both" refusal and cs stops formatting (visible in `:ConformInfo`); dropping
+`"inherit" = false` merges the builtin config back in; and the preset's
+`args = ["format"]` still concatenates if restated — inert today, but
+`csharpier format format` ("no file or directory found at format" in
+`conform.log`, observed 2026-08-18) the moment the `format` key is ever
+removed.
 
 **Also:** csharpier does not organize imports, so
 `dotnet_organize_imports_on_format` (next entry) fires on an explicit LSP
 format, and on save only when the roslyn fallback is the one formatting.
 `min` has no LSP: there, no csharpier on `$PATH` means cs goes unformatted.
-cs is also the one filetype that formats *after* save rather than on it
-(`docs/decisions/formatters.md#format-on-save-gates-on-a-global`): csharpier
-pays dotnet startup per invocation, so the buffer reformats a beat after `:w`
-instead of blocking it, and conform rewrites the file itself — no second
-write needed.
+cs still formats *after* save rather than on it
+(`docs/decisions/formatters.md#format-on-save-gates-on-a-global`); the daemon
+just makes the reformat land near-instantly. The idle server costs about a
+dotnet runtime of RSS per Neovim instance — the startup cost moved into
+memory, accepted.
 
 ## Organize imports goes through vim.lsp.config
 
