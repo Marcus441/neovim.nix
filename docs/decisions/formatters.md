@@ -49,6 +49,43 @@ it is absent, see
 `clang-format` is the opposite case and free — `pkgs.clang-tools` is already
 there as the clangd wrapper's fallback.
 
+## The prettier formatter runs prettierd
+
+**Why:** prettier boots node per invocation — measured 94–116 ms on a
+one-line file (2026-09-02) — paid synchronously on every
+ts/tsx/css/scss/html/json/yaml/markdown save. prettierd halves that, not
+more: 41–51 ms warm (measured 2026-09-02), because its client is itself a
+node script — the floor is a bare node boot; what the daemon removes is
+loading prettier and resolving config. The swap happens at the formatter
+*definition*, not the routing: nvf types every `format.type` as
+`listOf (enum …)` and no enum contains `prettierd`, so each language keeps
+`format.type = ["prettier"]` (and yaml's `"yaml.gitlab"` key keeps
+`["prettier"]`) while the entry named prettier execs `prettierd`. The daemon
+resolves the project's own prettier from `node_modules` before its bundled
+one, so a devshell's version still wins — the rule `preferPathExe` enforces
+everywhere else. `args` must be forced to `["$FILENAME"]`: prettierd takes
+the path as its only argument with the buffer on stdin, and rejects the
+preset's `--stdin-filepath`. The `dev` fallback pins `pkgs.prettierd` in
+prettier's `preferPathExe` slot — 290.4 MiB against prettier's 261.5 MiB
+(measured 2026-09-02), both dominated by node.
+
+nvf itself *removed* prettierd (rl-0.8: "high complexity that would be
+needed to support it"; dropped from the last modules in rl-26.07) — but that
+complexity is plugin injection: nvf pins prettier plus store-path plugins
+for astro/svelte and cannot feed those into a daemon. This repo pins
+nothing; prettierd takes prettier and its plugins from the project, so the
+refused complexity never arises. Do not re-align with nvf on this.
+
+**Breaks:** silently, in the one direction that looks like a cleanup:
+"fixing" `command` back to `prettier` while the forced `args` stand hands
+prettier a bare filename, and prettier then ignores stdin and formats the
+*on-disk* file — stale content wins over the unsaved buffer with no error
+anywhere. Dropping the `args` force instead fails loudly (`--stdin-filepath`
+reaches prettierd, `conform.log` shows the rejection). prettierd's per-project
+daemons also linger after the editor exits (core_d's design) — `prettierd
+stop` reclaims them. Without prettierd on `$PATH` the standard degradation
+applies: conform skips the formatter and the save goes through unformatted.
+
 
 
 

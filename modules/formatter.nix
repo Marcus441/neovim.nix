@@ -39,7 +39,11 @@ in {
                 end
               '';
             };
-            prettier.command = lib.mkForce "prettier";
+            # load-bearing: docs/decisions/formatters.md#the-prettier-formatter-runs-prettierd
+            prettier = {
+              command = lib.mkForce "prettierd";
+              args = lib.mkForce ["$FILENAME"];
+            };
             ruff.command = lib.mkForce "ruff";
             rustfmt.command = lib.mkForce "rustfmt";
             stylua.command = lib.mkForce "stylua";
@@ -94,7 +98,7 @@ in {
 
       prettier.command =
         lib.mkOverride 40
-        (preferPathExe pkgs "prettier" (lib.getExe pkgs.prettier));
+        (preferPathExe pkgs "prettierd" (lib.getExe pkgs.prettierd));
 
       ruff.command =
         lib.mkOverride 40

@@ -30,7 +30,7 @@ Twenty-eight files carry one today — `modules/nixpkgs.nix`, `modules/prefer-pa
 `modules/oil.nix`, `modules/diagnostics.nix`, `modules/statuscolumn.nix`,
 `modules/markdown-preview.nix`, `modules/languages/markdown.nix`,
 `modules/languages/json.nix` and `modules/neovide.nix`,
-`modules/formatter.nix` (six), `modules/languages/rust.nix` (two),
+`modules/formatter.nix` (seven), `modules/languages/rust.nix` (two),
 `modules/languages/yaml.nix` (two), `modules/languages/html.nix` (two),
 `modules/languages/typescript.nix` (two),
 `modules/languages/css.nix` (three), `modules/languages/openapi.nix` (three),
