@@ -82,7 +82,9 @@ cannot clobber it.
 **Also:** the annote is the project directory and stays `Comment` in every
 state — `annote_style` for an item in flight (a `nil` level falls through to
 it) and `info_style` for a finished one. A directory that changed colour on
-completion said nothing. State lives in the header icon instead, a `Display`
+completion said nothing, and in the same grey as the message it ran into the
+elapsed time, so `annote_separator` is the ` · ` the message already uses
+between its own fields. State lives in the header icon instead, a `Display`
 function fidget calls each render cycle: it animates while any item has no
 `data`, returns `✗` if any item's `data` is `vim.log.levels.ERROR`, and `✓`
 otherwise. A finished item carries its level as `data`; an item in flight
@@ -193,6 +195,59 @@ a line — transport, not content.
 `nix-direnv: ` stripped — so a rule is written against the message, not the
 prefix. `log_format` in `direnv.toml` or `DIRENV_LOG_FORMAT` changes the
 prefix and nothing else here.
+
+## The bar needs a producer
+
+**Why:** the counters above are a numerator. nix only writes its denominators
+and byte counts to a pipe under `--log-format internal-json` — one `@nix {…}`
+line per event — and that is a command-line flag with no environment or
+`nix.conf` equivalent (`common-args.cc`). nix-direnv calls nix through its
+`_nix` wrapper, and direnv sources `~/.config/direnv/direnvrc` *after*
+`lib/*.sh`, so a `_nix` redefinition there wins. That redefinition lives in
+`~/.dotfiles/flake` (`programs.direnv.stdlib`, branch `direnv-nvim-json-log`)
+and is gated twice: `$NVIM` set — Neovim puts its server address into every
+job child — and stderr not a TTY. A `:terminal` inside Neovim has `$NVIM` and
+a TTY, so its direnv output is untouched; so is every shell.
+
+The consumer is `nix_json` in `modules/direnv.lua`. A `start` records the
+activity's type by id. A `result` of type 105 (`resProgress`) carries
+`[done, expected, running, failed]`; on the builds aggregate (type 104) and
+the copy-paths aggregate (103) those are the counters, and on a file transfer
+(101) they are `[bytes, total, 0, 0]`, summed across transfers. A `result` of
+type 106 (`resSetExpected`) with fields `[101, n]` is the expected download
+total, and expected bytes is the larger of that and the per-transfer sum.
+`.narinfo` lookups are not transfers: a cold shell makes hundreds of them, a
+few bytes each, and some report no size, which rendered as `33/3 B`. Bytes
+show from 1 KiB, and without a denominator when the sum has outrun it. A
+`msg` at level 0
+is an error, 1 a warning, and anything else goes through the text classifier —
+which is where `these N paths will be fetched` still comes from. Field
+positions were read off a real `nix --log-format internal-json build`, not
+the headers.
+
+**Breaks:** at the seam between the two repositories.
+
+- **Producer switched on before the consumer is deployed.** The flake pins this
+  repository by revision. With the direnvrc override active and a pin that
+  predates this consumer, every `@nix {…}` line is a transcript line — the
+  wall this entry exists to remove, now in JSON. Bump the pin first.
+- **The override restates nix-direnv's own flags** (`--no-warn-dirty`,
+  `--extra-experimental-features`). A nix-direnv bump that changes them
+  changes nothing here and silently diverges there.
+- **devenv is not covered, by decision.** Its console renderer drops progress
+  events and its TUI cannot run in a pipe; `--trace-to json:stderr` would
+  carry the numbers but is undocumented, versioned with the CLI, and turns the
+  console lines off. devenv shows phases only.
+
+**Also:** the bar weights each counter by its expected count, and the paths'
+share is measured in bytes while a download total is known — the larger of
+the two fractions, so seven paths of which one is a 400 MiB NAR fill the bar
+as the bytes land rather than sitting at one seventh, and the last unpack
+lagging the last byte cannot move it backwards. In JSON mode `copying path`
+never arrives as text — it is the `start` text of a type-100 activity — so
+the plain-text increments are gated off on `json` and the aggregates are the
+only source.
+`:lua =_DIRENV.state().json` says whether the producer is active.
 
 **Testing:** `:cd` into a directory with an allowed, warm `.envrc` — no
 spinner, `Using cached dev shell` for 3 s. `touch flake.nix` in a `use flake`

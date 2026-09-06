@@ -14,6 +14,10 @@ local function reset()
     warns = {},
     paths = { done = 0, expected = 0 },
     builds = { done = 0, expected = 0 },
+    json = false,
+    acts = {},
+    bytes = {},
+    bytes_expected = 0,
   }
 end
 reset()
@@ -42,6 +46,7 @@ local function group()
       return icon
     end,
     annote_style = "Comment",
+    annote_separator = " · ",
     info_style = "Comment",
     ttl = 3,
   }, false)
@@ -72,18 +77,41 @@ local function bar(frac)
   return ("▰"):rep(n) .. ("▱"):rep(7 - n)
 end
 
+local function sizes(done, expected)
+  local units, i, ref = { "B", "KiB", "MiB", "GiB" }, 1, math.max(done, expected)
+  while ref >= 1024 and i < #units do
+    ref, i = ref / 1024, i + 1
+  end
+  local function f(n)
+    n = n / 1024 ^ (i - 1)
+    return i == 1 and ("%d"):format(n) or ("%.1f"):format(n)
+  end
+  if expected > 0 then
+    return ("%s/%s %s"):format(f(done), f(expected), units[i])
+  end
+  return f(done) .. " " .. units[i]
+end
+
 local function render()
-  local parts, counts = {}, {}
+  local bdone, bexp = 0, 0
+  for _, b in pairs(S.bytes) do
+    bdone, bexp = bdone + b[1], bexp + b[2]
+  end
+  bexp = math.max(bexp, S.bytes_expected)
+  local parts, counts, done, total = {}, {}, 0, 0
   if S.paths.done + S.paths.expected > 0 then
     table.insert(counts, count(S.paths, "path", "paths", "paths"))
   end
   if S.builds.done + S.builds.expected > 0 then
     table.insert(counts, count(S.builds, "build", "builds", "built"))
   end
-  local done, total = 0, 0
   for _, c in ipairs({ S.paths, S.builds }) do
     if c.expected > 0 then
-      done, total = done + c.done, total + c.expected
+      local frac = c.done / c.expected
+      if c == S.paths and bexp >= 1024 then
+        frac = math.max(frac, math.min(bdone / bexp, 1))
+      end
+      done, total = done + c.expected * frac, total + c.expected
     end
   end
   if total > 0 then
@@ -92,6 +120,9 @@ local function render()
     vim.list_extend(parts, counts)
   else
     table.insert(parts, S.phase or "loading")
+  end
+  if bdone >= 1024 then
+    table.insert(parts, sizes(bdone, bexp >= bdone and bexp or 0))
   end
   local e = elapsed()
   if e then
@@ -117,8 +148,58 @@ local function clean(line)
   return vim.trim(line)
 end
 
-local function classify(raw)
+local classify
+
+-- load-bearing: docs/decisions/direnv.md#the-bar-needs-a-producer
+local function nix_json(text)
+  local ok, m = pcall(vim.json.decode, text)
+  if not ok or type(m) ~= "table" then
+    return
+  end
+  S.json = true
+  local f = m.fields or {}
+  if m.action == "start" then
+    if m.type ~= 101 or not tostring(f[1] or ""):match("%.narinfo$") then
+      S.acts[m.id] = m.type
+    end
+    if m.type == 100 or m.type == 108 then
+      S.phase = "copying paths"
+    elseif m.type == 105 then
+      S.phase = "building"
+    elseif m.type == 112 or m.type == 113 then
+      S.phase = "fetching"
+    elseif m.type == 0 and (m.text or ""):match("^evaluating") then
+      S.phase = "evaluating"
+    end
+  elseif m.action == "result" and m.type == 105 then
+    local t = S.acts[m.id]
+    if t == 104 then
+      S.builds.done, S.builds.expected = f[1], f[2]
+    elseif t == 103 then
+      S.paths.done, S.paths.expected = f[1], f[2]
+    elseif t == 101 then
+      S.bytes[m.id] = { f[1], f[2] }
+    end
+  elseif m.action == "result" and m.type == 106 and f[1] == 101 then
+    S.bytes_expected = f[2]
+  elseif m.action == "stop" then
+    S.acts[m.id] = nil
+  elseif m.action == "msg" and type(m.msg) == "string" then
+    if m.level == 0 then
+      table.insert(S.errors, (m.msg:gsub("^error: ", "")))
+    elseif m.level == 1 then
+      table.insert(S.warns, m.msg)
+    else
+      classify(m.msg)
+    end
+  end
+end
+
+function classify(raw)
   local line = clean(raw)
+  if line:sub(1, 5) == "@nix " then
+    return nix_json(line:sub(6))
+  end
   if line == "" or line:match("^loading ") or line:match("^export ")
     or line:find("is taking a while to execute", 1, true)
     or line:match("^/") or line:match("^And %d+ more") then
@@ -146,12 +227,12 @@ local function classify(raw)
     return
   end
   if line:match("^copying path") then
-    S.paths.done = S.paths.done + 1
+    S.paths.done = S.paths.done + (S.json and 0 or 1)
     S.phase = "copying paths"
     return
   end
   if line:match("^building '") then
-    S.builds.done = S.builds.done + 1
+    S.builds.done = S.builds.done + (S.json and 0 or 1)
     S.phase = "building"
     return
   end

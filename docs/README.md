@@ -39,10 +39,10 @@ Thirty files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix
 `modules/images.nix` (three), `modules/splits.nix` (three),
 `modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
 `modules/languages/csharp.nix` (seven). The thirty-first and thirty-second
-are `modules/kanagawa-setup.lua` and `modules/direnv.lua`, where the pointer
-is a `--` rather than a `#` because the value it marks is Lua — subject to the
-two-line cap that governs everything shipping into `init.lua`, which a one-line
-pointer meets.
+are `modules/kanagawa-setup.lua` and `modules/direnv.lua` (two), where the
+pointer is a `--` rather than a `#` because the value it marks is Lua —
+subject to the two-line cap that governs everything shipping into `init.lua`,
+which a one-line pointer meets.
 The test is the **Breaks** line: a value
 that fails *silently* earns a pointer, one that fails loudly does not. The
 `mkOverride 40` in `modules/formatter.nix` is the one that looks like an
