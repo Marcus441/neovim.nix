@@ -181,9 +181,10 @@ All five paths are checked: correct flake stays silent; missing flake,
 non-evaluating flake, host absent from either output, and `nix` absent from
 `$PATH` each name what is wrong.
 
-**Also:** this is the third thing in the tree that reads the outside world, after
-`modules/database.nix` and `modules/direnv.nix` — but it is the first that
-reports rather than failing to an empty result, which is what
-`.claude/rules/lua-in-nix.md` asks for when a fourth is proposed. The residual
+**Also:** this is the second thing in the tree that reads the outside world,
+after `modules/direnv.nix` — but it is the first that reports rather than
+failing to an empty result, which is what `.claude/rules/lua-in-nix.md` asks for
+when a third is proposed. It was the third until `modules/database.nix` stopped
+reading a secrets file. The residual
 cost is unchanged: the build still succeeds on a machine where the feature
 cannot work. It now says so.

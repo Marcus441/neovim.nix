@@ -66,8 +66,11 @@ module position. See `evaluation-hazards.md`.
 
 ## Lua that reads the outside world
 
-`modules/database.nix` reads `$NVIM_DB_SECRETS` or
-`~/.config/nvim-secrets/servers.json` and shells out to `sqlcmd`. Two standing
-consequences: the build succeeds on a machine with neither, and the failure is a
-silently empty `vim.g.dbs`. Do not add a second thing of this shape without
-saying so — a config that half-works is worse than one that reports.
+`modules/direnv.nix` shells out to `direnv`, and `modules/languages/nix.nix`
+evaluates the host's own flake. Both carry the same standing consequence: the
+build succeeds on a machine where the feature cannot work, so the failure has to
+be *reported* rather than left as an empty result. `modules/database.nix` used
+to be the third and no longer reads anything — its secrets file and `sqlcmd`
+enumeration were removed in favour of dadbod-ui's own connection sources. Do not
+add another thing of this shape without saying so, and if you do, make it
+report: a config that half-works is worse than one that says why.
