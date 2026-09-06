@@ -45,6 +45,27 @@ in {
               args = lib.mkForce ["$FILENAME"];
             };
             ruff.command = lib.mkForce "ruff";
+            # load-bearing: docs/decisions/database.md#sqruff-refuses-an-unknown-dialect
+            sqruff = {
+              command = lib.mkForce "sqruff";
+              args = lib.mkLuaInline ''
+                function(_, ctx)
+                  local dialect = vim.b[ctx.buf].sql_dialect or vim.g.sql_dialect
+                  if dialect then
+                    return { "fix", "--dialect", dialect, "$FILENAME" }
+                  end
+                  return { "fix", "$FILENAME" }
+                end
+              '';
+              condition = lib.mkLuaInline ''
+                function(_, ctx)
+                  if vim.b[ctx.buf].sql_dialect or vim.g.sql_dialect then
+                    return true
+                  end
+                  return vim.fs.root(ctx.buf, { ".sqruff" }) ~= nil
+                end
+              '';
+            };
             rustfmt.command = lib.mkForce "rustfmt";
             stylua.command = lib.mkForce "stylua";
           };
@@ -103,6 +124,10 @@ in {
       ruff.command =
         lib.mkOverride 40
         (preferPathExe pkgs "ruff" (lib.getExe pkgs.ruff));
+
+      sqruff.command =
+        lib.mkOverride 40
+        (preferPathExe pkgs "sqruff" (lib.getExe pkgs.sqruff));
 
       stylua.command =
         lib.mkOverride 40
