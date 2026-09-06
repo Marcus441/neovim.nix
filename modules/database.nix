@@ -18,6 +18,9 @@
           after = ["vim-dadbod"];
         };
       };
+      # load-bearing: docs/decisions/database.md#the-clients-are-pinned-in-dev
+      extraPackages = [pkgs.sqlcmd pkgs.postgresql];
+
       luaConfigRC.dadbod = ''
         vim.g.db_ui_use_nerd_fonts = 1
         local function load_servers()

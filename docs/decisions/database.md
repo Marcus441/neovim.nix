@@ -41,3 +41,28 @@ read by a human, never parsed.
 **Also:** the same encoding is correct for both engines. libpq percent-decodes a
 URI it is handed as `--dbname`, and dadbod decodes before building `sqlcmd`'s
 `-U`/`-d` argv, so one encoder serves both rather than one rule per adapter.
+
+## the clients are pinned in dev
+
+**Why:** vim-dadbod is not a database driver — every adapter shells out, `sqlcmd`
+for SQL Server and `psql` for Postgres, and `modules/database.nix` shells out to
+the same two to enumerate. `gui` is launched from
+`programs.neovide.settings.neovim-bin` and `full` from a bare terminal, so
+neither has a devshell to supply them, and the build that actually carries
+dadbod would open an empty drawer on a clean machine. Measured 2026-09-06, the
+pair costs **48 MiB** on `gui` — 6696 → 6744 MiB.
+
+**Breaks:** loudly now, which is why this is an entry about the *cost* rather
+than the pin. Dropping either package leaves the enumerator reporting
+`[db] psql is not on $PATH` rather than failing to an empty table. The silent
+half is the closure: `postgresql` is a server package taken for one client
+binary, and there is no client-only output to narrow it to.
+
+**Also:** no `preferPathExe` wrapper is needed here, which is the part that
+looks wrong and is not. mnw *appends* — `wrapper.nix:91` is
+`vim.env.PATH = vim.env.PATH .. ":" .. makeBinPath (…extraBinPath)` — so a
+project's own `psql` inside a devshell still wins and these only fill the gap.
+That is `prefer-path.md#silent-fallback` behaviour obtained for free, and it is
+the reason `min` can be left out entirely rather than pinned and overridden.
+The 48 MiB is also far under the 212 MiB the two closures suggest, because
+`icu4c` is already paid for by `dotnet-sdk_10` in `dev`.
