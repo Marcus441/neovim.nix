@@ -90,3 +90,49 @@ only route, so the table has to carry it. Note too that dadbod's *query* path
 does not pass `-X` (`autoload/db/adapter/postgresql.vim:16-19`) even though the
 enumerator here does, so a `\pset` in `~/.psqlrc` still reaches the `dbout`
 buffer.
+
+## sql declines sqls
+
+**Why:** `vim.languages.sql.lsp.enable` defaults to `config.vim.lsp.enable`,
+which `modules/lsp.nix` sets true in `dev`, so enabling SQL at all switches
+`sqls` back on. `4c8b517` removed it for conflicting with dadbod and left no
+body explaining how, so: `sqls` claims `sql`, `mysql` and `plsql`, carries its
+own `config.yml` of database connections, and serves completion from them —
+duplicating the job `vim.g.dbs` and `vim-dadbod-completion` already do from the
+secrets file, against a second and separately-configured set of credentials.
+
+**Breaks:** loudly at first and confusingly after. The server attaches, and
+completion in a query buffer starts returning columns from whatever `sqls`
+itself is connected to rather than the connection the buffer is bound to. The
+`omnifunc` line in `modules/database.nix` and the blink `per_filetype` entry
+both assume dadbod is the only source of schema.
+
+**Also:** plain `false`, not `lib.mkDefault false`. nvf's own default here is
+`mkOptionDefault` at 1500, so an ordinary value overrides it without help, and
+a plain `false` errors the day something in `dev` disagrees — which is the good
+failure. A `mkDefault` nothing ever overrides is the noise
+`.claude/rules/evaluation-hazards.md` warns about.
+
+## sqruff refuses an unknown dialect
+
+**Why:** `sqruff fix` rewrites the file in place and does **not** refuse SQL it
+misparses. Measured 2026-09-06 at its default `ansi` dialect, it turned
+`SELECT TOP 10 [Name]` into `SELECT TOP 10[Name]` — it does not know `TOP`, so
+it closed the space it thought was spurious. The same file under
+`--dialect tsql` formats correctly. Postgres fares better but not well:
+`data->>'name'` becomes `data ->>'name'`. So the formatter is gated on knowing
+the dialect — `vim.b.sql_dialect`, then `vim.g.sql_dialect`, then a `.sqruff`
+found by `vim.fs.root` — and `conform` is told the formatter is unavailable
+when none of the three answers.
+
+**Breaks:** silently, and in the worst possible place. Dropping the `condition`
+does not fail a build or raise an error; it means every `:w` on a T-SQL file
+quietly reformats it as ANSI. `format_on_save` in this file gates on
+`vim.g.disable_autoformat` alone, so there is nothing else standing between an
+unrecognised dialect and the buffer.
+
+**Also:** `sqruff dialects` lists both `tsql` and `postgres`, which is why it
+was chosen over `sqlfluff` — one 20 MiB Rust binary covers both engines. The
+cost of the gate is that SQL formats nowhere until a dialect is declared; set
+`vim.g.sql_dialect`, or drop a `.sqruff` in the project, which is the mechanism
+sqruff itself documents.
