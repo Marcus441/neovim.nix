@@ -60,6 +60,12 @@
             desc = "Last session";
           }
           {
+            action = ":ene | DBUIToggle";
+            icon = "󰆼 ";
+            key = "d";
+            desc = "Database";
+          }
+          {
             action = ":qa";
             icon = " ";
             key = "q";
