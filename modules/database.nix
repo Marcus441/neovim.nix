@@ -23,6 +23,7 @@
 
       luaConfigRC.dadbod = ''
         vim.g.db_ui_use_nerd_fonts = 1
+        vim.g.db_ui_execute_on_save = 0
         local function load_servers()
           local path = os.getenv("NVIM_DB_SECRETS")
             or (os.getenv("HOME") .. "/.config/nvim-secrets/servers.json")
