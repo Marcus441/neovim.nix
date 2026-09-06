@@ -1,5 +1,7 @@
 {
-  flake.modules.nvf.dev = {
+  flake.modules.nvf.dev = let
+    sqlSources = ["dadbod" "lsp" "snippets" "path" "buffer"];
+  in {
     vim = {
       autocomplete.blink-cmp = {
         enable = true;
@@ -28,7 +30,9 @@
           sources = {
             default = ["lsp" "snippets" "path" "buffer"];
             per_filetype = {
-              sql = ["dadbod" "lsp" "snippets" "buffer"];
+              sql = sqlSources;
+              mysql = sqlSources;
+              plsql = sqlSources;
             };
             providers = {
               lsp = {
