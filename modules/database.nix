@@ -25,12 +25,14 @@
             or (os.getenv("HOME") .. "/.config/nvim-secrets/servers.json")
           local f = io.open(path, "r")
           if not f then
+            vim.notify(("[db] no secrets file at %s"):format(path), vim.log.levels.WARN)
             return {}
           end
           local contents = f:read("*a")
           f:close()
           local ok, data = pcall(vim.json.decode, contents)
           if not ok then
+            vim.notify(("[db] %s is not valid JSON"):format(path), vim.log.levels.ERROR)
             return {}
           end
           return data
@@ -40,26 +42,22 @@
           local port = s.port or 1433
           local out = vim.system({
             "sqlcmd", "-S", s.host .. "," .. port,
-            "-U", s.user, "-C", "-h", "-1", "-W", "-Q",
+            "-U", s.user, "-C", "-l", "5", "-h", "-1", "-W", "-Q",
             "SET NOCOUNT ON; SELECT name FROM sys.databases WHERE database_id > 4 ORDER BY name;",
-          }, { text = true, env = { SQLCMDPASSWORD = s.password } }):wait()
+          }, { text = true, env = { SQLCMDPASSWORD = s.password } }):wait(15000)
 
-          local conns = {}
-          local stdout = out.stdout or ""
-
-          if out.code ~= 0
-            or stdout:match("[Pp]assword:")
-            or stdout:match("[Ww]arning")
-            or stdout:match("[Ee]rror")
-          then
-            vim.notify(("[db] %s: enumeration failed (auth?)"):format(s.name), vim.log.levels.WARN)
-            return conns
+          if out.code ~= 0 then
+            local why = vim.trim(out.stderr or "")
+            if why == "" then why = vim.trim(out.stdout or "") end
+            if why == "" then why = "exit " .. tostring(out.code) end
+            vim.notify(("[db] %s: %s"):format(s.name, why), vim.log.levels.WARN)
+            return {}
           end
 
-          for line in stdout:gmatch("[^\r\n]+") do
+          local conns = {}
+          for line in (out.stdout or ""):gmatch("[^\r\n]+") do
             local db = vim.trim(line)
-            -- real DB names here are single tokens; reject anything with spaces/colons
-            if db ~= "" and not db:match("[:%s]") then
+            if db ~= "" then
               table.insert(conns, {
                 name = s.name .. "/" .. db,
                 url = ("sqlserver://%s:%s@%s:%d/%s?trustServerCertificate=yes")
@@ -71,6 +69,10 @@
         end
 
         local function refresh()
+          if vim.fn.executable("sqlcmd") == 0 then
+            vim.notify("[db] sqlcmd is not on $PATH", vim.log.levels.ERROR)
+            return
+          end
           local all = {}
           for _, s in ipairs(load_servers()) do
             local ok, conns = pcall(enumerate, s)
