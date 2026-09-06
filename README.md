@@ -121,7 +121,8 @@ Leader is `<Space>`.
 | `<leader>tf` | Toggle format on save |
 | `<leader>u` | Undotree |
 | `<leader>D` | Database UI |
-| `<leader>S` | Execute query (SQL buffers) |
+| `<M-CR>` | Execute query (SQL buffers) |
+| `<leader>S` | Execute query (SQL buffers, dadbod-ui default) |
 | `<leader>W` | Save query (SQL buffers) |
 | `<leader>E` | Edit bind parameters (SQL buffers) |
 | `<leader>cs` / `<leader>cl` | Trouble symbols / LSP |
@@ -160,7 +161,7 @@ saves it to `~/.local/share/db_ui/connections.json`, available in every session.
 **`$DBUI_URL`**, with an optional `$DBUI_NAME` — a single connection, for a
 one-off: `DBUI_URL=postgresql://… nvim`.
 
-Two behaviours worth knowing. `:w` does not execute a query — `<leader>S` does.
+Two behaviours worth knowing. `:w` does not execute a query — `<M-CR>` does, in normal and visual mode, the latter running just the selection.
 And SQL formatting is gated on knowing the dialect: a query buffer takes it from
 the connection URL, while a `.sql` file on disk needs `vim.g.sql_dialect` or a
 `.sqruff` in the project, because `sqruff` rewrites SQL it cannot parse rather

@@ -28,7 +28,11 @@
 
         vim.api.nvim_create_autocmd("FileType", {
           pattern = { "sql", "mysql", "plsql" },
-          callback = function() vim.bo.omnifunc = "vim_dadbod_completion#omni" end,
+          callback = function(args)
+            vim.bo[args.buf].omnifunc = "vim_dadbod_completion#omni"
+            vim.keymap.set({ "n", "v" }, "<M-CR>", "<Plug>(DBUI_ExecuteQuery)",
+              { buffer = args.buf, remap = true, silent = true, desc = "Execute query" })
+          end,
         })
       '';
       keymaps = [
