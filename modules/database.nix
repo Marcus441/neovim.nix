@@ -38,13 +38,64 @@
           return data
         end
 
+        local function pct(s)
+          return (tostring(s):gsub("[^%w%-%.%_%~]", function(c)
+            return ("%%%02X"):format(c:byte())
+          end))
+        end
+
+        local engines = {
+          sqlserver = {
+            client = "sqlcmd",
+            port = 1433,
+            argv = function(s, port)
+              return {
+                "sqlcmd", "-S", s.host .. "," .. port,
+                "-U", s.user, "-C", "-l", "5", "-h", "-1", "-W", "-Q",
+                "SET NOCOUNT ON; SELECT name FROM sys.databases WHERE database_id > 4 ORDER BY name;",
+              }
+            end,
+            env = function(s) return { SQLCMDPASSWORD = s.password } end,
+            url = function(s, port, db)
+              return ("sqlserver://%s:%s@%s:%d/%s?trustServerCertificate=yes")
+                     :format(pct(s.user), pct(s.password), s.host, port, pct(db))
+            end,
+          },
+          postgres = {
+            client = "psql",
+            port = 5432,
+            argv = function(s, port)
+              return {
+                "psql", "-wtAX", "-h", s.host, "-p", tostring(port),
+                "-U", s.user, "-d", "postgres", "-c",
+                "SELECT datname FROM pg_database WHERE NOT datistemplate AND datallowconn ORDER BY 1;",
+              }
+            end,
+            env = function(s)
+              return { PGPASSWORD = s.password, PGCONNECT_TIMEOUT = "5" }
+            end,
+            url = function(s, port, db)
+              return ("postgresql://%s:%s@%s:%d/%s")
+                     :format(pct(s.user), pct(s.password), s.host, port, pct(db))
+            end,
+          },
+        }
+
         local function enumerate(s)
-          local port = s.port or 1433
-          local out = vim.system({
-            "sqlcmd", "-S", s.host .. "," .. port,
-            "-U", s.user, "-C", "-l", "5", "-h", "-1", "-W", "-Q",
-            "SET NOCOUNT ON; SELECT name FROM sys.databases WHERE database_id > 4 ORDER BY name;",
-          }, { text = true, env = { SQLCMDPASSWORD = s.password } }):wait(15000)
+          local engine = engines[s.type or "sqlserver"]
+          if not engine then
+            vim.notify(("[db] %s: unknown type %s"):format(s.name, tostring(s.type)),
+              vim.log.levels.ERROR)
+            return {}
+          end
+          if vim.fn.executable(engine.client) == 0 then
+            vim.notify(("[db] %s is not on $PATH"):format(engine.client), vim.log.levels.ERROR)
+            return {}
+          end
+
+          local port = s.port or engine.port
+          local out = vim.system(engine.argv(s, port),
+            { text = true, env = engine.env(s) }):wait(15000)
 
           if out.code ~= 0 then
             local why = vim.trim(out.stderr or "")
@@ -60,8 +111,7 @@
             if db ~= "" then
               table.insert(conns, {
                 name = s.name .. "/" .. db,
-                url = ("sqlserver://%s:%s@%s:%d/%s?trustServerCertificate=yes")
-                      :format(s.user, vim.uri_encode(s.password), s.host, port, db),
+                url = engine.url(s, port, db),
               })
             end
           end
@@ -69,14 +119,14 @@
         end
 
         local function refresh()
-          if vim.fn.executable("sqlcmd") == 0 then
-            vim.notify("[db] sqlcmd is not on $PATH", vim.log.levels.ERROR)
-            return
-          end
           local all = {}
           for _, s in ipairs(load_servers()) do
-            local ok, conns = pcall(enumerate, s)
-            if ok then vim.list_extend(all, conns) end
+            if s.url then
+              table.insert(all, { name = s.name, url = s.url })
+            else
+              local ok, conns = pcall(enumerate, s)
+              if ok then vim.list_extend(all, conns) end
+            end
           end
           vim.g.dbs = all
           if vim.tbl_isempty(all) then
