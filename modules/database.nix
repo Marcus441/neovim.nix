@@ -35,7 +35,15 @@
         {
           mode = ["n"];
           key = "<leader>D";
-          action = "<CMD>DBUIToggle<CR>";
+          lua = true;
+          action = ''
+            function()
+              if vim.bo.filetype == "snacks_dashboard" then
+                vim.cmd("enew")
+              end
+              vim.cmd("DBUIToggle")
+            end
+          '';
           desc = "[D]atabase UI";
         }
       ];
