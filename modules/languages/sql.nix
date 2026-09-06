@@ -1,5 +1,7 @@
 {
   flake.modules.nvf.core = {
+    vim.luaConfigRC.sql-dialect = builtins.readFile ./sql-dialect.lua;
+
     vim.languages.sql = {
       enable = true;
       # load-bearing: docs/decisions/database.md#sql-declines-sqls

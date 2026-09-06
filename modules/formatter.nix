@@ -50,7 +50,7 @@ in {
               command = lib.mkForce "sqruff";
               args = lib.mkLuaInline ''
                 function(_, ctx)
-                  local dialect = vim.b[ctx.buf].sql_dialect or vim.g.sql_dialect
+                  local dialect = require("sql-dialect").of(ctx.buf)
                   if dialect then
                     return { "fix", "--dialect", dialect, "$FILENAME" }
                   end
@@ -59,10 +59,7 @@ in {
               '';
               condition = lib.mkLuaInline ''
                 function(_, ctx)
-                  if vim.b[ctx.buf].sql_dialect or vim.g.sql_dialect then
-                    return true
-                  end
-                  return vim.fs.root(ctx.buf, { ".sqruff" }) ~= nil
+                  return require("sql-dialect").known(ctx.buf)
                 end
               '';
             };
