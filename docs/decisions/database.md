@@ -66,3 +66,27 @@ That is `prefer-path.md#silent-fallback` behaviour obtained for free, and it is
 the reason `min` can be left out entirely rather than pinned and overridden.
 The 48 MiB is also far under the 212 MiB the two closures suggest, because
 `icu4c` is already paid for by `dotnet-sdk_10` in `dev`.
+
+## a query buffer is saved, not executed
+
+**Why:** `vim-dadbod-ui` defaults `g:db_ui_execute_on_save` to 1
+(`plugin/db_ui.vim:26`) and hooks `BufWritePost` (`autoload/db_ui/query.vim:181`),
+so every `:w` in a scratch query buffer runs it against whatever connection the
+buffer is bound to. That is a live production database as readily as a local
+one, triggered by the most reflexive keystroke in the editor. It is off here,
+and `<Leader>S` — dadbod-ui's own buffer-local bind, `ftplugin/sql.vim` — is the
+only thing that executes.
+
+**Breaks:** loudly in the direction that matters and quietly in the other.
+Turning it back on is immediately obvious. Leaving it on while SQL also has a
+formatter is the bad case: `modules/formatter.nix` gates `format_on_save` on
+`vim.g.disable_autoformat` alone, with no filetype exclusion, so a single `:w`
+would reformat the buffer on `BufWritePre` and run it on `BufWritePost`.
+
+**Also:** dadbod-ui's three SQL-buffer binds are the plugin's, not ours, which
+is why they were missing from the README table for as long as they have worked.
+With execute-on-save off, `<Leader>S` stops being a convenience and becomes the
+only route, so the table has to carry it. Note too that dadbod's *query* path
+does not pass `-X` (`autoload/db/adapter/postgresql.vim:16-19`) even though the
+enumerator here does, so a `\pset` in `~/.psqlrc` still reaches the `dbout`
+buffer.

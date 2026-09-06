@@ -121,6 +121,9 @@ Leader is `<Space>`.
 | `<leader>tf` | Toggle format on save |
 | `<leader>u` | Undotree |
 | `<leader>D` | Database UI |
+| `<leader>S` | Execute query (SQL buffers) |
+| `<leader>W` | Save query (SQL buffers) |
+| `<leader>E` | Edit bind parameters (SQL buffers) |
 | `<leader>cs` / `<leader>cl` | Trouble symbols / LSP |
 | `-` | Oil |
 | `<leader>y` / `<leader>Y` | Yank to clipboard / yank line |
