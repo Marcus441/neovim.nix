@@ -200,9 +200,14 @@ function classify(raw)
   if line:sub(1, 5) == "@nix " then
     return nix_json(line:sub(6))
   end
-  if line == "" or line:match("^loading ") or line:match("^export ")
+  if
+    line == ""
+    or line:match("^loading ")
+    or line:match("^export ")
     or line:find("is taking a while to execute", 1, true)
-    or line:match("^/") or line:match("^And %d+ more") then
+    or line:match("^/")
+    or line:match("^And %d+ more")
+  then
     return
   end
   if line:match("^unloading") then
@@ -214,14 +219,12 @@ function classify(raw)
     S.phase = "using " .. using
     return
   end
-  local n = line:match("^these (%d+) paths will be fetched")
-    or (line:match("^this path will be fetched") and 1)
+  local n = line:match("^these (%d+) paths will be fetched") or (line:match("^this path will be fetched") and 1)
   if n then
     S.paths.expected = tonumber(n)
     return
   end
-  n = line:match("^these (%d+) derivations will be built")
-    or (line:match("^this derivation will be built") and 1)
+  n = line:match("^these (%d+) derivations will be built") or (line:match("^this derivation will be built") and 1)
   if n then
     S.builds.expected = tonumber(n)
     return
@@ -236,8 +239,10 @@ function classify(raw)
     S.phase = "building"
     return
   end
-  local word = line:match("^(fetching)") or line:match("^(downloading)")
-    or line:match("^(unpacking)") or line:match("^(evaluating)")
+  local word = line:match("^(fetching)")
+    or line:match("^(downloading)")
+    or line:match("^(unpacking)")
+    or line:match("^(evaluating)")
   if word then
     S.phase = word
     return
@@ -261,8 +266,13 @@ function classify(raw)
     return
   end
   local failed = line:match("^✖ (.+)")
-  if failed or line:match("^error") or line:find("is blocked", 1, true)
-    or line:find("failed", 1, true) or line:find("Falling back", 1, true) then
+  if
+    failed
+    or line:match("^error")
+    or line:find("is blocked", 1, true)
+    or line:find("failed", 1, true)
+    or line:find("Falling back", 1, true)
+  then
     table.insert(S.errors, failed or line)
     return
   end
@@ -326,11 +336,15 @@ local function start()
     S.open = true
     show(false)
     timer = vim.uv.new_timer()
-    timer:start(1000, 1000, vim.schedule_wrap(function()
-      if S.open then
-        show(true)
-      end
-    end))
+    timer:start(
+      1000,
+      1000,
+      vim.schedule_wrap(function()
+        if S.open then
+          show(true)
+        end
+      end)
+    )
   end, (vim.g.direnv_interval or 500) + 200)
 end
 
