@@ -54,7 +54,7 @@
             argv = function(s, port)
               return {
                 "sqlcmd", "-S", s.host .. "," .. port,
-                "-U", s.user, "-C", "-l", "5", "-h", "-1", "-W", "-Q",
+                "-U", s.user, "-C", "-b", "-l", "5", "-h", "-1", "-W", "-Q",
                 "SET NOCOUNT ON; SELECT name FROM sys.databases WHERE database_id > 4 ORDER BY name;",
               }
             end,
@@ -69,7 +69,7 @@
             port = 5432,
             argv = function(s, port)
               return {
-                "psql", "-wtAX", "-h", s.host, "-p", tostring(port),
+                "psql", "-wqtAX", "-h", s.host, "-p", tostring(port),
                 "-U", s.user, "-d", "postgres", "-c",
                 "SELECT datname FROM pg_database WHERE NOT datistemplate AND datallowconn ORDER BY 1;",
               }
@@ -95,8 +95,15 @@
             vim.notify(("[db] %s is not on $PATH"):format(engine.client), vim.log.levels.ERROR)
             return {}
           end
+          for _, key in ipairs({ "host", "user", "password" }) do
+            if not s[key] then
+              vim.notify(("[db] %s: no %s in the secrets file"):format(s.name or "?", key),
+                vim.log.levels.ERROR)
+              return {}
+            end
+          end
 
-          local port = s.port or engine.port
+          local port = tonumber(s.port) or engine.port
           local out = vim.system(engine.argv(s, port),
             { text = true, env = engine.env(s) }):wait(15000)
 
@@ -125,10 +132,15 @@
           local all = {}
           for _, s in ipairs(load_servers()) do
             if s.url then
-              table.insert(all, { name = s.name, url = s.url })
+              table.insert(all, { name = s.name or s.url, url = s.url })
             else
               local ok, conns = pcall(enumerate, s)
-              if ok then vim.list_extend(all, conns) end
+              if ok then
+                vim.list_extend(all, conns)
+              else
+                vim.notify(("[db] %s: %s"):format(s.name or "?", tostring(conns)),
+                  vim.log.levels.ERROR)
+              end
             end
           end
           vim.g.dbs = all
