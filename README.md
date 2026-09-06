@@ -133,3 +133,35 @@ Leader is `<Space>`.
 | `<C-d>` / `<C-u>` | Half page down / up (centered) |
 | `n` / `N` | Next / prev match (centered) |
 | `<C-=>` / `<C-->` | Neovide scale up / down |
+
+## Databases
+
+`<leader>D` opens the dadbod-ui drawer. Connections come from three sources, and
+all three are read at once.
+
+**`.envrc`** — direnv is enabled, so anything it exports reaches the editor, and
+dadbod-ui turns every `DB_UI_*` variable in the environment into a connection.
+The suffix, lowercased, becomes its name. This is the per-project route:
+
+```bash
+# .envrc — keep it out of git
+export DB_UI_DEV=postgresql://user:pw@localhost:5432/myapp_dev
+export DB_UI_PROD=sqlserver://user:pw@sql.example:1433/myapp
+```
+
+`direnv allow` once and those appear as `dev` and `prod` in any nvim opened under
+that directory. No extra plugin is involved — dadbod-ui reads the process
+environment itself, so tpope's `vim-dotenv` buys nothing here. A plain `.env`
+file works the same way through direnv's own `dotenv` stdlib command.
+
+**`A` in the drawer**, or `:DBUIAddConnection` — prompts for a URL and a name and
+saves it to `~/.local/share/db_ui/connections.json`, available in every session.
+
+**`$DBUI_URL`**, with an optional `$DBUI_NAME` — a single connection, for a
+one-off: `DBUI_URL=postgresql://… nvim`.
+
+Two behaviours worth knowing. `:w` does not execute a query — `<leader>S` does.
+And SQL formatting is gated on knowing the dialect: a query buffer takes it from
+the connection URL, while a `.sql` file on disk needs `vim.g.sql_dialect` or a
+`.sqruff` in the project, because `sqruff` rewrites SQL it cannot parse rather
+than refusing.
