@@ -121,9 +121,12 @@ misparses. Measured 2026-09-06 at its default `ansi` dialect, it turned
 it closed the space it thought was spurious. The same file under
 `--dialect tsql` formats correctly. Postgres fares better but not well:
 `data->>'name'` becomes `data ->>'name'`. So the formatter is gated on knowing
-the dialect — `vim.b.sql_dialect`, then `vim.g.sql_dialect`, then a `.sqruff`
-found by `vim.fs.root` — and `conform` is told the formatter is unavailable
-when none of the three answers.
+the dialect. `modules/languages/sql-dialect.lua` answers in order:
+`vim.b.sql_dialect`, `vim.g.sql_dialect`, then the engine read off `b:db` —
+dadbod-ui sets it to the connection URL on every query buffer, so a scratch
+query formats as the dialect of the server it is bound to with nothing
+configured. Failing all three, a `.sqruff` found by `vim.fs.root` counts, and
+`conform` is told the formatter is unavailable when nothing answers at all.
 
 **Breaks:** silently, and in the worst possible place. Dropping the `condition`
 does not fail a build or raise an error; it means every `:w` on a T-SQL file
@@ -132,7 +135,9 @@ quietly reformats it as ANSI. `format_on_save` in this file gates on
 unrecognised dialect and the buffer.
 
 **Also:** `sqruff dialects` lists both `tsql` and `postgres`, which is why it
-was chosen over `sqlfluff` — one 20 MiB Rust binary covers both engines. The
-cost of the gate is that SQL formats nowhere until a dialect is declared; set
-`vim.g.sql_dialect`, or drop a `.sqruff` in the project, which is the mechanism
-sqruff itself documents.
+was chosen over `sqlfluff` — one 20 MiB Rust binary covers both engines, which
+is the whole point when the two are worked on side by side. The cost of the
+gate is that a `.sql` file on disk, opened outside a DBUI connection and in a
+project with no `.sqruff`, formats nowhere until `vim.g.sql_dialect` is set.
+That is the intended trade: no formatting is recoverable, ANSI-mangled T-SQL
+committed by a format-on-save is not.
