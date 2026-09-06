@@ -25,6 +25,30 @@ the reason `min` can be left out entirely rather than pinned and overridden.
 The 48 MiB is also far under the 212 MiB the two closures suggest, because
 `icu4c` is already paid for by `dotnet-sdk_10` in `dev`.
 
+## dbui notifies through vim.notify
+
+**Why:** `vim-dadbod-ui` draws its own notification float by default —
+`autoload/db_ui/notifications.vim` opens a window at `bot` + `g:db_ui_win_position`
+and colours it from `NotificationInfo`/`Error`/`Warning`, highlight groups it
+derives from `Normal`, `Error` and `WarningMsg` on first use. None of that goes
+near `vim.notify`, so it misses the snacks notifier entirely and appears in a
+different place, shape and palette from every other message in the editor.
+`g:db_ui_use_nvim_notify` routes them through `vim.notify` instead, which snacks
+owns here, so they inherit `style = "fancy"`, the solid border and the 3s
+timeout from `modules/snacks-notifier.nix` with nothing restated.
+
+**Breaks:** visibly, which is why there is no pointer at the value. Remove it
+and DBUI messages go back to their own float — wrong corner, wrong border, no
+history in `Snacks.notifier`. The plugin reads the global into a script-local at
+autoload time, so it has to be set before the first `db_ui#` call; `luaConfigRC`
+runs at init, which is early enough.
+
+**Also:** info messages carry `id = "vim-dadbod-ui-info"`, which snacks honours
+by replacing rather than stacking, so a run of them does not pile up. The query
+progress bar is *not* affected — it is a separate float in
+`autoload/db_ui/dbout.vim`, gated on `g:db_ui_disable_progress_bar`, and it
+never went through the notification path at all.
+
 ## a query buffer is saved, not executed
 
 **Why:** `vim-dadbod-ui` defaults `g:db_ui_execute_on_save` to 1
