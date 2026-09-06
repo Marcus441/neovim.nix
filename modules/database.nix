@@ -27,6 +27,19 @@
         vim.g.db_ui_execute_on_save = 0
 
         vim.api.nvim_create_autocmd("FileType", {
+          pattern = { "dbui" },
+          callback = function(args)
+            vim.keymap.set("n", "<C-S-k>", "<Plug>(DBUI_GotoFirstSibling)",
+              { buffer = args.buf, remap = true, silent = true, desc = "Go to first sibling" })
+            vim.keymap.set("n", "<C-S-j>", "<Plug>(DBUI_GotoLastSibling)",
+              { buffer = args.buf, remap = true, silent = true, desc = "Go to last sibling" })
+            for _, lhs in ipairs({ "<C-j>", "<C-k>" }) do
+              pcall(vim.keymap.del, "n", lhs, { buffer = args.buf })
+            end
+          end,
+        })
+
+        vim.api.nvim_create_autocmd("FileType", {
           pattern = { "sql", "mysql", "plsql" },
           callback = function(args)
             vim.bo[args.buf].omnifunc = "vim_dadbod_completion#omni"

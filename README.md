@@ -161,6 +161,12 @@ saves it to `~/.local/share/db_ui/connections.json`, available in every session.
 **`$DBUI_URL`**, with an optional `$DBUI_NAME` — a single connection, for a
 one-off: `DBUI_URL=postgresql://… nvim`.
 
+In the drawer, sibling navigation is on `<C-S-j>` / `<C-S-k>`, not the
+`<C-j>` / `<C-k>` the plugin's own `?` help advertises — those are left to
+smart-splits so you can move out of the drawer with the same keys that move
+between windows everywhere else. That help text is hardcoded in the plugin and
+cannot be corrected in place.
+
 Two behaviours worth knowing. `:w` does not execute a query — `<M-CR>` does, in normal and visual mode, the latter running just the selection.
 And SQL formatting is gated on knowing the dialect: a query buffer takes it from
 the connection URL, while a `.sql` file on disk needs `vim.g.sql_dialect` or a
