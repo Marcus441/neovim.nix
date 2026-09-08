@@ -24,7 +24,7 @@ breaks something non-obviously:
 config.preferPathExe = pkgs: name: fallbackExe:
 ```
 
-Thirty files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
+Thirty-one files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix`,
 `modules/clipboard.nix`, `modules/auto-complete.nix`, `modules/session.nix`,
 `modules/lsp-progress.nix`, `modules/noice.nix`, `modules/snacks-picker.nix`,
 `modules/oil.nix`, `modules/diagnostics.nix`, `modules/statuscolumn.nix`,
@@ -35,10 +35,11 @@ Thirty files carry one today — `modules/nixpkgs.nix`, `modules/prefer-path.nix
 `modules/languages/yaml.nix` (two), `modules/languages/html.nix` (two),
 `modules/languages/typescript.nix` (two),
 `modules/languages/css.nix` (three), `modules/languages/openapi.nix` (three),
+`modules/languages/angular.nix` (three),
 `modules/direnv.nix` (three),
 `modules/images.nix` (three), `modules/splits.nix` (three),
 `modules/languages/nix.nix` (five), `modules/languages/kotlin.nix` (six) and
-`modules/languages/csharp.nix` (seven). The thirty-first and thirty-second
+`modules/languages/csharp.nix` (seven). The thirty-second and thirty-third
 are `modules/kanagawa-setup.lua` and `modules/direnv.lua` (two), where the
 pointer is a `--` rather than a `#` because the value it marks is Lua —
 subject to the two-line cap that governs everything shipping into `init.lua`,
