@@ -44,8 +44,10 @@ in {
 ```
 
 Drop the outer `{config, ...}: let … in` when the language needs no `cmd`
-override — `csharp.nix` is the only one that doesn't, because roslyn-ls is a
-dotnet assembly nobody has on `$PATH`.
+override. Two files don't: `csharp.nix`, because roslyn-ls is a dotnet
+assembly nobody has on `$PATH`, and `angular.nix`, because the nixpkgs
+`ngserver` wrapper bakes in probe flags a `$PATH` binary would lack
+(`docs/decisions/angular.md`).
 
 | What | Aspect | Where |
 | --- | --- | --- |
