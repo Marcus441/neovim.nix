@@ -42,7 +42,7 @@ flake.nix               inputs, then import-tree ./modules
 modules/
   flake/                flake-parts plumbing: systems, nixpkgs, preferPathExe, packages
   editor/               options, keymaps, clipboard, folds, undo, oil, sessions
-  ui/                   statusline, statuscolumn, diagnostics, noice, neovide
+  ui/                   statusline, statuscolumn, diagnostics, neovide
   theme/                kanagawa and its highlight overrides
   snacks/               picker, dashboard, notifier, indent guides, images
   lsp/                  lsp, completion, formatting, debugger, trouble
