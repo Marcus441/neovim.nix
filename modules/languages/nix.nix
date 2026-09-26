@@ -5,10 +5,11 @@ in {
     vim = {
       languages.nix = {
         enable = true;
+        format.type = ["nixfmt"];
         lsp.enable = lib.mkDefault false;
       };
 
-      formatter.conform-nvim.setupOpts.formatters.alejandra.command = lib.mkForce "alejandra";
+      formatter.conform-nvim.setupOpts.formatters.nixfmt.command = lib.mkForce "nixfmt";
     };
   };
 
@@ -23,9 +24,9 @@ in {
     nixdExe = preferPathExe pkgs "nixd" (lib.getExe pkgs.nixd);
   in {
     vim = {
-      formatter.conform-nvim.setupOpts.formatters.alejandra.command =
+      formatter.conform-nvim.setupOpts.formatters.nixfmt.command =
         lib.mkOverride 40
-        (preferPathExe pkgs "alejandra" (lib.getExe pkgs.alejandra));
+        (preferPathExe pkgs "nixfmt" (lib.getExe pkgs.nixfmt));
 
       languages.nix.lsp = {
         enable = true;
