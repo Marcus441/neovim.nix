@@ -74,7 +74,6 @@
             enable = true;
             setupOpts.filewatching = "roslyn";
             setupOpts.extensions.razor.enabled = false;
-            setupOpts.silent = true;
           };
         };
 
@@ -112,35 +111,6 @@
         extraPackages = [
           pkgs.netcoredbg
           pkgs.dotnet-sdk_10
-        ];
-
-        augroups = [ { name = "RoslynFidget"; } ];
-        autocmds = [
-          {
-            event = [ "User" ];
-            pattern = [ "RoslynOnInit" ];
-            desc = "Report roslyn initialization through fidget, replacing the silenced notify";
-            group = "RoslynFidget";
-            callback = lib.mkLuaInline ''
-              function(ev)
-                require("lz.n").trigger_load("fidget-nvim")
-                local target = ev.data.type == "solution" and ev.data.target or "project"
-                require("fidget").notify("Initializing Roslyn for: " .. target, vim.log.levels.INFO)
-              end
-            '';
-          }
-          {
-            event = [ "User" ];
-            pattern = [ "RoslynInitialized" ];
-            desc = "Report roslyn initialization through fidget, replacing the silenced notify";
-            group = "RoslynFidget";
-            callback = lib.mkLuaInline ''
-              function()
-                require("lz.n").trigger_load("fidget-nvim")
-                require("fidget").notify("Roslyn project initialization complete", vim.log.levels.INFO)
-              end
-            '';
-          }
         ];
       };
     };
