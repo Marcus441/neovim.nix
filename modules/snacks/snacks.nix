@@ -7,11 +7,6 @@
         input.enabled = true;
         quickfile.enabled = true;
         scope.enabled = true;
-
-        styles.input = {
-          border = "solid";
-          row = 2;
-        };
       };
     };
   };

@@ -1,16 +1,5 @@
 {
   flake.modules.nvf.dev = {
-    vim.utility.snacks-nvim.setupOpts = {
-      notifier = {
-        enabled = true;
-        timeout = 3000;
-        style = "fancy";
-      };
-
-      styles.notification = {
-        border = "solid";
-        wo.winblend = 0;
-      };
-    };
+    vim.utility.snacks-nvim.setupOpts.notifier.enabled = true;
   };
 }
