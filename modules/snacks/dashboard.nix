@@ -1,9 +1,9 @@
 {
-  flake.modules.nvf.dev = {lib, ...}: {
+  flake.modules.nvf.dev = { lib, ... }: {
     vim.utility.snacks-nvim.setupOpts.dashboard = {
       enabled = true;
       sections = [
-        {section = "header";}
+        { section = "header"; }
         {
           section = "keys";
           gap = 1;

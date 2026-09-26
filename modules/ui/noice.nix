@@ -11,11 +11,17 @@
         views = {
           cmdline_popup.border = {
             style = "none";
-            padding = [1 2];
+            padding = [
+              1
+              2
+            ];
           };
           cmdline_popupmenu.border = {
             style = "none";
-            padding = [1 2];
+            padding = [
+              1
+              2
+            ];
           };
           confirm.border.style = "solid";
         };

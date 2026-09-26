@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.core = {lib, ...}: {
+  flake.modules.nvf.core = { lib, ... }: {
     vim = {
       languages.angular = {
         enable = true;
@@ -16,12 +16,15 @@
     };
   };
 
-  flake.modules.nvf.dev = {lib, ...}: {
+  flake.modules.nvf.dev = { lib, ... }: {
     vim.lsp = {
       presets.angular-language-server.enable = true;
       servers.angular-language-server = {
-        filetypes = ["htmlangular" "typescript"];
-        root_markers = lib.mkForce ["angular.json"];
+        filetypes = [
+          "htmlangular"
+          "typescript"
+        ];
+        root_markers = lib.mkForce [ "angular.json" ];
         workspace_required = true;
       };
     };

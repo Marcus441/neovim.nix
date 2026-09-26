@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.core = {lib, ...}: {
+  flake.modules.nvf.core = { lib, ... }: {
     vim.mini.statusline.enable = lib.mkDefault true;
   };
 

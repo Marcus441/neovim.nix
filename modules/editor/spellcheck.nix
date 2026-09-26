@@ -1,11 +1,11 @@
 {
-  flake.modules.nvf.core = {lib, ...}: {
+  flake.modules.nvf.core = { lib, ... }: {
     vim = {
-      augroups = [{name = "SpellCheck";}];
+      augroups = [ { name = "SpellCheck"; } ];
       autocmds = [
         {
-          event = ["FileType"];
-          pattern = ["markdown"];
+          event = [ "FileType" ];
+          pattern = [ "markdown" ];
           desc = "Enable spellcheck for markdown";
           group = "SpellCheck";
           callback = lib.mkLuaInline ''
@@ -22,7 +22,7 @@
   flake.modules.nvf.dev = {
     vim.spellcheck = {
       enable = true;
-      languages = ["en"];
+      languages = [ "en" ];
       programmingWordlist.enable = false;
     };
   };

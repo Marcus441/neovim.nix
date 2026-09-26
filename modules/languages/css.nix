@@ -1,45 +1,50 @@
-{config, ...}: let
+{ config, ... }:
+let
   inherit (config.flake.lib) preferPathExe;
-in {
-  flake.modules.nvf.core = {lib, ...}: {
+in
+{
+  flake.modules.nvf.core = { lib, ... }: {
     vim.languages = {
       css = {
         enable = true;
-        format.type = ["prettier"];
+        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
       };
 
       scss = {
         enable = true;
-        format.type = ["prettier"];
+        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
       };
     };
   };
 
-  flake.modules.nvf.dev = {
-    pkgs,
-    lib,
-    ...
-  }: {
-    vim = {
-      languages = {
-        css.lsp.enable = true;
+  flake.modules.nvf.dev =
+    {
+      pkgs,
+      lib,
+      ...
+    }:
+    {
+      vim = {
+        languages = {
+          css.lsp.enable = true;
 
-        scss = {
-          lsp = {
-            enable = true;
-            servers = ["vscode-css-language-server"];
+          scss = {
+            lsp = {
+              enable = true;
+              servers = [ "vscode-css-language-server" ];
+            };
+            extraDiagnostics.enable = false;
           };
-          extraDiagnostics.enable = false;
         };
-      };
 
-      lsp.servers.vscode-css-language-server.cmd = lib.mkForce [
-        (preferPathExe pkgs "vscode-css-language-server"
-          (lib.getExe' pkgs.vscode-langservers-extracted "vscode-css-language-server"))
-        "--stdio"
-      ];
+        lsp.servers.vscode-css-language-server.cmd = lib.mkForce [
+          (preferPathExe pkgs "vscode-css-language-server" (
+            lib.getExe' pkgs.vscode-langservers-extracted "vscode-css-language-server"
+          ))
+          "--stdio"
+        ];
+      };
     };
-  };
 }

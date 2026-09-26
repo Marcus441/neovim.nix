@@ -1,7 +1,9 @@
-{config, ...}: let
+{ config, ... }:
+let
   inherit (config.flake.lib) preferPathExe;
-in {
-  flake.modules.nvf.core = {lib, ...}: {
+in
+{
+  flake.modules.nvf.core = { lib, ... }: {
     vim = {
       formatter.conform-nvim = {
         enable = true;
@@ -20,14 +22,14 @@ in {
           format_after_save = null;
           formatters.prettier = {
             command = lib.mkForce "prettierd";
-            args = lib.mkForce ["$FILENAME"];
+            args = lib.mkForce [ "$FILENAME" ];
           };
         };
       };
 
       keymaps = [
         {
-          mode = ["n"];
+          mode = [ "n" ];
           key = "<leader>tf";
           action = "function() vim.g.disable_autoformat = not vim.g.disable_autoformat; vim.notify(\"Format on save \" .. (vim.g.disable_autoformat and \"disabled\" or \"enabled\")) end";
           lua = true;
@@ -37,13 +39,15 @@ in {
     };
   };
 
-  flake.modules.nvf.dev = {
-    pkgs,
-    lib,
-    ...
-  }: {
-    vim.formatter.conform-nvim.setupOpts.formatters.prettier.command =
-      lib.mkOverride 40
-      (preferPathExe pkgs "prettierd" (lib.getExe pkgs.prettierd));
-  };
+  flake.modules.nvf.dev =
+    {
+      pkgs,
+      lib,
+      ...
+    }:
+    {
+      vim.formatter.conform-nvim.setupOpts.formatters.prettier.command = lib.mkOverride 40 (
+        preferPathExe pkgs "prettierd" (lib.getExe pkgs.prettierd)
+      );
+    };
 }

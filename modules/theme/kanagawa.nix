@@ -1,5 +1,5 @@
-{lib, ...}: {
-  flake.modules.nvf.core = {pkgs, ...}: {
+{ lib, ... }: {
+  flake.modules.nvf.core = { pkgs, ... }: {
     vim.globals.theme_transparent = lib.mkDefault true;
 
     vim.extraPlugins = {

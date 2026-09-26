@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.core = {lib, ...}: {
+  flake.modules.nvf.core = { lib, ... }: {
     vim.languages = {
       enableFormat = true;
       enableTreesitter = true;

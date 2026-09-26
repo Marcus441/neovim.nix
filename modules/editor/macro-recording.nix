@@ -1,10 +1,10 @@
 {
-  flake.modules.nvf.dev = {lib, ...}: {
+  flake.modules.nvf.dev = { lib, ... }: {
     vim = {
-      augroups = [{name = "MacroRecordingNotificationGroup";}];
+      augroups = [ { name = "MacroRecordingNotificationGroup"; } ];
       autocmds = [
         {
-          event = ["RecordingEnter"];
+          event = [ "RecordingEnter" ];
           desc = "Notify when macro recording starts";
           group = "MacroRecordingNotificationGroup";
           callback = lib.mkLuaInline ''
@@ -20,7 +20,7 @@
           '';
         }
         {
-          event = ["RecordingLeave"];
+          event = [ "RecordingLeave" ];
           desc = "Notify when macro recording ends";
           group = "MacroRecordingNotificationGroup";
           callback = lib.mkLuaInline ''

@@ -4,7 +4,7 @@
 
     vim.keymaps = [
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "<leader>gb";
         action = "<cmd>lua Snacks.gitbrowse()<cr>";
         desc = "[G]it [B]rowse";

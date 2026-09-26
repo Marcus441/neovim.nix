@@ -1,10 +1,10 @@
 {
-  flake.modules.nvf.core = {lib, ...}: {
+  flake.modules.nvf.core = { lib, ... }: {
     vim = {
-      augroups = [{name = "UserSetup";}];
+      augroups = [ { name = "UserSetup"; } ];
       autocmds = [
         {
-          event = ["TextYankPost"];
+          event = [ "TextYankPost" ];
           desc = "Highlight when yanking (copying) text";
           group = "UserSetup";
           callback = lib.mkLuaInline ''

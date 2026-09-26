@@ -1,14 +1,16 @@
-{config, ...}: let
+{ config, ... }:
+let
   inherit (config.flake.lib) preferPathExe;
-in {
-  flake.modules.nvf.core = {lib, ...}: {
+in
+{
+  flake.modules.nvf.core = { lib, ... }: {
     vim = {
       luaConfigRC.sql-dialect = builtins.readFile ./dialect.lua;
 
       languages.sql = {
         enable = true;
         lsp.enable = false;
-        format.type = ["sqruff"];
+        format.type = [ "sqruff" ];
         extraDiagnostics.enable = false;
       };
 
@@ -32,13 +34,15 @@ in {
     };
   };
 
-  flake.modules.nvf.dev = {
-    pkgs,
-    lib,
-    ...
-  }: {
-    vim.formatter.conform-nvim.setupOpts.formatters.sqruff.command =
-      lib.mkOverride 40
-      (preferPathExe pkgs "sqruff" (lib.getExe pkgs.sqruff));
-  };
+  flake.modules.nvf.dev =
+    {
+      pkgs,
+      lib,
+      ...
+    }:
+    {
+      vim.formatter.conform-nvim.setupOpts.formatters.sqruff.command = lib.mkOverride 40 (
+        preferPathExe pkgs "sqruff" (lib.getExe pkgs.sqruff)
+      );
+    };
 }

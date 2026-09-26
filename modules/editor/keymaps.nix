@@ -2,49 +2,49 @@
   flake.modules.nvf.core = {
     vim.keymaps = [
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "<Esc>";
         action = "<cmd>nohlsearch<CR>";
         desc = "Clear search highlights";
       }
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "J";
         action = "mzJ`z";
         desc = "Join line and keep cursor position";
       }
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "<C-d>";
         action = "<C-d>zz";
         desc = "Half page down and center";
       }
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "<C-u>";
         action = "<C-u>zz";
         desc = "Half page up and center";
       }
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "n";
         action = "nzzzv";
         desc = "Next search match and center";
       }
       {
-        mode = ["n"];
+        mode = [ "n" ];
         key = "N";
         action = "Nzzzv";
         desc = "Previous search match and center";
       }
       {
-        mode = ["v"];
+        mode = [ "v" ];
         key = "J";
         action = ":m '>+1<CR>gv=gv";
         desc = "Move visual block down";
       }
       {
-        mode = ["v"];
+        mode = [ "v" ];
         key = "K";
         action = ":m '<-2<CR>gv=gv";
         desc = "Move visual block up";
