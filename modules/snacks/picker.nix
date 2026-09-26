@@ -1,69 +1,8 @@
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim.utility.snacks-nvim.setupOpts.picker = {
       enabled = true;
 
-      layout.preset = "block";
-
-      layouts.block = lib.generators.mkLuaInline ''
-        {
-          layout = {
-            box = "horizontal",
-            width = 0.9,
-            height = 0.85,
-            {
-              box = "vertical",
-              width = 0.5,
-              { win = "input", height = 1, border = "solid",
-                title = "{title} {live} {flags}", title_pos = "center" },
-              { win = "list", border = "solid", title = " Results ", title_pos = "center" },
-            },
-            { win = "preview", border = "solid",
-              title = "{preview}", title_pos = "center" },
-          },
-        }
-      '';
-
-      layouts.select = lib.generators.mkLuaInline ''
-        {
-          hidden = { "preview" },
-          layout = {
-            backdrop = false,
-            width = 0.5, min_width = 80, max_width = 100,
-            height = 0.4, min_height = 2,
-            box = "vertical",
-            { win = "input", height = 1, border = "solid",
-              title = "{title}", title_pos = "center" },
-            { win = "list", border = "solid" },
-            { win = "preview", border = "solid" },
-          },
-        }
-      '';
-
-      layouts.vscode = lib.generators.mkLuaInline ''
-        {
-          hidden = { "preview" },
-          layout = {
-            backdrop = false,
-            row = 1,
-            width = 0.4, min_width = 80,
-            height = 0.4,
-            box = "vertical",
-            { win = "input", height = 1, border = "solid",
-              title = "{title} {live} {flags}", title_pos = "center" },
-            { win = "list", border = "solid" },
-            { win = "preview", border = "solid" },
-          },
-        }
-      '';
-
-      formatters.file = {
-        filename_first = true;
-        truncate = "left";
-      };
-
-      sources.lines.layout.preset = "block";
-      sources.zoxide = { };
       sources.projects = {
         dev = [
           "~/Projects"
