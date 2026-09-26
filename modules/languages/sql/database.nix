@@ -39,6 +39,21 @@
             end,
           })
         '';
+        autocomplete.blink-cmp.setupOpts.sources = {
+          per_filetype = lib.genAttrs [ "sql" "mysql" "plsql" ] (_: [
+            "dadbod"
+            "lsp"
+            "snippets"
+            "path"
+            "buffer"
+          ]);
+          providers.dadbod = {
+            name = "Dadbod";
+            module = "vim_dadbod_completion.blink";
+            score_offset = 30;
+          };
+        };
+
         keymaps = [
           {
             mode = [ "n" ];
