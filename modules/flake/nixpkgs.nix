@@ -10,7 +10,6 @@
       config.allowUnfreePredicate =
         pkg:
         builtins.elem (lib.getName pkg) [
-          "kotlin-lsp"
           "vscode-extension-ms-dotnettools-csharp"
         ];
     };
