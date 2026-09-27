@@ -135,7 +135,9 @@ Leader is `<Space>`. LSP keys follow the Neovim defaults.
 | `<leader>tm` / `<leader>tp`      | Toggle markdown rendering / markdown preview   |
 | `<leader>ql` / `<leader>qs`      | Load last session / pick a session             |
 | `<leader>qw` / `<leader>qd`      | Save / delete session                          |
-| `<leader>dc` / `<leader>db`      | Debugger continue / toggle breakpoint          |
+| `<F5>` / `<leader>b`             | Debugger continue / toggle breakpoint          |
+| `<F10>` / `<F11>` / `<F12>`      | Debugger step over / into / out                |
+| `<C-n>` / `<C-p>` / `<CR>`       | Completion next / previous / accept            |
 | `<leader>u`                      | Undotree                                       |
 | `<leader>D`                      | Database UI                                    |
 | `<M-CR>`                         | Execute query (SQL buffers)                    |
@@ -145,7 +147,6 @@ Leader is `<Space>`. LSP keys follow the Neovim defaults.
 | `-`                              | Oil                                            |
 | `<leader>d`                      | Delete (void register)                         |
 | `J` / `K` (visual)               | Move block down / up                           |
-| `<C-d>` / `<C-u>`                | Half page down / up (centered)                 |
 | `n` / `N`                        | Next / prev match (centered)                   |
 | `<C-=>` / `<C-->`                | Neovide scale up / down                        |
 
