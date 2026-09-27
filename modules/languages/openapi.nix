@@ -17,7 +17,7 @@
         ];
       };
 
-      vscode-json-language-server.settings.json = {
+      jsonls.settings.json = {
         validate.enable = true;
 
         schemas = [

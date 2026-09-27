@@ -1,31 +1,14 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
-    vim.languages.json = {
-      enable = true;
-      lsp.enable = lib.mkDefault false;
-    };
+  flake.modules.nvf.core = {
+    vim.languages.json.enable = true;
   };
 
   flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, ... }:
     {
       vim = {
-        languages.json.lsp.enable = true;
-
-        lsp.servers.vscode-json-language-server.cmd = lib.mkForce [
-          (preferPathExe pkgs "vscode-json-language-server" (
-            lib.getExe' pkgs.vscode-langservers-extracted "vscode-json-language-server"
-          ))
-          "--stdio"
-        ];
+        lsp.servers.jsonls.enable = true;
+        extraPackages = [ pkgs.vscode-langservers-extracted ];
       };
     };
 }
