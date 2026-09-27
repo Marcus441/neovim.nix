@@ -41,9 +41,9 @@
         keymaps = [
           {
             mode = [ "n" ];
-            key = "<leader>mp";
+            key = "<leader>tp";
             action = "<CMD>MarkdownPreviewToggle<CR>";
-            desc = "[M]arkdown [P]review";
+            desc = "[T]oggle markdown [P]review";
           }
         ];
       };
