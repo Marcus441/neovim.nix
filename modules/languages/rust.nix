@@ -10,7 +10,7 @@ in
         lsp.enable = lib.mkDefault false;
       };
 
-      formatter.conform-nvim.setupOpts.formatters.rustfmt.command = lib.mkForce "rustfmt";
+      formatter.conform-nvim.setupOpts.formatters_by_ft.rust = [ "rustfmt" ];
     };
   };
 

@@ -7,11 +7,8 @@ in
     vim = {
       languages.yaml = {
         enable = true;
-        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
       };
-
-      formatter.conform-nvim.setupOpts.formatters_by_ft."yaml.gitlab" = [ "prettier" ];
     };
   };
 

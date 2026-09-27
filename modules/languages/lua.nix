@@ -10,7 +10,7 @@ in
         lsp.enable = lib.mkDefault false;
       };
 
-      formatter.conform-nvim.setupOpts.formatters.stylua.command = lib.mkForce "stylua";
+      formatter.conform-nvim.setupOpts.formatters_by_ft.lua = [ "stylua" ];
     };
   };
 
@@ -31,9 +31,7 @@ in
           (preferPathExe pkgs "lua-language-server" (lib.getExe pkgs.lua-language-server))
         ];
 
-        formatter.conform-nvim.setupOpts.formatters.stylua.command = lib.mkOverride 40 (
-          preferPathExe pkgs "stylua" (lib.getExe pkgs.stylua)
-        );
+        extraPackages = [ pkgs.stylua ];
       };
     };
 }

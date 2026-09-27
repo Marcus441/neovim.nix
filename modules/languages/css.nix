@@ -7,13 +7,11 @@ in
     vim.languages = {
       css = {
         enable = true;
-        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
       };
 
       scss = {
         enable = true;
-        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
       };
     };

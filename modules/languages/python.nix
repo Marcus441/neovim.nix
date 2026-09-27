@@ -7,11 +7,10 @@ in
     vim = {
       languages.python = {
         enable = true;
-        format.type = [ "ruff" ];
         lsp.enable = lib.mkDefault false;
       };
 
-      formatter.conform-nvim.setupOpts.formatters.ruff.command = lib.mkForce "ruff";
+      formatter.conform-nvim.setupOpts.formatters_by_ft.python = [ "ruff_format" ];
     };
   };
 
@@ -32,9 +31,7 @@ in
           "--stdio"
         ];
 
-        formatter.conform-nvim.setupOpts.formatters.ruff.command = lib.mkOverride 40 (
-          preferPathExe pkgs "ruff" (lib.getExe pkgs.ruff)
-        );
+        extraPackages = [ pkgs.ruff ];
       };
     };
 }

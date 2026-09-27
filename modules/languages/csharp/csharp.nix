@@ -4,12 +4,12 @@
       languages.csharp = {
         enable = true;
         treesitter.enable = true;
-        format.type = [ "csharpier" ];
         lsp.enable = lib.mkDefault false;
       };
 
+      formatter.conform-nvim.setupOpts.formatters_by_ft.cs = [ "csharpier" ];
+
       formatter.conform-nvim.setupOpts.formatters.csharpier = {
-        command = lib.mkForce null;
         "inherit" = false;
         format = lib.mkLuaInline ''
           function(self, ctx, lines, callback)

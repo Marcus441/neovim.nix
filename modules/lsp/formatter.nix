@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
   flake.modules.nvf.core = { lib, ... }: {
     vim = {
@@ -20,10 +16,6 @@ in
             end
           '';
           format_after_save = null;
-          formatters.prettier = {
-            command = lib.mkForce "prettierd";
-            args = lib.mkForce [ "$FILENAME" ];
-          };
         };
       };
 
@@ -38,16 +30,4 @@ in
       ];
     };
   };
-
-  flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
-    {
-      vim.formatter.conform-nvim.setupOpts.formatters.prettier.command = lib.mkOverride 40 (
-        preferPathExe pkgs "prettierd" (lib.getExe pkgs.prettierd)
-      );
-    };
 }

@@ -7,13 +7,11 @@ in
     vim.languages = {
       typescript = {
         enable = true;
-        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
       };
 
       tsx = {
         enable = true;
-        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
       };
     };

@@ -7,7 +7,6 @@ in
     vim = {
       languages.markdown = {
         enable = true;
-        format.type = [ "prettier" ];
         lsp.enable = lib.mkDefault false;
 
         extensions.render-markdown-nvim = {

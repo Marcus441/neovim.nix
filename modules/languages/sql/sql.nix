@@ -1,7 +1,3 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
   flake.modules.nvf.core = { lib, ... }: {
     vim = {
@@ -10,12 +6,12 @@ in
       languages.sql = {
         enable = true;
         lsp.enable = false;
-        format.type = [ "sqruff" ];
         extraDiagnostics.enable = false;
       };
 
+      formatter.conform-nvim.setupOpts.formatters_by_ft.sql = [ "sqruff" ];
+
       formatter.conform-nvim.setupOpts.formatters.sqruff = {
-        command = lib.mkForce "sqruff";
         args = lib.mkLuaInline ''
           function(_, ctx)
             local dialect = require("sql-dialect").of(ctx.buf)
@@ -35,14 +31,8 @@ in
   };
 
   flake.modules.nvf.dev =
+    { pkgs, ... }:
     {
-      pkgs,
-      lib,
-      ...
-    }:
-    {
-      vim.formatter.conform-nvim.setupOpts.formatters.sqruff.command = lib.mkOverride 40 (
-        preferPathExe pkgs "sqruff" (lib.getExe pkgs.sqruff)
-      );
+      vim.extraPackages = [ pkgs.sqruff ];
     };
 }

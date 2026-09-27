@@ -20,7 +20,10 @@ in
           '';
         }
       ];
-      formatter.conform-nvim.setupOpts.formatters.clang-format.command = lib.mkForce "clang-format";
+      formatter.conform-nvim.setupOpts.formatters_by_ft = {
+        c = [ "clang-format" ];
+        cpp = [ "clang-format" ];
+      };
 
       languages.clang = {
         enable = true;
@@ -50,9 +53,7 @@ in
           (preferPathExe pkgs "clangd" (lib.getExe' pkgs.clang-tools "clangd"))
         ];
 
-        formatter.conform-nvim.setupOpts.formatters.clang-format.command = lib.mkOverride 40 (
-          preferPathExe pkgs "clang-format" (lib.getExe' pkgs.clang-tools "clang-format")
-        );
+        extraPackages = [ pkgs.clang-tools ];
       };
     };
 }

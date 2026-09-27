@@ -7,11 +7,10 @@ in
     vim = {
       languages.nix = {
         enable = true;
-        format.type = [ "nixfmt" ];
         lsp.enable = lib.mkDefault false;
       };
 
-      formatter.conform-nvim.setupOpts.formatters.nixfmt.command = lib.mkForce "nixfmt";
+      formatter.conform-nvim.setupOpts.formatters_by_ft.nix = [ "nixfmt" ];
     };
   };
 
@@ -26,9 +25,7 @@ in
     in
     {
       vim = {
-        formatter.conform-nvim.setupOpts.formatters.nixfmt.command = lib.mkOverride 40 (
-          preferPathExe pkgs "nixfmt" (lib.getExe pkgs.nixfmt)
-        );
+        extraPackages = [ pkgs.nixfmt ];
 
         languages.nix.lsp = {
           enable = true;

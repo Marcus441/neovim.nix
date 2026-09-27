@@ -6,7 +6,6 @@ in
   flake.modules.nvf.core = { lib, ... }: {
     vim.languages.json = {
       enable = true;
-      format.type = [ "prettier" ];
       lsp.enable = lib.mkDefault false;
     };
   };
