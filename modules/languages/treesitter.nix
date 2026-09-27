@@ -1,8 +1,12 @@
 {
   flake.modules.nvf.core = {
-    vim.treesitter = {
-      enable = true;
-      indent.enable = true;
+    vim = {
+      languages.enableTreesitter = true;
+
+      treesitter = {
+        enable = true;
+        indent.enable = true;
+      };
     };
   };
 }
