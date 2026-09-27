@@ -1,54 +1,16 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim.languages = {
-      typescript = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
-
-      tsx = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
+      typescript.enable = true;
+      tsx.enable = true;
     };
   };
 
   flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, ... }:
     {
       vim = {
-        languages = {
-          typescript = {
-            lsp = {
-              enable = true;
-              servers = [
-                "typescript-language-server"
-              ];
-            };
-          };
-
-          tsx = {
-            lsp = {
-              enable = true;
-              servers = [
-                "typescript-language-server"
-              ];
-            };
-          };
-        };
-
-        lsp.servers.typescript-language-server.cmd = lib.mkForce [
-          (preferPathExe pkgs "typescript-language-server" (lib.getExe pkgs.typescript-language-server))
-          "--stdio"
-        ];
+        lsp.servers.ts_ls.enable = true;
 
         diagnostics.nvim-lint = {
           linters_by_ft = {
@@ -67,7 +29,10 @@ in
           ];
         };
 
-        extraPackages = [ pkgs.eslint_d ];
+        extraPackages = [
+          pkgs.eslint_d
+          pkgs.typescript-language-server
+        ];
       };
     };
 }
