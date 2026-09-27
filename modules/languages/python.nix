@@ -31,12 +31,7 @@ in
           "--stdio"
         ];
 
-        diagnostics.nvim-lint.linters_by_ft.python = [ "mypy" ];
-
-        extraPackages = [
-          pkgs.mypy
-          pkgs.ruff
-        ];
+        extraPackages = [ pkgs.ruff ];
       };
     };
 }
