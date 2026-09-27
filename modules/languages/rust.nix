@@ -1,39 +1,12 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim = {
-      languages.rust = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
-
+      languages.rust.enable = true;
       formatter.conform-nvim.setupOpts.formatters_by_ft.rust = [ "rustfmt" ];
     };
   };
 
-  flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
-    {
-      vim = {
-        languages.rust = {
-          lsp.enable = true;
-          extensions.crates-nvim.enable = true;
-        };
-
-        lsp.servers.rust-analyzer = {
-          enable = lib.mkForce false;
-          cmd = lib.mkForce [
-            (preferPathExe pkgs "rust-analyzer" (lib.getExe pkgs.rust-analyzer))
-          ];
-          filetypes = [ "rust" ];
-        };
-      };
-    };
+  flake.modules.nvf.dev = {
+    vim.languages.rust.extensions.crates-nvim.enable = true;
+  };
 }
