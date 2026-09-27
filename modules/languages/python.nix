@@ -1,37 +1,21 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim = {
-      languages.python = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
-
+      languages.python.enable = true;
       formatter.conform-nvim.setupOpts.formatters_by_ft.python = [ "ruff_format" ];
     };
   };
 
   flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, ... }:
     {
       vim = {
-        languages.python.lsp.enable = true;
+        lsp.servers.basedpyright.enable = true;
 
-        lsp.servers.basedpyright.cmd = lib.mkForce [
-          (preferPathExe pkgs "basedpyright-langserver" (
-            lib.getExe' pkgs.basedpyright "basedpyright-langserver"
-          ))
-          "--stdio"
+        extraPackages = [
+          pkgs.basedpyright
+          pkgs.ruff
         ];
-
-        extraPackages = [ pkgs.ruff ];
       };
     };
 }
