@@ -15,18 +15,6 @@
       }
       {
         mode = [ "n" ];
-        key = "<C-d>";
-        action = "<C-d>zz";
-        desc = "Half page down and center";
-      }
-      {
-        mode = [ "n" ];
-        key = "<C-u>";
-        action = "<C-u>zz";
-        desc = "Half page up and center";
-      }
-      {
-        mode = [ "n" ];
         key = "n";
         action = "nzzzv";
         desc = "Next search match and center";
