@@ -18,10 +18,7 @@ in
     }:
     {
       vim = {
-        languages.html = {
-          lsp.enable = true;
-          extraDiagnostics.enable = false;
-        };
+        languages.html.lsp.enable = true;
 
         lsp.servers.superhtml.cmd = lib.mkForce [
           (preferPathExe pkgs "superhtml" (lib.getExe pkgs.superhtml))

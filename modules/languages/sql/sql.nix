@@ -6,7 +6,6 @@
       languages.sql = {
         enable = true;
         lsp.enable = false;
-        extraDiagnostics.enable = false;
       };
 
       formatter.conform-nvim.setupOpts.formatters_by_ft.sql = [ "sqruff" ];

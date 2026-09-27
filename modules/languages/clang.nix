@@ -53,6 +53,11 @@ in
           (preferPathExe pkgs "clangd" (lib.getExe' pkgs.clang-tools "clangd"))
         ];
 
+        diagnostics.nvim-lint.linters_by_ft = {
+          c = [ "clangtidy" ];
+          cpp = [ "clangtidy" ];
+        };
+
         extraPackages = [ pkgs.clang-tools ];
       };
     };

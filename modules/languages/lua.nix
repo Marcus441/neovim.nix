@@ -31,7 +31,12 @@ in
           (preferPathExe pkgs "lua-language-server" (lib.getExe pkgs.lua-language-server))
         ];
 
-        extraPackages = [ pkgs.stylua ];
+        diagnostics.nvim-lint.linters_by_ft.lua = [ "luacheck" ];
+
+        extraPackages = [
+          pkgs.luajitPackages.luacheck
+          pkgs.stylua
+        ];
       };
     };
 }

@@ -33,10 +33,6 @@ in
                 "typescript-language-server"
               ];
             };
-            extraDiagnostics = {
-              enable = true;
-              types = [ "eslint_d" ];
-            };
           };
 
           tsx = {
@@ -46,7 +42,6 @@ in
                 "typescript-language-server"
               ];
             };
-            extraDiagnostics.enable = false;
           };
         };
 
@@ -57,12 +52,22 @@ in
 
         diagnostics.nvim-lint = {
           linters_by_ft = {
+            typescript = [ "eslint_d" ];
             typescriptreact = [ "eslint_d" ];
             javascriptreact = [ "eslint_d" ];
           };
 
-          linters.eslint_d.cmd = lib.mkForce (preferPathExe pkgs "eslint_d" (lib.getExe pkgs.eslint_d));
+          linters.eslint_d.required_files = [
+            "eslint.config.js"
+            "eslint.config.mjs"
+            ".eslintrc"
+            ".eslintrc.json"
+            ".eslintrc.js"
+            ".eslintrc.yml"
+          ];
         };
+
+        extraPackages = [ pkgs.eslint_d ];
       };
     };
 }

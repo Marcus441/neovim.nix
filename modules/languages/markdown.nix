@@ -38,16 +38,15 @@ in
     {
       vim = {
         utility.preview.markdownPreview.enable = true;
-        extraPackages = [ pkgs.nodejs ];
+        extraPackages = [
+          pkgs.markdownlint-cli2
+          pkgs.nodejs
+        ];
 
         languages.markdown = {
           lsp = {
             enable = true;
             servers = [ "marksman" ];
-          };
-          extraDiagnostics = {
-            enable = true;
-            types = [ "markdownlint-cli2" ];
           };
         };
 
@@ -56,9 +55,7 @@ in
           "server"
         ];
 
-        diagnostics.nvim-lint.linters.markdownlint-cli2.cmd = lib.mkForce (
-          preferPathExe pkgs "markdownlint-cli2" (lib.getExe pkgs.markdownlint-cli2)
-        );
+        diagnostics.nvim-lint.linters_by_ft.markdown = [ "markdownlint-cli2" ];
 
         keymaps = [
           {

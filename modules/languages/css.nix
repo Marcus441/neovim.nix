@@ -33,7 +33,6 @@ in
               enable = true;
               servers = [ "vscode-css-language-server" ];
             };
-            extraDiagnostics.enable = false;
           };
         };
 

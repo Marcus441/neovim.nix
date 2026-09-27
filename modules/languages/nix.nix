@@ -25,7 +25,16 @@ in
     in
     {
       vim = {
-        extraPackages = [ pkgs.nixfmt ];
+        diagnostics.nvim-lint.linters_by_ft.nix = [
+          "statix"
+          "deadnix"
+        ];
+
+        extraPackages = [
+          pkgs.deadnix
+          pkgs.nixfmt
+          pkgs.statix
+        ];
 
         languages.nix.lsp = {
           enable = true;
