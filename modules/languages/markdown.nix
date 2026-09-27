@@ -1,13 +1,8 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim = {
       languages.markdown = {
         enable = true;
-        lsp.enable = lib.mkDefault false;
 
         extensions.render-markdown-nvim = {
           enable = true;
@@ -30,32 +25,18 @@ in
   };
 
   flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, ... }:
     {
       vim = {
         utility.preview.markdownPreview.enable = true;
+        lsp.servers.marksman.enable = true;
+        diagnostics.nvim-lint.linters_by_ft.markdown = [ "markdownlint-cli2" ];
+
         extraPackages = [
           pkgs.markdownlint-cli2
+          pkgs.marksman
           pkgs.nodejs
         ];
-
-        languages.markdown = {
-          lsp = {
-            enable = true;
-            servers = [ "marksman" ];
-          };
-        };
-
-        lsp.servers.marksman.cmd = lib.mkForce [
-          (preferPathExe pkgs "marksman" (lib.getExe pkgs.marksman))
-          "server"
-        ];
-
-        diagnostics.nvim-lint.linters_by_ft.markdown = [ "markdownlint-cli2" ];
 
         keymaps = [
           {
