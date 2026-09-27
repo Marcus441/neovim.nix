@@ -1,9 +1,5 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim = {
       treesitter.queries = [
         {
@@ -25,34 +21,16 @@ in
         cpp = [ "clang-format" ];
       };
 
-      languages.clang = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-        dap.enable = lib.mkDefault false;
-      };
+      languages.clang.enable = true;
     };
   };
 
   flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, ... }:
     {
       vim = {
-        languages.clang = {
-          lsp = {
-            enable = true;
-            servers = [ "clangd" ];
-          };
-          dap.enable = true;
-        };
-
-        lsp.servers.clangd.cmd = lib.mkForce [
-          (preferPathExe pkgs "clangd" (lib.getExe' pkgs.clang-tools "clangd"))
-        ];
-
+        languages.clang.dap.enable = true;
+        lsp.servers.clangd.enable = true;
         extraPackages = [ pkgs.clang-tools ];
       };
     };
