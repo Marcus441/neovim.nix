@@ -1,7 +1,7 @@
 {
   flake.modules.nvf.dev = {
     vim.lsp.servers = {
-      yaml-language-server.settings.yaml = {
+      yamlls.settings.yaml = {
         schemaStore = {
           enable = true;
           url = "https://www.schemastore.org/api/json/catalog.json";
