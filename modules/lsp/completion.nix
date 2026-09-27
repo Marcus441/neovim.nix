@@ -10,6 +10,18 @@
       setupOpts = {
         keymap.preset = "enter";
         signature.enabled = true;
+        sources.providers = {
+          lsp = {
+            score_offset = 5;
+            fallbacks = [ ];
+          };
+          snippets.score_offset = 4;
+          path.score_offset = 3;
+          buffer = {
+            score_offset = 2;
+            max_items = 5;
+          };
+        };
         completion = {
           documentation.auto_show = true;
           list.selection = {
