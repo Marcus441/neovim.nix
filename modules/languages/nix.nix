@@ -1,67 +1,26 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim = {
-      languages.nix = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
-
+      languages.nix.enable = true;
       formatter.conform-nvim.setupOpts.formatters_by_ft.nix = [ "nixfmt" ];
     };
   };
 
   flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, lib, ... }:
     let
       inherit (lib) mkLuaInline;
     in
     {
       vim = {
-        diagnostics.nvim-lint.linters_by_ft.nix = [
-          "statix"
-          "deadnix"
-        ];
-
-        extraPackages = [
-          pkgs.deadnix
-          pkgs.nixfmt
-          pkgs.statix
-        ];
-
-        languages.nix.lsp = {
-          enable = true;
-          servers = [
-            "nil"
-            "nixd"
-          ];
-        };
-
         lsp.servers = {
-          nil = {
-            cmd = lib.mkForce [
-              (preferPathExe pkgs "nil" (lib.getExe pkgs.nil))
-            ];
-
-            on_attach = mkLuaInline ''
-              function(client, _)
-                client.server_capabilities.completionProvider = nil
-              end
-            '';
-          };
+          nil_ls.on_attach = mkLuaInline ''
+            function(client, _)
+              client.server_capabilities.completionProvider = nil
+            end
+          '';
 
           nixd = {
-            cmd = lib.mkForce [
-              (preferPathExe pkgs "nixd" (lib.getExe pkgs.nixd))
-            ];
-
             on_attach = mkLuaInline ''
               function(client, _)
                 client.server_capabilities = {
@@ -95,6 +54,19 @@ in
             '';
           };
         };
+
+        diagnostics.nvim-lint.linters_by_ft.nix = [
+          "statix"
+          "deadnix"
+        ];
+
+        extraPackages = [
+          pkgs.deadnix
+          pkgs.nil
+          pkgs.nixd
+          pkgs.nixfmt
+          pkgs.statix
+        ];
       };
     };
 }
