@@ -3,6 +3,12 @@
     vim.session.nvim-session-manager = {
       enable = true;
       usePicker = false;
+      mappings = {
+        loadSession = "<leader>qs";
+        loadLastSession = "<leader>ql";
+        saveCurrentSession = "<leader>qw";
+        deleteSession = "<leader>qd";
+      };
       setupOpts = {
         autosave_last_session = true;
         autoload_mode = "Disabled";
