@@ -4,14 +4,11 @@
       enable = true;
       setupOpts = {
         filetypes = {
-          "*" = {
-            RGB = true;
-            RRGGBB = true;
-            always_update = true;
-            css = true;
-            mode = "background";
-          };
+          css = { };
+          scss = { };
+          html = { };
         };
+        user_default_options.css = true;
       };
     };
   };
