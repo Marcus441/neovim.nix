@@ -13,7 +13,7 @@
         previous = null;
       };
       setupOpts = {
-        keymap.preset = "default";
+        keymap.preset = "enter";
         signature.enabled = true;
         completion.documentation.auto_show = true;
       };
