@@ -132,66 +132,6 @@ in
             return root
           end
         '';
-
-        augroups = [ { name = "NixdFlakeCheck"; } ];
-
-        autocmds = [
-          {
-            event = [ "FileType" ];
-            pattern = [ "nix" ];
-            desc = "Report once whether the flake nixd is pointed at can answer for this host";
-            group = "NixdFlakeCheck";
-            callback = mkLuaInline ''
-              function(event)
-                if _NIXD_FLAKE_CHECKED or _NIXD_DEVENV_ROOT(event.buf) then
-                  return
-                end
-                _NIXD_FLAKE_CHECKED = true
-
-                local flake = vim.env.HOME .. "/.dotfiles/flake"
-                local host = vim.fn.hostname()
-                local account = vim.env.USER .. "@" .. host
-
-                local function warn(what)
-                  vim.notify("[nixd] " .. what .. "; flake-derived completion is missing",
-                    vim.log.levels.WARN)
-                end
-
-                local function report(out)
-                  if out.code ~= 0 then
-                    warn(flake .. " did not evaluate")
-                    return
-                  end
-                  local ok, names = pcall(vim.json.decode, out.stdout)
-                  if not ok then
-                    warn(flake .. " named no configurations")
-                    return
-                  end
-                  if not vim.tbl_contains(names.nixos, host) then
-                    warn("nixosConfigurations has no " .. host)
-                  end
-                  if not vim.tbl_contains(names.home, account) then
-                    warn("homeConfigurations has no " .. account)
-                  end
-                end
-
-                if not vim.uv.fs_stat(flake .. "/flake.nix") then
-                  warn("no flake at " .. flake)
-                  return
-                end
-                local expr = "let f = builtins.getFlake " .. vim.fn.json_encode(flake)
-                  .. "; in { nixos = builtins.attrNames f.nixosConfigurations;"
-                  .. " home = builtins.attrNames f.homeConfigurations; }"
-                local spawned = pcall(vim.system,
-                  {"nix", "eval", "--impure", "--json", "--expr", expr},
-                  {text = true}, vim.schedule_wrap(report))
-                if not spawned then
-                  warn("nix is not on PATH")
-                end
-              end
-            '';
-          }
-        ];
       };
     };
 }
