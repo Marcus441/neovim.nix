@@ -1,5 +1,9 @@
 {
-  flake.modules.nvf.dev = {
+  flake.modules.nvf.dev = { lib, ... }: {
+    vim.lsp.servers."*".capabilities = lib.mkLuaInline ''
+      require("blink.cmp").get_lsp_capabilities()
+    '';
+
     vim.autocomplete.blink-cmp = {
       enable = true;
       friendly-snippets.enable = true;

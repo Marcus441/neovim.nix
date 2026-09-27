@@ -1,7 +1,11 @@
 {
   flake.modules.nvf.dev = {
     vim = {
-      lsp.trouble.enable = true;
+      lazy.plugins.trouble = {
+        package = "trouble";
+        setupModule = "trouble";
+        cmd = "Trouble";
+      };
 
       keymaps = [
         {

@@ -1,16 +1,7 @@
 {
   flake.modules.nvf.dev = {
     vim = {
-      lsp = {
-        enable = true;
-        formatOnSave = true;
-        lspkind.enable = false;
-        lightbulb.enable = false;
-        lspsaga.enable = false;
-        lspSignature.enable = false;
-        otter-nvim.enable = false;
-        nvim-docs-view.enable = false;
-      };
+      startPlugins = [ "nvim-lspconfig" ];
 
       keymaps = [
         {
