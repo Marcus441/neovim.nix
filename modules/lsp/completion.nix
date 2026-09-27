@@ -15,7 +15,13 @@
       setupOpts = {
         keymap.preset = "enter";
         signature.enabled = true;
-        completion.documentation.auto_show = true;
+        completion = {
+          documentation.auto_show = true;
+          list.selection = {
+            preselect = false;
+            auto_insert = false;
+          };
+        };
       };
     };
   };
