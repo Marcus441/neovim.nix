@@ -5,8 +5,4 @@
       cursorlineopt = "number";
     };
   };
-
-  flake.modules.nvf.dev = {
-    vim.visuals.nvim-cursorline.enable = true;
-  };
 }
