@@ -1,47 +1,17 @@
-{ config, ... }:
-let
-  inherit (config.flake.lib) preferPathExe;
-in
 {
-  flake.modules.nvf.core = { lib, ... }: {
+  flake.modules.nvf.core = {
     vim.languages = {
-      css = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
-
-      scss = {
-        enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
+      css.enable = true;
+      scss.enable = true;
     };
   };
 
   flake.modules.nvf.dev =
-    {
-      pkgs,
-      lib,
-      ...
-    }:
+    { pkgs, ... }:
     {
       vim = {
-        languages = {
-          css.lsp.enable = true;
-
-          scss = {
-            lsp = {
-              enable = true;
-              servers = [ "vscode-css-language-server" ];
-            };
-          };
-        };
-
-        lsp.servers.vscode-css-language-server.cmd = lib.mkForce [
-          (preferPathExe pkgs "vscode-css-language-server" (
-            lib.getExe' pkgs.vscode-langservers-extracted "vscode-css-language-server"
-          ))
-          "--stdio"
-        ];
+        lsp.servers.cssls.enable = true;
+        extraPackages = [ pkgs.vscode-langservers-extracted ];
       };
     };
 }
