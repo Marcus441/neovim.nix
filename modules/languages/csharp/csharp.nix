@@ -1,11 +1,7 @@
 {
   flake.modules.nvf.core = { lib, ... }: {
     vim = {
-      languages.csharp = {
-        enable = true;
-        treesitter.enable = true;
-        lsp.enable = lib.mkDefault false;
-      };
+      languages.csharp.enable = true;
 
       formatter.conform-nvim.setupOpts.formatters_by_ft.cs = [ "csharpier" ];
 

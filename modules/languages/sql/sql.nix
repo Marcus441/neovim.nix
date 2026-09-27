@@ -3,10 +3,7 @@
     vim = {
       luaConfigRC.sql-dialect = builtins.readFile ./dialect.lua;
 
-      languages.sql = {
-        enable = true;
-        lsp.enable = false;
-      };
+      languages.sql.enable = true;
 
       formatter.conform-nvim.setupOpts.formatters_by_ft.sql = [ "sqruff" ];
 
