@@ -1,5 +1,7 @@
 {
   flake.modules.nvf.dev = {
+    vim.binds.whichKey.register."<leader>q" = "Session";
+
     vim.session.nvim-session-manager = {
       enable = true;
       usePicker = false;

@@ -7,6 +7,11 @@
         cmd = "Trouble";
       };
 
+      binds.whichKey.register = {
+        "<leader>c" = "Code";
+        "<leader>x" = "Trouble";
+      };
+
       keymaps = [
         {
           mode = [ "n" ];

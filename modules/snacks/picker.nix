@@ -18,6 +18,8 @@
       };
     };
 
+    vim.binds.whichKey.register."<leader>s" = "Search";
+
     vim.keymaps = [
       {
         mode = [ "n" ];
