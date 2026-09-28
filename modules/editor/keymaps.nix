@@ -2,6 +2,28 @@
   flake.modules.nvf.core = {
     vim.keymaps = [
       {
+        mode = [
+          "n"
+          "x"
+        ];
+        key = "j";
+        action = "v:count == 0 ? 'gj' : 'j'";
+        expr = true;
+        silent = true;
+        desc = "Down a screen line";
+      }
+      {
+        mode = [
+          "n"
+          "x"
+        ];
+        key = "k";
+        action = "v:count == 0 ? 'gk' : 'k'";
+        expr = true;
+        silent = true;
+        desc = "Up a screen line";
+      }
+      {
         mode = [ "n" ];
         key = "<Esc>";
         action = "<cmd>nohlsearch<CR>";
