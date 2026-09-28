@@ -3,6 +3,14 @@
     vim = {
       startPlugins = [ "nvim-lspconfig" ];
 
+      binds.whichKey.register = {
+        "gr" = "LSP";
+        "gra" = "Code action";
+        "grn" = "Rename";
+        "grx" = "Run code lens";
+        "K" = "Hover";
+      };
+
       keymaps = [
         {
           mode = [ "n" ];
