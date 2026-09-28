@@ -9,6 +9,9 @@ require("kanagawa").setup({
 						bg = "none",
 						bg_border = "none",
 					},
+					pmenu = {
+						bg = "none",
+					},
 				},
 			},
 		},
