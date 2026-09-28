@@ -1,5 +1,5 @@
 {
-  flake.modules.nvf.core = {
+  flake.modules.nvf.core = { lib, ... }: {
     vim = {
       languages.markdown = {
         enable = true;
@@ -13,14 +13,13 @@
         };
       };
 
-      keymaps = [
-        {
-          mode = [ "n" ];
-          key = "<leader>tm";
-          action = "<CMD>RenderMarkdown toggle<CR>";
-          desc = "[T]oggle [M]arkdown rendering";
-        }
-      ];
+      luaConfigRC.toggle-markdown = lib.nvim.dag.entryAfter [ "pluginConfigs" ] ''
+        Snacks.toggle({
+          name = "Markdown rendering",
+          get = require("render-markdown").get,
+          set = require("render-markdown").set,
+        }):map("<leader>tm")
+      '';
     };
   };
 
