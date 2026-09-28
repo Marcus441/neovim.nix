@@ -12,6 +12,7 @@
         shortmess = "IF";
         wrap = false;
         linebreak = true;
+        breakindent = true;
         guicursor = "i:block";
         winborder = "single";
       };
