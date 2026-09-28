@@ -17,6 +17,10 @@
         guicursor = "i:block";
         winborder = "single";
       };
+
+      luaConfigRC.toggle-wrap = lib.nvim.dag.entryAfter [ "pluginConfigs" ] ''
+        Snacks.toggle.option("wrap", { name = "Line wrap" }):map("<leader>tl")
+      '';
     };
   };
 
