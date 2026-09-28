@@ -133,6 +133,8 @@ Leader is `<Space>`. LSP keys follow the Neovim defaults.
 | `<leader>tb` / `<leader>td`      | Toggle line blame / deleted lines              |
 | `<leader>tf`                     | Toggle format on save                          |
 | `<leader>tm` / `<leader>tp`      | Toggle markdown rendering / markdown preview   |
+| `<leader>ti` / `<leader>tw`      | Toggle indent guides / LSP word highlights     |
+| `<leader>tD`                     | Toggle dimming                                 |
 | `<leader>ql` / `<leader>qs`      | Load last session / pick a session             |
 | `<leader>qw` / `<leader>qd`      | Save / delete session                          |
 | `<F5>` / `<leader>b`             | Debugger continue / toggle breakpoint          |
