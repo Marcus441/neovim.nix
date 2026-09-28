@@ -24,8 +24,18 @@
     { pkgs, ... }:
     {
       vim = {
-        lsp.servers.superhtml.enable = true;
-        extraPackages = [ pkgs.superhtml ];
+        lsp.servers = {
+          superhtml.enable = true;
+          emmet_language_server.filetypes = [
+            "html"
+            "htmlangular"
+          ];
+        };
+
+        extraPackages = [
+          pkgs.emmet-language-server
+          pkgs.superhtml
+        ];
       };
     };
 }
