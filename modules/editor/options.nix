@@ -13,6 +13,7 @@
         wrap = false;
         linebreak = true;
         breakindent = true;
+        sidescrolloff = 8;
         guicursor = "i:block";
         winborder = "single";
       };
