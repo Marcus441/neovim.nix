@@ -11,6 +11,7 @@
         shiftwidth = lib.mkDefault 4;
         shortmess = "IF";
         wrap = false;
+        linebreak = true;
         guicursor = "i:block";
         winborder = "single";
       };
