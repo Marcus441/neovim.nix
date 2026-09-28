@@ -13,6 +13,7 @@
         wrap = true;
         guicursor = "i:block";
         winborder = "rounded";
+        pumborder = "rounded";
       };
     };
   };
