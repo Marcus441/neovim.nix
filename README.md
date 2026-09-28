@@ -111,6 +111,8 @@ Leader is `<Space>`. LSP keys follow the Neovim defaults.
 | `gd` / `gD`                      | Definition / declaration                       |
 | `grr` / `gri` / `grt`            | References / implementation / type definition  |
 | `grn` / `gra`                    | Rename symbol / code action                    |
+| `<leader>cr` / `<leader>ca`      | Rename symbol / code action                    |
+| `<leader>cc`                     | Run code lens                                  |
 | `gO` / `gW`                      | Document / workspace symbols                   |
 | `K` / `<C-w>d`                   | Hover / diagnostic under cursor                |
 | `[d` / `]d`                      | Previous / next diagnostic                     |
