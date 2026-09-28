@@ -8,8 +8,8 @@
           "markdown"
           "text"
         ];
-        desc = "Enable spellcheck for prose";
-        command = "setlocal spell";
+        desc = "Enable spellcheck and wrapping for prose";
+        command = "setlocal spell wrap";
       }
     ];
   };
