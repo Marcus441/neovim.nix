@@ -10,7 +10,11 @@
     { pkgs, ... }:
     {
       vim = {
-        lsp.servers.cssls.enable = true;
+        lsp.servers = {
+          cssls.enable = true;
+          emmet_language_server.filetypes = [ "css" ];
+        };
+
         extraPackages = [ pkgs.vscode-langservers-extracted ];
       };
     };
