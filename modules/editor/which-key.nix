@@ -16,18 +16,24 @@
           '';
         };
 
+        luaConfigRC.toggle-which-key = lib.nvim.dag.entryAfter [ "pluginConfigs" ] ''
+          Snacks.toggle({
+            name = "Which-key popup",
+            get = function()
+              return not vim.g.which_key_hidden
+            end,
+            set = function(enabled)
+              vim.g.which_key_hidden = not enabled
+            end,
+          }):map("<leader>tk")
+        '';
+
         keymaps = [
           {
             mode = [ "n" ];
             key = "<leader>?";
             action = "<cmd>lua require('which-key').show({ global = false })<cr>";
             desc = "Buffer local keymaps";
-          }
-          {
-            mode = [ "n" ];
-            key = "<leader>tk";
-            action = "<cmd>lua vim.g.which_key_hidden = not vim.g.which_key_hidden<cr>";
-            desc = "[T]oggle which-[K]ey";
           }
         ];
       };
