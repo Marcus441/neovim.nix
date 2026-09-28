@@ -11,11 +11,20 @@
     };
   };
 
-  flake.modules.nvf.dev = {
-    vim.utility.snacks-nvim.setupOpts = {
-      dim.enabled = true;
-      rename.enabled = true;
-      words.enabled = true;
+  flake.modules.nvf.dev =
+    { lib, ... }:
+    {
+      vim = {
+        utility.snacks-nvim.setupOpts = {
+          dim.enabled = true;
+          rename.enabled = true;
+          words.enabled = true;
+        };
+
+        luaConfigRC.toggle-snacks = lib.nvim.dag.entryAfter [ "pluginConfigs" ] ''
+          Snacks.toggle.dim():map("<leader>tD")
+          Snacks.toggle.words():map("<leader>tw")
+        '';
+      };
     };
-  };
 }
