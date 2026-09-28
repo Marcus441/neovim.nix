@@ -13,6 +13,27 @@
 
       keymaps = [
         {
+          mode = [
+            "n"
+            "x"
+          ];
+          key = "<leader>ca";
+          action = "<cmd>lua vim.lsp.buf.code_action()<cr>";
+          desc = "[C]ode [A]ction";
+        }
+        {
+          mode = [ "n" ];
+          key = "<leader>cr";
+          action = "<cmd>lua vim.lsp.buf.rename()<cr>";
+          desc = "[C]ode [R]ename";
+        }
+        {
+          mode = [ "n" ];
+          key = "<leader>cc";
+          action = "<cmd>lua vim.lsp.codelens.run()<cr>";
+          desc = "Run [C]ode lens";
+        }
+        {
           mode = [ "n" ];
           key = "gd";
           action = "<cmd>lua Snacks.picker.lsp_definitions()<cr>";
