@@ -10,7 +10,10 @@
     { pkgs, ... }:
     {
       vim = {
-        lsp.servers.ts_ls.enable = true;
+        lsp.servers = {
+          ts_ls.enable = true;
+          emmet_language_server.filetypes = [ "typescriptreact" ];
+        };
 
         diagnostics.nvim-lint = {
           linters_by_ft = {
