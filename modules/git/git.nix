@@ -5,7 +5,10 @@
       vim-fugitive.enable = true;
     };
 
-    vim.binds.whichKey.register."<leader>g" = "Git";
+    vim.binds.whichKey.register = {
+      "<leader>g" = "Git";
+      "<leader>h" = "Git hunk";
+    };
 
     vim.keymaps = [
       {
