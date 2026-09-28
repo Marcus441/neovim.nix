@@ -15,7 +15,8 @@
         breakindent = true;
         sidescrolloff = 8;
         guicursor = "i:block";
-        winborder = "single";
+        winborder = "rounded";
+        pumborder = "rounded";
       };
 
       luaConfigRC.toggle-wrap = lib.nvim.dag.entryAfter [ "pluginConfigs" ] ''
