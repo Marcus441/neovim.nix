@@ -5,6 +5,10 @@ require("kanagawa").setup({
 			all = {
 				ui = {
 					bg_gutter = "none",
+					float = {
+						bg = "none",
+						bg_border = "none",
+					},
 				},
 			},
 		},
