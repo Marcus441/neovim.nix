@@ -10,7 +10,7 @@
         tabstop = lib.mkDefault 4;
         shiftwidth = lib.mkDefault 4;
         shortmess = "IF";
-        wrap = true;
+        wrap = false;
         guicursor = "i:block";
         winborder = "single";
       };
