@@ -12,7 +12,7 @@
         shortmess = "IF";
         wrap = true;
         guicursor = "i:block";
-        winborder = "single";
+        winborder = "rounded";
       };
     };
   };
