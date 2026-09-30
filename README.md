@@ -43,7 +43,7 @@ modules/
   flake/                flake-parts plumbing: systems, nixpkgs, formatter, packages
   editor/               options, keymaps, which-key, clipboard, folds, undo, oil, sessions
   ui/                   statusline, diagnostics, icons, colorizer, neovide
-  theme/                kanagawa
+  theme/                modus
   snacks/               picker, notifier, indent guides, images
   lsp/                  lspconfig, completion, formatting, linting, debugger, trouble
   git/                  gitsigns, fugitive, gitbrowse
