@@ -4,8 +4,8 @@
 
     vim.extraPlugins = {
       theme-plugin = {
-        package = pkgs.vimPlugins.kanagawa-nvim;
-        setup = builtins.readFile ./kanagawa.lua;
+        package = pkgs.vimPlugins.modus-themes-nvim;
+        setup = builtins.readFile ./modus.lua;
       };
     };
   };
