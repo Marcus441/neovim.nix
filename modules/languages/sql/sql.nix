@@ -28,8 +28,39 @@
   };
 
   flake.modules.nvf.dev =
-    { pkgs, ... }:
+    { pkgs, lib, ... }:
     {
-      vim.extraPackages = [ pkgs.sqruff ];
+      vim = {
+        extraPackages = [ pkgs.sqruff ];
+
+        diagnostics.nvim-lint.linters.sqruff.args = [
+          "lint"
+          "--format=json"
+          "--parsing-errors"
+          (lib.mkLuaInline ''
+            function()
+              return require("sql-dialect").lint_flag(0)
+            end
+          '')
+          "-"
+        ];
+
+        augroups = [ { name = "SqlLint"; } ];
+
+        autocmds = [
+          {
+            event = [ "BufWritePost" ];
+            desc = "Lint SQL when the dialect is known";
+            group = "SqlLint";
+            callback = lib.mkLuaInline ''
+              function(args)
+                if vim.bo[args.buf].filetype == "sql" and require("sql-dialect").known(args.buf) then
+                  require("lint").try_lint("sqruff")
+                end
+              end
+            '';
+          }
+        ];
+      };
     };
 }

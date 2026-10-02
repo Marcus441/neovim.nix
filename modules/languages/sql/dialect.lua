@@ -23,8 +23,17 @@ local function has_bind_params(buf)
   return vim.fn.match(text, [[\(^\|[^:]\)\(]] .. vim.g.db_ui_bind_param_pattern .. [[\)]]) >= 0
 end
 
+local function lint_flag(buf)
+  local dialect = of(buf)
+  if dialect then
+    return "--dialect=" .. dialect
+  end
+  return "--config=" .. vim.fs.joinpath(vim.fs.root(buf, { ".sqruff" }), ".sqruff")
+end
+
 package.loaded["sql-dialect"] = {
   of = of,
+  lint_flag = lint_flag,
   has_bind_params = has_bind_params,
   known = function(buf)
     return of(buf) ~= nil or vim.fs.root(buf, { ".sqruff" }) ~= nil
