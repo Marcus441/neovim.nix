@@ -31,7 +31,7 @@
           vim.g.db_ui_execute_on_save = 0
 
           vim.api.nvim_create_autocmd("FileType", {
-            pattern = { "sql", "mysql", "plsql" },
+            pattern = "sql",
             callback = function(args)
               vim.keymap.set({ "n", "x" }, "<M-CR>", function()
                 return vim.b.dbui_db_key_name and "<Plug>(DBUI_ExecuteQuery)" or "<Cmd>DBUIFindBuffer<CR>"
@@ -40,13 +40,13 @@
           })
         '';
         autocomplete.blink-cmp.setupOpts.sources = {
-          per_filetype = lib.genAttrs [ "sql" "mysql" "plsql" ] (_: [
+          per_filetype.sql = [
             "dadbod"
             "lsp"
             "snippets"
             "path"
             "buffer"
-          ]);
+          ];
           providers.dadbod = {
             name = "Dadbod";
             module = "vim_dadbod_completion.blink";
