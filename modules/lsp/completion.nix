@@ -9,10 +9,13 @@
       friendly-snippets.enable = true;
       setupOpts = {
         keymap.preset = "enter";
-        cmdline.keymap."<Tab>" = lib.mkForce [
-          "show_and_insert_or_accept_single"
-          "select_next"
-        ];
+        cmdline.keymap = {
+          preset = "cmdline";
+          "<Tab>" = lib.mkForce [
+            "show_and_insert_or_accept_single"
+            "select_next"
+          ];
+        };
         signature.enabled = true;
         sources.providers = {
           lsp = {
