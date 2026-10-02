@@ -33,7 +33,6 @@
           vim.api.nvim_create_autocmd("FileType", {
             pattern = { "sql", "mysql", "plsql" },
             callback = function(args)
-              vim.bo[args.buf].omnifunc = "vim_dadbod_completion#omni"
               vim.keymap.set({ "n", "x" }, "<M-CR>", function()
                 return vim.b.dbui_db_key_name and "<Plug>(DBUI_ExecuteQuery)" or "<Cmd>DBUIFindBuffer<CR>"
               end, { buffer = args.buf, expr = true, remap = true, silent = true, desc = "Execute query" })
