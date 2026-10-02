@@ -34,7 +34,7 @@
             pattern = { "sql", "mysql", "plsql" },
             callback = function(args)
               vim.bo[args.buf].omnifunc = "vim_dadbod_completion#omni"
-              vim.keymap.set({ "n", "v" }, "<M-CR>", "<Plug>(DBUI_ExecuteQuery)",
+              vim.keymap.set({ "n", "x" }, "<M-CR>", "<Plug>(DBUI_ExecuteQuery)",
                 { buffer = args.buf, remap = true, silent = true, desc = "Execute query" })
             end,
           })
