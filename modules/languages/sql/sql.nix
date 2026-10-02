@@ -19,7 +19,8 @@
         '';
         condition = lib.mkLuaInline ''
           function(_, ctx)
-            return require("sql-dialect").known(ctx.buf)
+            local dialect = require("sql-dialect")
+            return dialect.known(ctx.buf) and not dialect.has_bind_params(ctx.buf)
           end
         '';
       };
