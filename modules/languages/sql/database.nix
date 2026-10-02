@@ -13,11 +13,9 @@
           };
           vim-dadbod-ui = {
             package = pkgs.vimPlugins.vim-dadbod-ui;
-            after = [ "vim-dadbod" ];
           };
           vim-dadbod-completion = {
             package = pkgs.vimPlugins.vim-dadbod-completion;
-            after = [ "vim-dadbod" ];
           };
         };
         extraPackages = [
