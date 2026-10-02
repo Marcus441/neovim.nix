@@ -29,16 +29,6 @@
           db_ui_execute_on_save = 0;
         };
 
-        luaConfigRC.dadbod = ''
-          vim.api.nvim_create_autocmd("FileType", {
-            pattern = "sql",
-            callback = function(args)
-              vim.keymap.set({ "n", "x" }, "<M-CR>", function()
-                return vim.b.dbui_db_key_name and "<Plug>(DBUI_ExecuteQuery)" or "<Cmd>DBUIFindBuffer<CR>"
-              end, { buffer = args.buf, expr = true, remap = true, silent = true, desc = "Execute query" })
-            end,
-          })
-        '';
         autocomplete.blink-cmp.setupOpts.sources = {
           per_filetype.sql = [
             "dadbod"
@@ -62,14 +52,27 @@
           }
         ];
 
-        augroups = [ { name = "DboutCleanup"; } ];
+        augroups = [ { name = "Dadbod"; } ];
 
         autocmds = [
           {
             event = [ "FileType" ];
+            pattern = [ "sql" ];
+            desc = "Execute query, or attach the file to a connection";
+            group = "Dadbod";
+            callback = lib.mkLuaInline ''
+              function(args)
+                vim.keymap.set({ "n", "x" }, "<M-CR>", function()
+                  return vim.b.dbui_db_key_name and "<Plug>(DBUI_ExecuteQuery)" or "<Cmd>DBUIFindBuffer<CR>"
+                end, { buffer = args.buf, expr = true, remap = true, silent = true, desc = "Execute query" })
+              end
+            '';
+          }
+          {
+            event = [ "FileType" ];
             pattern = [ "dbout" ];
             desc = "Disable snacks indent/scope guides in query result buffers";
-            group = "DboutCleanup";
+            group = "Dadbod";
             callback = lib.mkLuaInline ''
               function(args)
                 vim.b[args.buf].snacks_indent = false
