@@ -1,7 +1,6 @@
 local function of(buf)
-  local explicit = vim.b[buf].sql_dialect or vim.g.sql_dialect
-  if explicit then
-    return explicit
+  if vim.b[buf].sql_dialect then
+    return vim.b[buf].sql_dialect
   end
   -- dadbod-ui sets b:db to the connection url on every query buffer
   local url = vim.b[buf].db
@@ -13,7 +12,7 @@ local function of(buf)
       return "postgres"
     end
   end
-  return nil
+  return vim.g.sql_dialect
 end
 
 package.loaded["sql-dialect"] = {
