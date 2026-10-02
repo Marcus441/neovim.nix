@@ -42,7 +42,6 @@
         autocomplete.blink-cmp.setupOpts.sources = {
           per_filetype.sql = [
             "dadbod"
-            "lsp"
             "snippets"
             "path"
             "buffer"
