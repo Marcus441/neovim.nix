@@ -76,7 +76,6 @@
               function(args)
                 vim.b[args.buf].snacks_indent = false
                 vim.b[args.buf].snacks_scope = false
-                vim.wo.wrap = false
               end
             '';
           }
