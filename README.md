@@ -144,10 +144,10 @@ Leader is `<Space>`. LSP keys follow the Neovim defaults.
 | `<C-n>` / `<C-p>` / `<CR>`       | Completion next / previous / accept            |
 | `<leader>u`                      | Undotree                                       |
 | `<leader>D`                      | Database UI                                    |
-| `<M-CR>`                         | Execute query (SQL buffers)                    |
-| `<leader>S`                      | Execute query (SQL buffers, dadbod-ui default) |
-| `<leader>W`                      | Save query (SQL buffers)                       |
-| `<leader>E`                      | Edit bind parameters (SQL buffers)             |
+| `<M-CR>`                         | Execute query, or attach file to a connection  |
+| `<leader>S`                      | Execute query (dadbod-ui query buffers)        |
+| `<leader>W`                      | Save query (dadbod-ui query buffers)           |
+| `<leader>E`                      | Edit bind parameters (dadbod-ui query buffers) |
 | `-`                              | Oil                                            |
 | `<leader>d`                      | Delete (void register)                         |
 | `J` / `K` (visual)               | Move block down / up                           |
@@ -167,4 +167,5 @@ export DB_UI_PROD=sqlserver://user:pw@sql.example:1433/myapp
 `A` in the drawer adds a connection and saves it to
 `~/.local/share/db_ui/connections.json`. SQL formatting needs a known dialect: a
 query buffer takes it from the connection, a `.sql` file needs
-`vim.g.sql_dialect` or a `.sqruff` in the project.
+`vim.g.sql_dialect` or a `.sqruff` in the project. A query buffer with bind
+parameters (`:name`) is not formatted.
